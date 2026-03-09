@@ -1,0 +1,434 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Strabismus Simulator</title>
+
+<link href="style.css" rel="stylesheet" type="text/css" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"/>
+
+<script type="text/javascript" src="scripts/jquery-2.1.4.min.js" defer></script>
+<script type="text/javascript" src="scripts/Script.js" defer></script>
+
+
+</head>
+
+<body>
+
+
+
+
+<!--<div id="bodyContainer">-->
+
+
+
+
+<!--<div id="androidLine"></div>-->
+
+
+<!--
+<div id="imageDisplayer">
+</div>
+-->
+<!--<div id="loadCover">   
+    <div id="loadBarContainer">
+    	<div id="loadBar"></div>
+    	</div>
+</div>-->
+
+
+
+
+
+
+
+<div id="screenDimensions"></div>
+
+
+
+<div id="mainContainer">
+
+
+<canvas id="canvas1"></canvas>
+<canvas id="canvas2"></canvas>
+<canvas id="canvas3"></canvas>
+<canvas id="canvas4"></canvas>
+
+
+<div id="testBox">
+<div class="column">
+<ul>
+	<li id="list0"></li>
+	<li id="list1"></li>
+	<li id="list2"></li>
+	<li id="list3"></li>
+	<li id="list4"></li>
+	<li id="list5"></li>
+	<li id="list6"></li>
+</ul>
+</div>
+
+<div class="column">
+<ul>
+	<li id="list7"></li>
+	<li id="list8"></li>
+	<li id="list9"></li>
+	<li id="list10"></li>
+	<li id="list11"></li>
+	<li id="list12"></li>
+	<li id="list13"></li>
+</ul>
+</div>
+
+<div class="column">
+<ul>
+	<li id="list14"></li>
+	<li id="list15"></li>
+	<li id="list16"></li>
+	<li id="list17"></li>
+	<li id="list18"></li>
+	<li id="list19"></li>
+	<li id="list20"></li>
+</ul>
+</div>
+</div>
+
+
+
+
+<div id="panel1" class="panelBG">
+<!--<div id="toggle_hidden"></div>-->
+<!--<div id="patientChange"></div>-->
+<div id="patientArrows"></div>
+<div id="patientQuizState">1</div>
+<div id="patientQuizMark"></div>
+
+
+<div id="correctMark"></div>
+<div id="incorrectMark"></div>
+<!--<div id="toggle_dominant"></div>-->
+<!--<div id="dom_OS">OS</div>-->
+<!--<div id="crossOut"></div>-->
+</div>
+
+<div id="panel2" class="panelBG">
+
+<div id="domBG" class="innerPanelBG">
+<div id="dom_OD">OD</div>
+<div id="dom_OS">OS</div>
+<div class="arrow" id="toggle_dominant"></div>
+</div>
+
+<div id="inputBG" class="innerPanelBG">
+<div class="letters" id="letterX">X</div>
+<div class="letters" id="letterY">Y</div>
+<div class="letters" id="tropia">Tropia</div>
+<div class="letters" id="phoria">Phoria</div>
+
+<div class="inputField" id="inputFieldX">0</div>
+<div class="arrow" id="custom_tropia_X_add"></div>
+<div class="arrow" id="custom_tropia_X_sub"></div>
+
+<div class="inputField" id="inputFieldY">0</div>
+<div class="arrow" id="custom_tropia_Y_add"></div>
+<div class="arrow" id="custom_tropia_Y_sub"></div>
+
+<div class="inputField" id="inputFieldX_h">0</div>
+<div class="arrow" id="custom_phoria_X_add"></div>
+<div class="arrow" id="custom_phoria_X_sub"></div>
+
+<div class="inputField" id="inputFieldY_h">0</div>
+<div class="arrow" id="custom_phoria_Y_add"></div>
+<div class="arrow" id="custom_phoria_Y_sub"></div>
+
+<div id="disableAxisCover"></div>
+</div>
+</div>
+
+<div id="panel3" class="panelBG">
+<div id="toggle_target" class="innerPanelBG"></div>
+<div id="toggle_occluder" class="innerPanelBG"></div>
+<div id="simult_toggle"></div>
+<div id="prismSetBG" class="innerPanelBG">
+<div class="inputField" id="input_diopters">0</div>
+<div id="toggle_prism"></div>
+<div id="rotate_prism"></div>
+<div class="arrow" id="tool_prism_add"></div>
+<div class="arrow" id="tool_prism_sub"></div>
+</div>
+</div>
+
+
+
+
+<div id="panel4" class="panelBG">
+<div id="quizAnswerContainer" class="innerPanelBG">
+<!----------------------------------------------------------------->
+<div class="arrow" id="closeQuizMenu"></div>
+<!----------------------------------------------------------------->
+<div id="quizDiopterColumn">
+<div class="quizTitle" id="quizDiopterTitle">Δ</div>
+<div class="inputField quizDiopInput" id="quizDiopterInput1">0</div>
+<div class="inputField quizDiopInput" id="quizDiopterInput2">0</div>
+<div class="arrow" id="quiz_arrowUp_diop1"></div>
+<div class="arrow" id="quiz_arrowDown_diop1"></div>
+<div class="arrow" id="quiz_arrowUp_diop2"></div>
+<div class="arrow" id="quiz_arrowDown_diop2"></div>
+</div>
+<!----------------------------------------------------------------->
+<div id="quizEyeColumn">
+<div class="quizTitle" id="quizEyeTitle">Eye</div>
+<div class="quizButton" id="quizEyeField1">N/A</div>
+<div class="quizButton" id="quizEyeField2">N/A</div>
+<div class="arrow" id="quizEyeButton1"></div>
+<div class="arrow" id="quizEyeButton2"></div>
+
+
+<div class="quizEyeMenu" id="quizEyeMenu1">
+<div id="left">Left</div>
+<div id="quizLine">- - - - -</div>
+<div id="right">Right</div>
+<div id="quizLine2">- - - - -</div>
+<div id="none2">N/A</div>
+<div class="arrow" id="left1button"></div>
+<div class="arrow" id="right1button"></div>
+<div class="arrow" id="none1button"></div>
+</div>
+
+<div class="quizEyeMenu" id="quizEyeMenu2">
+<div id="left">Left</div>
+<div id="quizLine">- - - - -</div>
+<div id="right">Right</div>
+<div id="quizLine2">- - - - -</div>
+<div id="none2">N/A</div>
+<div class="arrow" id="left2button"></div>
+<div class="arrow" id="right2button"></div>
+<div class="arrow" id="none2button"></div>
+</div>
+</div>
+
+<!----------------------------------------------------------------->
+<div id="quizConditionColumn">
+
+<div class="quizTitle" id="quizConditionTitle">Condition</div>
+<div class="quizButton" id="quizConditionField1">N/A</div>
+<div class="quizButton" id="quizConditionField2">N/A</div>
+<div class="arrow" id="quizConditionButton1"></div>
+<div class="arrow" id="quizConditionButton2"></div>
+
+
+<div class="quizConditionMenu" id="quizConditionMenu1">
+<div id="eso">Esotropia</div>
+<div id="quizLineCond1">- - - - - - - - - - - - - - - - -</div>
+<div id="exo">Exotropia</div>
+<div id="quizLineCond2">- - - - - - - - - - - - - - - - -</div>
+<div id="hyper">Hypertropia</div>
+<div id="quizLineCond3">- - - - - - - - - - - - - - - - -</div>
+<div id="hypo">Hypotropia</div>
+<div id="quizLineCond4">- - - - - - - - - - - - - - - - -</div>
+<div id="none">N/A</div>
+<div class="arrow" id="eso1button"></div>
+<div class="arrow" id="exo1button"></div>
+<div class="arrow" id="hyper1button"></div>
+<div class="arrow" id="hypo1button"></div>
+<div class="arrow" id="noneC1button"></div>
+</div>
+
+<div class="quizConditionMenu" id="quizConditionMenu2">
+<div id="eso">Esophoria</div>
+<div id="quizLineCond1">- - - - - - - - - - - - - - - - -</div>
+<div id="exo">Exophoria</div>
+<div id="quizLineCond2">- - - - - - - - - - - - - - - - -</div>
+<div id="hyper">Hyperphoria</div>
+<div id="quizLineCond3">- - - - - - - - - - - - - - - - -</div>
+<div id="hypo">Hypophoria</div>
+<div id="quizLineCond4">- - - - - - - - - - - - - - - - -</div>
+<div id="none">N/A</div>
+<div class="arrow" id="eso2button"></div>
+<div class="arrow" id="exo2button"></div>
+<div class="arrow" id="hyper2button"></div>
+<div class="arrow" id="hypo2button"></div>
+<div class="arrow" id="noneC2button"></div>
+</div>
+
+</div>
+
+
+
+<div id="incompleteMessage">Select at least one condition.</div>
+<div id="submitButton">Submit</div>
+<div id="diagnose">Submit</div>
+<div id="patientNumber"><span id="patientN">1</span><span id="patientOf"> of </span>3</div>
+<div id="patientNext"><div id="patientNextImage"></div></div>
+<div id="patientPrev"><div id="patientPrevImage"></div></div>
+
+</div><!--quizAnswerContainer end-->
+
+</div><!--panel 4 end-->
+
+
+
+
+<div id="panel5" class="panelBG">
+<div id="conditionContainer" class="innerPanelBG">
+<div id="tropiaContainer">
+<div id="diopterID_tropia">50 Δ Left</div>
+<!--<div id="dominant_tropia">Left</div>-->
+<div id="conditionID_tropia">Exotropia</div>
+</div>
+<div id="dashes">- - - - - - - - - - -</div>
+<div id="phoriaContainer">
+<div id="diopterID_phoria">15 Δ Right</div>
+<!--<div id="dominant_phoria">Right</div>-->
+<div id="conditionID_phoria">Hyperphoria</div>
+</div>
+</div>
+</div>
+
+
+
+<div id="homeButton"><div id="homeButtonImage"></div></div>
+<div id="modeText">---</div>
+<div id="helpButton"></div>
+<div id="testResetButton">Try Three<br/>New Patients</div>
+
+
+
+<div id="scoreBG">
+	<div id="scoreTitle">Score:</div>
+    <div id="scoreNumber">0/3</div>
+    <!--<div class="closeWindow" id="closeScore"></div>-->
+    <div class="continueBT" id="continueScore">Review Answers</div>
+</div>
+
+<!--
+<div id="loadingCover">
+<div id="loadingText">Loading</div>
+</div>
+-->
+
+<div id="panelHide"></div>
+
+
+<div id="loadPatientsCover">Generating new patients...</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="instructContainer">
+
+	<div id="screenshotContainer"></div>
+    <div id="overlayContainer">
+    
+    <div id="instructStart">Instructions</div>
+    <div id="instructSkip">Start Simulator</div>
+    <div id="instructNext">Next &#9658</div>
+    <div id="instructVideo">Video Tutorial</div>
+    
+    </div>
+    
+    <div id="instructExit"></div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="menuContainer">
+
+<div id="menuBorder"></div>
+<div id="menuBG">
+	<div class="menuCircle" id="menuCircle1"></div>
+	<div class="menuCircle" id="menuCircle2"></div>
+</div>
+
+<div id="moduleTitle"></div>
+
+<div class="menuButton" id="menuReviewButton">
+<div id="menuReviewButtonTitle">Explore Mode</div>
+<div id="menuReviewButtonInfo">Learn how various deviations<br/>appear through cover testing</div>
+</div>
+<div class="menuButton" id="menuTestButton">
+<div id="menuTestButtonTitle">Test Mode</div>
+<div id="menuTestButtonInfo">Evaluate for strabismus in<br/>three randomized patients</div>
+</div>
+
+
+<div id="creditContainer">
+	
+    <div id="creditBoxContainer">
+    	<div id="creditTitle">Acknowledgment</div>
+   	  	<div class="creditBox" id="creditBox1">
+       		<p class="creditBold">Faruk H. Örge, MD</p>
+            <div class="creditRegular">
+        	<p>William R. and Margaret E. Althans Professor and Director</p>
+        	<p>Center for Pediatric Ophthalmology and Adult Strabismus</p>
+        	<p>University Hospitals Eye Institute</p>
+			<p>Department of Ophthalmology and Visual Sciences</p>
+			<p>Case Western Reserve University School of Medicine</p>
+            </div>     
+        </div>
+    </div>
+	
+    <div id="startButton">Start</div>
+
+</div><!--END: creditContainer-->
+<div class="menuSubButton" id="creditButtonNew">Acknowledgment</div>
+
+
+
+
+<!--<div class="menuSubButtonsNew" id="creditButtonNew">Acknowledgment</div>-->
+
+
+<div id="copyright">© 2015  American Academy of Ophthalmology</div>
+
+
+</div><!-- END: menuContainer-->
+
+
+
+
+</div><!--mainContainer-->
+
+
+
+<!--</div>end: body container-->
+
+
+
+
+
+
+</body>
+</html>

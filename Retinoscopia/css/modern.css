@@ -1,0 +1,381 @@
+/* MODERN UI OVERRIDES - V2 (Fixes & Polish) */
+
+/* 1. Global Reset & Typography */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+html,
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+    background-color: #1f2937 !important;
+    /* Dark Gray bg */
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. Main Container Polish */
+#retSimContainer {
+    background-color: #f3f4f6 !important;
+    /* Light Gray surface */
+    border-radius: 16px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 3. Button Fixes (Responsive & Rounded) */
+.startButton {
+    width: auto !important;
+    min-width: 140px !important;
+    padding: 0 24px !important;
+    height: 56px !important;
+    border-radius: 28px !important;
+    background-color: #4F46E5 !important;
+    /* Indigo 600 */
+    color: white !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.4) !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+    text-shadow: none !important;
+}
+
+.startButton:hover {
+    background-color: #4338ca !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.5) !important;
+}
+
+/* 4. Tutorial Text Fixes (Size & Readability) */
+#instructionText {
+    font-size: 14px !important;
+    /* Reduced from 16px */
+    line-height: 1.6 !important;
+    font-weight: 400 !important;
+    color: #f3f4f6 !important;
+    background-color: rgba(17, 24, 39, 0.85) !important;
+    /* Darker, more opaque bg */
+    padding: 24px !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    max-width: 600px !important;
+    width: auto !important;
+    height: auto !important;
+    top: 400px !important;
+    /* Adjust position */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin-left: 0 !important;
+    /* Remove negative margin centering */
+}
+
+/* 5. Tutorial Buttons (Next/Skip) */
+#instructionExit {
+    /* "Próximo" - Needs flex width */
+    width: auto !important;
+    min-width: 60px !important;
+    height: auto !important;
+    padding: 12px 24px !important;
+    border-radius: 30px !important;
+    background-color: #ffffff !important;
+    color: #111827 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    font-size: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    right: 40px !important;
+    bottom: 40px !important;
+    border: none !important;
+}
+
+#instructionExit:hover {
+    background-color: #f3f4f6 !important;
+    transform: scale(1.05);
+}
+
+#instructionSkip {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13px !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    text-decoration: none !important;
+    bottom: 40px !important;
+    right: 15px !important;
+}
+
+#instructionSkip:hover {
+    color: white !important;
+    text-decoration: underline !important;
+}
+
+/* 6. Tool Panels - Modern Look */
+#patientRxContainer_new,
+#workingDistanceContainer_new,
+#lightAngleContainer_new,
+#toolContainer_new,
+.formulaContainer_new,
+.toolInputContainer_new {
+    background-color: white !important;
+    border-radius: 12px !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+/* 7. Inputs */
+.inputField_new,
+.formulaNum_new,
+.num {
+    border-radius: 6px !important;
+    border: 1px solid #d1d5db !important;
+    background-color: #f9fafb !important;
+    color: #111827 !important;
+    font-family: 'Inter', monospace !important;
+    font-weight: 500 !important;
+}
+
+.inputField_new:focus,
+.formulaNum_new:focus {
+    outline: none !important;
+    border-color: #4F46E5 !important;
+    ring: 2px solid rgba(79, 70, 229, 0.2);
+}
+
+/* 8. Reset Button */
+#resetButton_new {
+    background-color: #ef4444 !important;
+    color: white !important;
+    border-radius: 8px !important;
+    border: none !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+/* MINIMALIST UPDATE */
+
+/* 1. Start Screen De-clutter */
+.menuCircle {
+    display: none !important;
+    /* Remove circles for clean look */
+}
+
+#menuBG {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%) !important;
+    /* Darker, cleaner blue */
+}
+
+/* 2. Global Font Reduction (Organization) */
+html,
+body,
+.inputField_new,
+.formulaNum_new,
+.num {
+    font-size: 14px !important;
+    /* Base size reduced */
+}
+
+#moduleTitle {
+    font-size: 36px !important;
+    /* Reduced from 42px */
+    letter-spacing: -0.5px !important;
+}
+
+/* 3. Tutorial Text Only */
+.instructionImage {
+    display: none !important;
+    /* Force hide */
+}
+
+#instructionText {
+    position: fixed !important;
+    /* Ensure it floats above everything */
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 600px !important;
+    max-width: 90% !important;
+    height: auto !important;
+    margin-left: 0 !important;
+    text-align: center !important;
+    font-size: 16px !important;
+    background-color: rgba(17, 24, 39, 0.95) !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 40px !important;
+    z-index: 5000 !important;
+    border-radius: 16px !important;
+}
+
+#instructionControls {
+    display: flex !important;
+    /* Enable Flexbox */
+    justify-content: center !important;
+    /* Center buttons horizontally */
+    gap: 20px !important;
+    /* Space between buttons */
+    margin-top: 20px !important;
+    /* Space from text */
+    width: 100% !important;
+}
+
+#instructionExit,
+#instructionSkip {
+    display: flex !important;
+    position: relative !important;
+    /* Reset from fixed */
+    top: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    right: auto !important;
+    transform: none !important;
+    margin: 0 !important;
+    /* Remove margins */
+
+    cursor: pointer !important;
+    text-transform: uppercase !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    height: 44px !important;
+    width: 140px !important;
+    /* Fixed equal width */
+    min-width: 140px !important;
+    border-radius: 8px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: none !important;
+    z-index: 5002 !important;
+    /* Ensure above overlay */
+}
+
+#instructionExit {
+    background-color: #4F46E5 !important;
+    color: white !important;
+    box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3) !important;
+}
+
+#instructionSkip {
+    background-color: #f3f4f6 !important;
+    /* Light gray for secondary action */
+    color: #4b5563 !important;
+    /* Dark gray text */
+    border: 1px solid #d1d5db !important;
+}
+
+#instructionExit:hover {
+    background-color: #4338ca !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 8px rgba(79, 70, 229, 0.4) !important;
+}
+
+#instructionSkip:hover {
+    background-color: #e5e7eb !important;
+    color: #111827 !important;
+    border-color: #9ca3af !important;
+}
+
+/* 5. Tooltip/Modal Fix for Help */
+#instructionOverlay {
+    background-color: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(5px);
+}
+
+
+/* HARMONIZATION - RESET BUTTON & UI */
+
+/* Harmonize Reset Button with new Start Button */
+#resetButton_new {
+    background-color: #ef4444 !important;
+    /* Keep red but flat/modern */
+    background: linear-gradient(145deg, #ef4444 0%, #dc2626 100%) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+#resetButton_new:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px) !important;
+}
+
+/* Panel Backgrounds - Cleaner White */
+#patientRxContainer_new,
+#toolContainer_new,
+.formulaContainer_new,
+#workingDistanceContainer_new,
+#lightAngleContainer_new,
+.toolInputContainer_new {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    /* Slate 200 */
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+    /* Subtler shadow */
+}
+
+
+/* FIX BUTTON VISIBILITY - Removed default hide */
+
+
+/* MODAL LAYOUT RESTRUCTURING */
+
+/* Parent Container */
+#instructionModalContainer {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 600px !important;
+    max-width: 90% !important;
+    background-color: white !important;
+    /* Clean White */
+    padding: 30px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+    z-index: 5000 !important;
+    display: none;
+    /* JS toggles this */
+}
+
+/* Dynamic Text Area */
+/* Dynamic Text Area - Removed conflicting rules */
+
+/* Controls Footer */
+#instructionControls {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 20px !important;
+    margin-top: 10px !important;
+    border-top: 1px solid #f1f5f9 !important;
+    padding-top: 20px !important;
+}
+
+/* Buttons Reset (Remove old absolute positioning) */
+/* Buttons Reset - Removed conflicting rules */
+
+/* Button Styles */
+#instructionExit {
+    /* Next */
+    background-color: #2563eb !important;
+    color: white !important;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2) !important;
+}
+
+#instructionExit:hover {
+    background-color: #1d4ed8 !important;
+}
+
+#instructionSkip {
+    /* Close */
+    background-color: #f1f5f9 !important;
+    /* Slate 100 */
+    color: #64748b !important;
+    box-shadow: none !important;
+}
+
+#instructionSkip:hover {
+    background-color: #e2e8f0 !important;
+    color: #475569 !important;
+}

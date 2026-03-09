@@ -1,0 +1,1250 @@
+@charset "ISO-8859-1";
+
+*{
+	padding: 0;
+	margin: 0;
+	border: 0;
+	//cursor:none;
+	-webkit-tap-highlight-color:rgba(100,0,100,100);
+}
+@font-face {
+    font-family: Gotham;
+    src:url(../fonts/Gotham-Medium.otf);
+}
+html, body{
+	background-color:#333;
+	//cursor:pointer;
+	overflow:hidden;
+	width:100%;
+	height:100%;
+	//font-family:Gotham, Arial, sans-serif;
+	font-family:Arial, sans-serif;
+	font-size:20px;
+	-webkit-touch-callout: none;
+    //-webkit-user-select: none;
+    //-khtml-user-select: none;
+    //-moz-user-select: none;
+    //-ms-user-select: none;
+    //user-select: none;
+	position:fixed;
+	top:0px;
+	left:0px;
+}
+::selection {
+	//background: transparent;
+}
+::-moz-selection {
+	//background: transparent;	
+}
+#mainContainer{
+	position:absolute;
+	top:0px;
+	left:0px;
+	height:540px;
+	width:920px;
+	background-color:#000;
+}
+
+
+#retSimContainer{
+	position:absolute;
+	top:10px;
+	left:10px;
+	height:520px;
+	width:900px;
+	border-radius:10px;
+	background-color:#CCC;
+}
+#patientRxContainer{
+	position:absolute;
+	top:15px;
+	right:-175px;
+	width:160px;
+	height:250px;
+	//background-color:#FC0;
+	border-radius:5px;
+}
+#patientRxContainer_new{
+	position:absolute;
+	top:55px;
+	right:15px;
+	height:160px;
+	width:270px;
+	padding-left:10px;
+	box-sizing:border-box;
+	background-color:#EEE;
+	border-bottom-left-radius:7px;
+    border-bottom-right-radius:7px;
+}
+#patientRxTitle_new{
+	position:absolute;
+	top:0px;
+	left:5px;
+	width:140px;
+	height:40px;
+	padding:5px;
+	//background-color:#A3A;
+    display:none;
+}
+#patientRxSphere_new{
+	position:absolute;
+	top:0px;
+	left:5px;
+	padding-top:5px;
+	box-sizing:border-box;
+	width:140px;
+	height:80px;
+	background-color:#EEE;
+	//border-top:1px dashed #636363;
+}
+#patientRxContainerTop_new{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:270px;
+	height:120px;
+	//background-color:#88C;
+    //display:none;
+}
+#patientRxContainerTopLeft_new{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:140px;
+	height:110px;
+	//background-color:#3A3;
+    //display:none;
+}
+#patientRxContainerBottom_new{
+	position:absolute;
+	top:80px;
+	left:5px;
+	width:260px;
+	height:80px;
+	background-color:#EEE;
+	border-top:1px dashed #636363;
+}
+#patientRxContainerTopRight_new{
+	position:absolute;
+	top:0px;
+	right:0px;
+	width:130px;
+	height:120px;
+	background-color:#FFF;
+    display:none;
+}
+#patientImage_new{
+	position:absolute;
+	top:10px;
+	right:15px;
+	width:70px;
+	height:100px;
+	//background-color:#000;
+	//background-image:url(../images/patientImage.svg);
+	background-size:contain;
+	background-repeat:no-repeat;
+	
+}
+#workingDistanceContainer{
+	position:absolute;
+	bottom:-115px;
+	right:15px;
+	width:160px;
+	height:110px;
+	background-color:#eee;
+	border-radius:5px;
+}
+#workingDistanceContainer_new{
+	position:absolute;
+	top:368px;
+	right:115px;
+	height:116px;
+	width:170px;
+	padding:0px 0px 0px 10px;
+	box-sizing:border-box;
+	background-color:#EEE;
+	border-radius:7px;
+}
+#wdcTitle_new{
+	width:152px;
+	padding:7px 0px 15px 0px;
+	margin-bottom:5px;
+	border-bottom:1px dashed #636363;
+	//background-color:#FeF;
+}
+#lightAngleContainer_new{
+	position:absolute;
+	top:345px;
+	left:445px;
+	height:140px;
+	width:130px;
+	padding:0px 0px 0px 10px;
+	box-sizing:border-box;
+	background-color:#EEE;
+	border-radius:7px;
+}
+#lacTitle_new{
+	width:110px;
+	padding:7px 0px 15px 0px;
+	margin-bottom:5px;
+	border-bottom:1px dashed #636363;
+	//background-color:#FeF;
+}
+.lightDegreeButton_new{
+	float:left;
+	width:25px;
+	height:27px;
+	text-align:center;
+	font-size:11px;
+	color:#444;
+	font-weight:bold;
+	padding-top:6px;
+	margin:7px 0px 0px 3px;
+	box-sizing:border-box;
+	border-radius:6px;
+	border:1px solid #bbb;
+	border-bottom:2px solid #999;
+	//background-color:#FFF;
+	cursor:pointer;
+}
+.ldb_new{
+	margin-left:11px;
+}
+#formulaContainer{
+	position:absolute;
+	bottom:140px;
+	right:-255px;
+	height:80px;
+	width:240px;
+	background-color:#fff;
+}
+.formulaContainer_new{
+	position:absolute;
+	top:225px;
+	right:15px;
+	height:133px;
+	width:270px;
+	padding:0px 0px 0px 10px;
+	box-sizing:border-box;
+	background-color:#EEE;
+	border-radius:7px;
+}
+.ftest{
+    top:82px;
+	right:0px;
+    height:122px;
+    //width:285px;
+    border-bottom:1px dashed #636363;
+}
+
+#toolContainer{
+	position:absolute;
+	bottom:-215px;
+	left:15px;
+	height:100px;
+	width:345px;
+	padding-left:10px;
+	box-sizing:border-box;
+	background-color:#fff;
+	border-radius:5px;
+}
+#toolContainer_new{
+	position:absolute;
+	top:345px;
+	left:15px;
+	height:140px;
+	width:420px;
+	padding-left:10px;
+	box-sizing:border-box;
+	background-color:#EEE;
+	border-radius:7px;
+	//display:none;
+}
+#tabContainer_new{
+	position:absolute;
+	top:5px;
+	left:5px;
+	height:45px;
+	width:420px;
+	//background-color:#7F7;
+}
+.toolTab_new{
+	float:left;
+	margin-right:5px;
+	height:45px;
+	width:203px;
+	color:#FFF;
+	padding:7px 0px 0px 10px;
+	border-top-left-radius:5px;
+	border-top-right-radius:5px;
+	box-sizing:border-box;
+	background-color:#70c130;
+	cursor:pointer;
+	display:none;
+}
+.tabDisable{
+	background-color:#bababa;
+}
+.tabText{
+	float:left;
+}
+.lensIcon{
+	float:right;
+	width:25px;
+	height:25px;
+	margin:3px 10px 0px 0px;
+	background-image:url(../images/lensIcon.svg);
+	background-repeat:no-repeat;
+	opacity:0.5;
+}
+.toolInputContainer_new{
+	position:absolute;
+	bottom:5px;
+	left:10px;
+	height:94px;
+	width:400px;
+	padding:10px 0px 0px 10px;
+	box-sizing:border-box;
+	background-color:#EEE;
+	border-top:1px dashed #636363;
+}
+#lensTitle_new{
+	//background-color:#F0F;
+	width:200px;
+	padding:3px 0px 0px 7px;
+}
+.ticShift_new{
+	bottom:-110px;
+	//background-color:#ECC;
+	display:none;
+}
+#retina{
+	position:absolute;
+	width:100%;
+	height:100%;
+	background-color:#F50;
+	opacity:0;
+}
+#eyeContainer{
+	position:absolute;
+	top:15px;
+	left:15px;
+	width:560px;
+	height:310px;
+	background-color:#000;
+	//border:3px solid #fff;
+	border-radius:10px;
+	box-sizing:content-box;
+	overflow:hidden;
+}
+#outputContainer{
+	position:absolute;
+	top:15px;
+	right:190px;
+	width:110px;
+	height:250px;
+	box-sizing:border-box;
+	background-color:#fff;
+}
+#toggleContainer{
+	position:absolute;
+	bottom:-215px;
+	right:485px;
+	height:100px;
+	width:40px;
+	border-radius:50px;
+	background-color:#FFF;
+	cursor:pointer;
+}
+#toggleKnob{
+	position:absolute;
+	top:10px;
+	left:5px;
+	height:50px;
+	width:30px;
+	border-radius:50px;
+}
+#resetButton{
+	position:absolute;
+	bottom:-115px;
+	right:190px;
+	height:35px;
+	width:100px;
+	padding:7px;
+	text-align:center;
+	box-sizing:border-box;
+	border-radius:5px;
+	border:1px solid #000;
+	background-color:#DDD;
+	cursor:pointer;
+}
+#resetButton:hover{
+	background-color:#DDD;
+}
+#resetButton_new{
+	position:absolute;
+	bottom:118px;
+	right:15px;
+	height:30px;
+	width:70px;
+	padding-top:4px;
+	font-size:16px;
+	color:#000;
+	text-align:center;
+	box-sizing:border-box;
+	border-radius:10px;
+	border-bottom:2px solid #777;
+	background-color:#FFF;
+	cursor:pointer;
+}
+#homeButton{
+	position:absolute;
+	bottom:35px;
+	right:16px;
+	//top:1010px;
+	//left:10px;
+	//border:solid 2px #aaa;
+	width:29px;
+	height:23px;
+	background-color:#FFF;
+	border-radius:10px;
+	//display:none;
+	cursor:pointer;
+}
+#homeButtonImage{
+	position:absolute;
+	top:3px;
+	left:6px;
+	width:17px;
+	height:17px;
+	background-image:url(../images/homeButton.png);
+	background-repeat:no-repeat;
+	background-size:contain;
+	cursor:pointer;
+	//opacity:0.5;
+}
+#helpButton{
+	position:absolute;
+	bottom:35px;
+	right:55px;
+	text-align:center;
+	//top:1010px;
+	//left:10px;
+	//border:solid 2px #aaa;
+	font-size:18px;
+	font-weight:bold;
+	width:29px;
+	height:23px;
+	background-color:#FFF;
+	border-radius:10px;
+	//display:none;
+	cursor:pointer;
+}
+.formulaRow{
+	float:left;
+	height:40px;
+	width:240px;
+}
+.formulaNum{
+	float:left;
+	height:40px;
+	width:80px;
+	padding:5px;
+	text-align:center;
+	border:1px solid #000;
+	box-sizing:border-box;
+}
+.formulaTitle_new{
+	float:left;
+	width:248px;
+	height:30px;
+	padding:7px 0px 5px 0px;
+	border-bottom:1px dashed #636363;
+	//background-color:#A3A;
+}
+.ftitle{
+    height:22px;
+    //border-top:1px dashed #636363;
+}
+.formulaRow_new{
+	margin-top:5px;
+	float:left;
+	height:35px;
+	width:260px;
+    box-sizing:border-box;
+	//border-top:1px dashed #333;
+	//background-color:#FFF;
+}
+.finput{
+    font-size:20px;
+}
+.formulaNum_new{
+	float:left;
+	height:35px;
+	width:80px;
+	margin-right:5px;
+	padding:5px;
+	text-align:center;
+	color:#70c130;
+	border:1px solid #CCC;
+	box-sizing:border-box;
+	border-radius:5px;
+	background-color:#FFF;
+}
+.fnRed_new{
+	color:#C00;
+}
+.rxLabel{
+	margin-left:15px;
+}
+.numInputContainer{
+	margin:5px 20px 10px 20px;
+	width:120px;
+	height:40px;
+}
+.numInputContainer_new{
+	float:left;
+	margin:0px 5px 0px 0px;
+	width:130px;
+	height:70px;
+	//background-color:#F0F;
+}
+.nic_new0{
+	width:120px;
+	//margin-top:5px;
+}
+.nic_new{
+	width:125px;
+	margin-top:5px;
+    //background-color:#FC0;
+}
+.nic2_new{
+	margin-top:5px;
+	margin-left:-10px;
+}
+.fieldTitle_new{
+	height:22px;
+	width:100%;
+	padding:2px 0px 0px 10px;
+	box-sizing:border-box;
+	font-size:13px;
+	font-weight:bold;
+	//background-color:#FFF;
+}
+.inputField_new{
+	float:left;
+	width:80px;
+	height:40px;
+	text-align:right;
+	border-radius:10px;
+	margin-left:10px;
+	padding:7px 10px 0px 0px;
+	border:1px solid #CCC;
+	box-sizing:border-box;
+	background-color:#FFF;
+}
+.arrowSet_new{
+	float:left;
+	height:40px;
+	width:25px;
+	margin-left:5px;
+	border-radius:7px;
+	overflow:hidden;
+}
+.tool{
+	float:left;
+	height:80px;
+	width:80px;
+	margin:10px 10px 0px 0px;
+}
+.num{
+	float:left;
+	width:80px;
+	height:40px;
+	text-align:right;
+	padding:7px 10px 0px 0px;
+	border:1px solid #000;
+	box-sizing:border-box;
+	background-color:#FFF;
+}
+.arrow{
+	float:left;
+	width:40px;
+	height:20px;
+	border:1px solid #000;
+	box-sizing:border-box;
+	background-color:#CCC;
+	background-repeat:no-repeat;
+	background-size:17px 9px;
+	background-position:center;
+	cursor:pointer;
+}
+.arrow_new{
+	float:left;
+	width:25px;
+	height:20px;
+	background-color:#AAA;
+	background-repeat:no-repeat;
+	background-size:13px 7px;
+	background-position:center;
+	cursor:pointer;
+}
+.arrow:hover{
+	background-color:#FFF;
+}
+.arrowTool{
+	width:80px;
+}
+.arrowUp{
+	background-image:url(../images/arrowUp.svg);
+}
+.arrowDown{
+	background-image:url(../images/arrowDown.svg);
+}
+.arrowUp_new{
+	background-image:url(../images/arrowUp.svg);
+	border-bottom:1px solid #EEE;
+}
+.arrowDown_new{
+	background-image:url(../images/arrowDown.svg);
+}
+.narrow{
+	margin-left:-5px;
+	width:60px;
+}
+.red{
+	color:#FFF;
+	background-color:#C00;
+}
+.green{
+	color:#FFF;
+	background-color:#090;
+}
+.lens{
+	position:absolute;
+	width:560px;
+	height:310px;
+	background-size:contain;
+	background-repeat:no-repeat;
+	//background-color:#F0f;
+	//display:none;
+}
+#lens0{
+	background-image:url(../images/lens0.png);
+}
+#lens1{
+	background-image:url(../images/lens1.png);
+}
+#lens2{
+	background-image:url(../images/lens2.png);
+}
+#lens3{
+	background-image:url(../images/lens3.png);
+}
+.lensNum{
+	position:absolute;
+	top:275px;
+	left:50%;
+	width:60px;
+	margin-left:-30px;
+	color:#FFF;
+	font-weight:bold;
+	text-align:center;
+}
+.lensAngle{
+	background-color:#70c130;
+	top:270px;
+	width:40px;
+	margin-left:-20px;
+	border-radius:8px;
+}
+.la_red{
+	background-color:#C00;
+}
+#lens0Pow{
+	text-align:right;
+	top:40px;
+	left:130px;
+}
+#lens1Pow{
+	text-align:right;
+	top:81px;
+	left:110px;
+}
+#lens2Pow{
+	text-align:left;
+	top:40px;
+	left:430px;
+}
+#lens3Pow{
+	text-align:left;
+	top:81px;
+	left:445px;
+}
+.lensRect{
+	width:560px;
+	height:310px;
+}
+#lens2Rect{
+	background-image:url(../images/lens2Cyl.svg);
+}
+#lens3Rect{
+	background-image:url(../images/lens3Cyl.svg);
+}
+#refWidth{
+	position:absolute;
+	bottom:7px;
+	left:120px;
+	display:none;
+}
+#refAngle{
+	position:absolute;
+	bottom:7px;
+	left:10px;
+	display:none;
+}
+#refMotion{
+	position:absolute;
+	bottom:7px;
+	right:10px;
+	display:none;
+}
+.refInfo{
+	font-size:16px;
+}
+
+.marg{
+	margin:5px 0px 10px 15px;
+}
+
+
+
+/*new*/
+
+#lightBeamContainer{
+	position:absolute;
+	top:0px;
+	left:0px;
+	//width:200px;
+	//height:200px;
+	//background-color:#F60;
+	opacity:0.75;
+	cursor:pointer;
+}
+#lightBeam{
+	position:absolute;
+	top:-100px;/*(beam height - container height)/2*/
+	left:25px;
+	//width:150px;
+	//height:400px;
+	//background-color:#FFF;
+	background-image:url(../images/lightBeam.svg);
+	opacity:0.4;
+	//border-bottom:10px solid #F0F;
+	//filter:blur(3px);
+	//display:none;
+}
+#reflectionContainer{
+	position:absolute;
+	bottom:0px;
+	right:0px;
+	width:200px;
+	height:200px;
+	//background-color:#F00;
+	//cursor:pointer;
+}
+#reflection{
+	position:absolute;
+	top:-200px;
+	left:50px;
+	width:100px;
+	height:600px;
+	//background-color:#FF0;
+	background-image:url(../images/reflection.svg);
+	background-size:100%;
+	//background-repeat:no-repeat;
+	//display:none;
+}
+#hole{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:560px;
+	height:310px;
+	//background-image:url(../images/eye.svg);
+	background-image:url(../images/retSim_eye.png);
+	//opacity:0.7;
+}
+.invisible{
+	display:none;
+}
+
+
+.half{
+	width:40px;
+}
+.deg{
+	background-image:none;
+	font-size:14px;
+	text-align:center;
+}
+
+#presetContainer{
+	position:absolute;
+	top:625px;
+	right:190px;
+	width:110px;
+	height:250px;
+	padding-left:10px;
+	box-sizing:border-box;
+	background-color:#EEE;
+	border-radius:5px;
+}
+.presetColumn{
+	float:left;
+	width:50px;
+	height:225px;
+	//background-color:#FF0;
+}
+.preset{
+	float:left;
+	width:40px;
+	height:22px;
+	font-size:14px;
+	text-align:center;
+	background-color:#CCC;
+	padding:3px;
+	border:1px solid #000;
+	margin:9px 0px 0px 0px;
+	box-sizing:border-box;
+	cursor:pointer;
+}
+.preset:hover{
+	border:2px solid #000;
+	padding-top:2px;
+}
+.presetLabel{
+	margin-left:15px;
+}
+
+.testColor{
+	background-color:#FF0;
+}
+#checkData{
+	position:absolute;
+	top:25px;
+	left:25px;
+	//width:250px;
+	//height:50px;
+	font-size:16px;
+	padding:10px;
+	background-color:#FFF;
+	cursor:pointer;
+	display:none;
+}
+#goal{
+	position:absolute;
+	top:25px;
+	left:420px;
+	width:150px;
+	font-size:12px;
+	padding:10px;
+	text-align:right;
+	//background-color:#F0C;
+	cursor:pointer;
+	display:none;
+}
+
+
+.copyright{
+	position:absolute;
+	height:20px;
+	width:390px;
+	bottom:3px;
+	right:15px;
+	//right:20px;
+	font-size:13px;
+	text-align:right;
+	color:#666;
+	//margin:0px 0px 0px -200px;
+	//background-color:#F0F;
+	//display:none;
+	font-family:Arial, sans-serif;
+}
+
+#testPanel{
+    position:absolute;
+    top:55px;
+    right:15px;
+    width:270px;
+    height:303px;
+    border-radius:7px;
+    background-color:#EEE;
+    display:none;
+}
+.answerUnder{
+    position:absolute;
+    height:50px;
+    width:270px;
+    background-color:#CCC;
+    bottom:160px;
+    right:15px;
+    display:none;
+}
+#testPanelButton{
+    position:absolute;
+    bottom:66px;
+    right:15px;
+    height:43px;
+	width:70px;
+	padding:13px 0px 0px 0px;
+	//font-size:20px;
+    //font-weight:bold;
+    line-height:16px;
+	//color:#555;
+	text-align:center;
+	box-sizing:border-box;
+	border-radius:10px;
+	border-bottom:2px solid #777;
+	background-color:#FFF;
+    //background-color:#FA0;
+    //background-color:#FEA;
+	cursor:pointer;
+    display:none;
+}
+
+.newRefractive{
+    position:absolute;
+    top:22px;
+    left:62px;
+    width:153px;
+    height:50px;
+    padding:12px;
+    font-size:20px;
+	text-align:center;
+	box-sizing:border-box;
+	border-radius:15px;
+    border-bottom:2px solid #777;
+	background-color:#FFF;
+    cursor:pointer;
+}
+.fital{
+    text-align:center;
+    font-style:italic;
+    color:#777;
+    font-size:17px;
+}
+.fcheck{
+    top:215px;
+}
+.refractAnswer{
+    position:absolute;
+    height:27px;
+    width:270px;
+    font-color:#F30;
+    text-align:center;
+    color:#FFF;
+    background-color:#D30;
+    bottom:0px;
+    border-bottom-left-radius:7px;
+    border-bottom-right-radius:7px;
+    //opacity:0.3;
+    display:none;
+}
+
+#refractTestExit{
+    position:absolute;
+    top:7px;
+    right:12px;
+    //font-weight:bold;
+    color:#777;
+    cursor:pointer;
+    display:none;
+}
+#coverButtons{
+    position:absolute;
+    bottom:65px;
+    right:10px;
+    background-color:#CCC;
+    height:90px;
+    width:80px;
+    display:none;
+}
+#coverInputs{
+    position:absolute;
+    top:90px;
+    width:100%;
+    height:125px;
+    background-color:#EEE;
+    //opacity:0.5;
+    display:none;
+}
+#coverCheckAnswer{
+    position:absolute;
+    top:215px;
+    width:100%;
+    height:55px;
+    background-color:#EEE;
+    //opacity:0.5;
+    display:none;
+}
+#miniAnswerContainer{
+    position:absolute;
+    top:213px;
+    left:45px;
+    width:180px;
+    height:54px;
+    color:#70c130;
+    border:1px solid #AAA;
+    //background-color:#FFF;
+    font-size:12px;
+    display:none;
+}
+.miniRow{
+    float:left;
+}
+.miniAnswer{
+    float:left;
+    padding:8px;
+    //line-height:16px;
+    box-sizing:border-box;
+    text-align:center;
+    height:27px;
+    width:60px;
+    //background-color:#f60;
+}
+.miniRed{
+    color:#C00;
+    //padding-top:8px;
+}
+.miniAnswerRed{
+    padding-top:6px;
+}
+#flipIcon{
+    position:absolute;
+    top:58px;
+    right:4px;
+    width:24px;
+    height:24px;
+    font-size:18px;
+    padding-top:5px;
+    color:#FFF;
+    box-sizing:border-box;
+    text-align:center;
+    border-radius:10px;
+    border:none;
+    background-image:url(../images/flipIcon.svg);
+    background-size:contain;
+    background-repeat:none;
+    cursor:pointer;
+}
+.streakInput{
+    width:60px;
+}
+#patientTabs{
+    position:absolute;
+    right:15px;
+    top:15px;
+}
+#ptest{
+    float:left;
+    height:43px;
+	width:130px;
+	padding:13px 0px 0px 0px;
+    line-height:16px;
+	text-align:center;
+	box-sizing:border-box;
+	border-radius:10px;
+	border-bottom:2px solid #777;
+	background-color:#FFF;
+	cursor:pointer;
+}
+#psim{
+    float:left;
+    height:43px;
+	width:130px;
+	padding:13px 0px 0px 0px;
+    line-height:16px;
+	text-align:center;
+	box-sizing:border-box;
+	border-radius:10px;
+	border-bottom:2px solid #777;
+	background-color:#FFF;
+    margin-right:10px;
+	cursor:pointer;
+}
+.modeTab{
+    position:absolute;
+    top:-41px;
+    right:138px;
+    text-align:center;
+    line-height:36px;
+    font-weight:bold;
+    border-top-left-radius:7px;
+    border-top-right-radius:7px;
+    height:40px;
+    width:132px;
+    background-color:#EEE;
+    cursor:pointer;
+}
+#testTab{
+    right:0px;
+    background-color:#DDD;
+    //border-bottom:1px solid #AAA;
+}
+#patientFlash{
+    position:absolute;
+	top:15px;
+	left:15px;
+	width:560px;
+	height:310px;
+	background-color:#000;
+	//border:3px solid #fff;
+	border-radius:10px;
+	//box-sizing:content-box;
+	//overflow:hidden;
+    display:none;
+}
+#errorInfoIcon{
+    position:absolute;
+    top:8px;
+    right:10px;
+    font-size:12px;
+    font-weight:bold;
+    text-align:center;
+    color:#C00;
+    cursor:pointer;
+    width:17px;
+    height:17px;
+    border-radius:20px;
+    box-sizing:border-box;
+    border:2px solid #C00;
+    display:none;
+}
+#errorInfoBox{
+    position:absolute;
+    bottom:12px;
+    left:10px;
+    width:250px;
+    height:80px;
+    color:#C00;
+    line-height:14px;
+    font-size:13px;
+    background-color:#EEE;
+    display:none;
+}
+#errorInfoRanges{
+    position:absolute;
+    bottom:17px;
+    left:10px;
+    width:250px;
+    height:20px;
+    font-size:11px;
+    background-color:#EEE;
+}
+#closeErrorX{
+    position:absolute;
+    top:0px;
+    right:0px;
+    font-size:16px;
+    color:#C00;
+    cursor:pointer;
+}
+
+
+/* --- MODERN UI OVERRIDES (Adaptado por Prof. Lucas) --- */
+
+/* 1. Cores e Fontes Globais */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+    background-color: #1f2937 !important;
+}
+
+#retSimContainer {
+    background-color: #f3f4f6 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* 2. Paineis e Containers */
+#patientRxContainer_new, 
+#patientRxSphere_new, 
+#patientRxContainerBottom_new, 
+#workingDistanceContainer_new, 
+#lightAngleContainer_new, 
+.formulaContainer_new, 
+#toolContainer_new, 
+.toolInputContainer_new {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 3. Inputs e Campos */
+.formulaNum_new, 
+.inputField_new, 
+.num,
+.toolInputContainer_new input {
+    border: 1px solid #d1d5db !important;
+    border-radius: 6px !important;
+    background-color: #f9fafb !important;
+    color: #374151 !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.formulaNum_new:focus, 
+.inputField_new:focus {
+    border-color: #4F46E5 !important;
+    outline: 2px solid #c7d2fe !important;
+}
+
+/* 4. Botões de Reset */
+#resetButton_new {
+    background-color: #ef4444 !important;
+    color: white !important;
+    border: none !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3) !important;
+    transition: all 0.2s ease !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+}
+
+#resetButton_new:hover {
+    background-color: #dc2626 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* 5. Abas */
+.toolTab_new {
+    background-color: #4F46E5 !important;
+    border-top-left-radius: 8px !important;
+    border-top-right-radius: 8px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    font-size: 13px !important;
+    letter-spacing: 0.5px !important;
+}
+
+.tabDisable {
+    background-color: #9ca3af !important;
+}
+
+/* 6. Setas */
+.arrow_new, .arrow {
+    background-color: #e5e7eb !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+}
+
+.arrow_new:hover, .arrow:hover {
+    background-color: #d1d5db !important;
+}
+

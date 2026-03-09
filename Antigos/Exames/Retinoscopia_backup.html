@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Retinoscopia</title>
+    <style>
+        body {
+            background-color: whitesmoke;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            overflow: hidden;
+            background-image: url('/Imagens/background.png');
+            background-size: cover; /* Ajusta a imagem para cobrir toda a tela */
+            background-position: center; /* Centraliza a imagem */
+            background-repeat: no-repeat; /* Evita que a imagem se repita */
+            
+        }
+        .titulo-tabela {
+            position: absolute;
+            left: 55%;
+            height: 45px;
+            width: 450px;
+            top: 23%; /* Ajuste a posição vertical acima da tabela */
+            text-align: center;
+            align-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            background-color: #9fff15;
+            color: #000000; /* Mesma cor do cabeçalho */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px
+        }
+        table {
+            position: absolute;
+            left: 55%;
+            top: 30%;
+            border-collapse: collapse;
+            width: 600px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background: #ffffff;
+        }
+        thead {
+            background-color: #88cc11;
+            color: rgb(9, 9, 9);
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        tr:nth-child(even) {
+            background-color: #f3f3f3;
+        }
+        tr:hover {
+            background-color: #e6e6e6;
+            cursor: pointer;
+        }
+        th {
+            font-size: 16px;
+        }
+        td {
+            font-size: 14px;
+            text-align: center;
+        }
+    
+        #retinoscopioWelch {
+            position: absolute;
+            display: none;
+        }
+         #faixa {
+            position: absolute;
+            display: none;
+            width: 30px;
+            height: 200px;
+            background-color: rgb(240, 227, 113);
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        #faixaRetino {
+            position: absolute;
+            display: none;
+            width: 30px;
+            height: 200px;
+            background-color: rgba(245, 156, 78, 0.125);
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .avatar{
+
+            left: 10%;
+            position: absolute;
+            top: 0%;
+            width: 683px;
+            
+        }
+
+        .botões {
+                position: absolute;
+                left: 55%;
+                top: 15vh;
+                margin-left: auto;
+                display: flex;
+                align-content: space-between;
+                gap: 10px;
+        }
+        .botao {
+            position: relative;
+            background-color: #9fff15; /* Cor contrastante ao roxo */
+            color: black; /* Cor ajustada para contraste com o fundo */
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, transform 0.2s;
+            }
+
+            .botao:hover {
+                background-color: #aaff22; /* Cor mais clara ao passar o mouse */
+                transform: scale(1.05); /* Leve aumento ao passar o mouse */
+            }
+
+            .botao:active {
+                background-color: #88cc11; /* Cor mais escura ao clicar */
+                transform: scale(0.95); /* Leve redução ao clicar */
+            }
+
+
+        .lente-OD{
+            position: absolute;
+            top: 47%;
+            left: 16.5%;
+            height: 200px;
+            transform: rotate(225deg);
+            
+        }
+        .lente-OE{
+            position: absolute;
+            top: 47%;
+            left: 31%;
+            height: 200px;
+            transform: rotate(135deg);
+        }
+        .campo-texto {
+                width: 150px;
+                font-size: 18px;
+                padding: 8px;
+                border: 2px solid #ddd;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                outline: none;
+                transition: all 0.3s ease-in-out;
+                text-align: center;
+        }
+            .campo-texto:focus {
+                border-color: #6200ea; /* Cor de destaque */
+                box-shadow: 0 4px 12px rgba(98, 0, 234, 0.4); /* Efeito ao focar */
+            }
+            .campo-texto:disabled {
+                background-color: #f4f4f9; /* Fundo diferente para desativado */
+                border-color: #bbb;
+                color: #666;
+            }
+        
+        .limite{
+            position: relative;
+            left: 285px;
+            top: 200px;
+            height: 400px;
+            width: 230px;
+            border: 4px solid black;
+            overflow: hidden;
+        }
+        
+
+    </style>
+
+</head>
+<body>
+    
+    <div>
+        <img class="avatar" src="/Imagens/fundobranco-para-olhos.svg" alt="">
+        
+        <img class="avatar" src="/Imagens/pupila-OD.svg" alt="">
+        <img class="avatar" src="/Imagens/pupila-OE.svg" alt="">
+        <div id="limiteCaixa" class="limite">
+            <div id="faixa"></div>
+        </div>
+        <img class="avatar" src="/Imagens/contorno-pupila-od.svg" alt="">
+        <img class="avatar" src="/Imagens/contorno-pupila-oe.svg" alt="">
+        <img class="avatar" id="OD" src="/Imagens/OD.svg" alt="">
+        <img class="avatar" id="OE" src="/Imagens/OE.svg" alt="">
+        
+        <img class="avatar" src="/Imagens/sem-olhos.svg" alt="">
+        <img class="avatar" style="left: 275px; top: 340px; width: 520px;" src="/Imagens/oculosprova.svg" alt="">
+        <img id="retinoscopioWelch" src="/Imagens/retinoscopio.png" alt="">
+    </div>
+    
+    <img class="lente-OD" id="IDlente-OD" src="/Imagens/lente-negativa.svg" alt="">
+    <h5 class="lente-OD" id="IDlente-OD-text" style="left: 387px; top: 430px;">0.00</h5>
+    
+    <img class="lente-OE" id="IDlente-OE" src="/Imagens/lente-negativa.svg" alt="">
+    <h5 class="lente-OE" id="IDlente-OE-text" style="left: 655px; top: 425px;">0.00</h5>
+    <div id="faixaRetino"></div>
+    
+    <div>  
+        <button class="botao" style="left: 1590px; top: -170px;" onclick="ocultarTabela()">👁️‍🗨️</button>
+        <button class="botao" style="left: 1450px; top: -170px;" onclick="aleatorio()">🎲</button>
+        <h1 class="titulo-tabela">Retinoscopia Estática: DT 50cm</h1>
+        <table id="tabela">
+            <thead>
+                <tr>
+                    <th>Estatica</th>
+                    <th>Esférico</th>
+                    <th>Cilíndrico</th>
+                    <th>Eixo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>OD</td>
+                    <td id="esf-OD">0,00</td>
+                    <td id="cil-OD">-0,00</td>
+                    <td id="eixo-OD" >0</td>
+                </tr>
+                <tr>
+                    <td>OE</td>
+                    <td id="esf-OE" >0,00</td>
+                    <td id="cil-OE" >-0,00</td>
+                    <td id="eixo-OE" >0</td>
+                </tr>
+            </tbody>
+        </table>
+        <table style="top: 450px;" id="tabela2">
+            <thead>
+                <tr>
+                    <th>Primeira Força</th>
+                    <th>Segunda Força</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="PrimeiraF">0,00</td>
+                    <td id="SegundaF" >0,00</td>
+                </tr>
+                <tr>
+                    <td id="TerceiraF">0,00</td>
+                    <td id="QuartaF">0,00</td>
+                </tr>
+                
+            </tbody>
+        </table>
+        
+        <div class="botões">
+            <button class="botao" id="btnOlho" onclick="mudarOlho()">Olho Direito</button>
+            <button class="botao" onclick="ModoRetino()">Retinoscopio</button>
+            <button class="botao" onclick="alterarValor(0.25)">➕</button>
+            <button class="botao" onclick="alterarValor(-0.25)">➖</button>
+            <input type="text" class="campo-texto" id="campoValor" value="0.00">
+        </div>
+        <div class="botões">
+        </div>
+    </div>
+    
+    <script>
+        let Retino = false
+        let olho = "direito";
+        let faixaTamanho = 200;
+        let faixaDifMiopia = 500;
+        let faixaDifHipermetropia = 290;
+        let status = "hiper";
+        
+        function ModoRetino(){
+            Retino = !Retino
+            console.log (Retino)
+            if (Retino){
+                const faixa = document.getElementById('faixa');
+                const faixaDoRetino = document.getElementById('faixaRetino');
+                const retinoscopioWelch = document.getElementById('retinoscopioWelch');
+                faixa.style.display="block"
+                faixaDoRetino.style.display="block"
+                retinoscopioWelch.style.display="block"
+
+                document.addEventListener('mousemove', (evento) => {
+                    const x = evento.clientX;
+                    const y = evento.clientY;
+
+                    const larguraJanela = window.innerWidth; // Largura total da janela (para calcular inversão)
+
+
+                    // Atualiza a posição do retângulo para seguir o mouse
+                    faixaDoRetino.style.left = `${x}px`;
+                    if (status === "hiper"){
+                        faixa.style.left = `${parseInt(faixaDoRetino.style.left, 10) + faixaDifHipermetropia}px`;
+                        console.log('aumentando: ' + faixaDifHipermetropia)
+                    } else {
+                        faixa.style.left = `${faixaDifMiopia - parseInt(faixaDoRetino.style.left, 10)}px`;
+                        console.log('miope')
+                    }
+
+                    retinoscopioWelch.style.left = `${x + 150 + (faixaTamanho/2)}px`;
+                    faixa.style.top = `${y-(350)}px`;
+                    faixaDoRetino.style.top = `${y - (faixaTamanho-50)}px`;
+                    retinoscopioWelch.style.top = `${y - 150}px`;
+                });
+            
+            } else {
+                faixa.style.display="none"
+                retinoscopioWelch.style.display="none"
+            }        
+        }
+        
+        function aleatorio() {
+            // IDs
+            const esfOD = document.getElementById('esf-OD');
+            const esfOE = document.getElementById('esf-OE');
+            const cilOD = document.getElementById('cil-OD');
+            const cilOE = document.getElementById('cil-OE');
+            const eixoOD = document.getElementById('eixo-OD');
+            const eixoOE = document.getElementById('eixo-OE');
+            const forca1 = document.getElementById('PrimeiraF');
+            const forca2 = document.getElementById('SegundaF');
+            const forca3 = document.getElementById('TerceiraF');
+            const forca4 = document.getElementById('QuartaF');
+            const esfMaior = 5;
+            const cilMaior = 2;
+            const eixoPasso = 10;
+
+            // Gera um número aleatório em passos de 0.25 dentro de um intervalo
+            function gerarAleatorio(min, max, passo) {
+                const range = (max - min) / passo; // Quantidade de valores possíveis
+                return Math.round(Math.random() * range) * passo + min;
+            }
+
+            // Gera valores para Esf entre -5 e 5 em passos de 0.25
+            const valorEsfOD = gerarAleatorio(-esfMaior, esfMaior, 0.25);
+            const valorEsfOE = gerarAleatorio(-esfMaior, esfMaior, 0.25);
+
+            // Gera valores para Cil entre -2 e 0 em passos de 0.25 (apenas negativos)
+            const valorCilOD = gerarAleatorio(-cilMaior, 0, 0.25);
+            const valorCilOE = gerarAleatorio(-cilMaior, 0, 0.25);
+
+            // Gera valores para Eixo entre 0 e 180 em passos de 10
+            const valorEixoOD = gerarAleatorio(0, 180, eixoPasso);
+            const valorEixoOE = gerarAleatorio(0, 180, eixoPasso);
+
+            // Atualiza os elementos com os valores gerados
+            esfOD.innerText = (valorEsfOD > 0 ? "+" : "") + valorEsfOD.toFixed(2); // Adiciona "+" para valores positivos
+            esfOE.innerText = (valorEsfOE > 0 ? "+" : "") + valorEsfOE.toFixed(2);
+            cilOD.innerText = valorCilOD.toFixed(2); // Exibe com 2 casas decimais
+            cilOE.innerText = valorCilOE.toFixed(2);
+            eixoOD.innerText = valorEixoOD; // Eixo não precisa de casas decimais
+            eixoOE.innerText = valorEixoOE;
+            
+            forca1.innerText = esfOD.innerText;
+            forca2.innerText =((valorEsfOD + valorCilOD) > 0 ? "+" : "") + (valorEsfOD + valorCilOD).toFixed(2);
+            forca3.innerText = esfOE.innerText;
+            forca4.innerText =((valorEsfOE + valorCilOE) > 0 ? "+" : "") + (valorEsfOE + valorCilOE).toFixed(2);
+            mudarFaixa();
+        }
+
+
+        let StatusTabela = false
+        function ocultarTabela (){
+            const table = document.getElementById('tabela');
+            const table2 = document.getElementById('tabela2');
+            StatusTabela = !StatusTabela;
+            if (StatusTabela){
+                table.style.display="none"
+                table2.style.display="none"
+            } else{
+                table.style.display="revert"
+                table2.style.display="revert"
+            }
+
+        }
+
+        function alterarValor(passo) {
+            const campo = document.getElementById('campoValor');
+            let valorAtual = parseFloat(campo.value); // Obtém o valor atual sem o sinal
+            let lente = document.getElementById('IDlente-OD');
+            if (olho === 'direito'){
+                lente = document.getElementById('IDlente-OD');
+                text = document.getElementById('IDlente-OD-text');
+            } else if (olho === 'esquerdo') {
+                lente = document.getElementById('IDlente-OE');
+                text = document.getElementById('IDlente-OE-text');
+            }
+
+            valorAtual += passo; // Incrementa ou decrementa
+            // Define o sinal baseado no valor
+            campo.value = (valorAtual > 0 ? "+" : "") + valorAtual.toFixed(2); // Adiciona '+' somente para valores positivos
+            // Verifica o valor para alterar o src da imagem
+            if (valorAtual > 0) {
+                lente.src = '/Imagens/lente-positiva.svg'; // Imagem para valor positivo
+            } else {
+                lente.src = '/Imagens/lente-negativa.svg'; // Imagem para valor zero ou negativo
+            }
+            text.innerText = campo.value;
+        }
+
+        function mudarOlho() {
+            const btn = document.getElementById('btnOlho');
+            const cxLimite = document.getElementById('limiteCaixa');
+            if (olho === 'esquerdo') {
+                btn.innerText = 'Olho Direito';
+                olho = 'direito';
+                cxLimite.style.left = '285px';
+            } else if (olho === 'direito') {
+                btn.innerText = 'Olho Esquerdo';
+                olho = 'esquerdo';
+                cxLimite.style.left = '555px';
+            }
+            mudarFaixa();
+        }
+
+        function mudarFaixa(){
+            const f1 = parseFloat(document.getElementById('PrimeiraF').innerText.replace(',', '.'));
+            const f2 = parseFloat(document.getElementById('SegundaF').innerText.replace(',', '.'));
+            const f3 = parseFloat(document.getElementById('TerceiraF').innerText.replace(',', '.'));
+            const f4 = parseFloat(document.getElementById('QuartaF').innerText.replace(',', '.'));
+            console.log('Status Olho1: ' + olho)
+            if (olho === 'direito') {
+                if (f1 > 0){
+                    console.log("OD: Hipermetropia")
+                    faixaDifMiopia = 0;
+                    faixaDifHipermetropia = 10;
+                    status = "hiper";
+                } else {
+                    console.log("OD: Miopia")
+                    // faixaDifMiopia = 500;
+                    faixaDifMiopia = 500;
+                    faixaDifHipermetropia = 0;
+                    status = "miope";
+                }
+                    
+
+            } else if (olho === 'esquerdo') {
+                if (f3 > 0) {
+                    console.log ("OE: Hipermetropia")
+                    faixaDifMiopia=0
+                    faixaDifHipermetropia = 250;
+                    status = "hiper";
+                } else {
+                    console.log ("OE: Miopia")
+                    faixaDifMiopia = 720;
+                    faixaDifHipermetropia = 0;
+                    status = "miope";
+                }
+            }
+            console.log('Status Olho2: ' + olho)
+            console.log('Status final: ' + status)
+        }
+
+    </script>
+</body>
+</html>

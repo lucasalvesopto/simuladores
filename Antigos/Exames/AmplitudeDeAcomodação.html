@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Amplitude de Acomodação</title>
+    <style>
+        body {
+            background-color: whitesmoke;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            overflow: hidden;
+            background-image: url('/Imagens/background.png');
+            background-size: cover; /* Ajusta a imagem para cobrir toda a tela */
+            background-position: center; /* Centraliza a imagem */
+            background-repeat: no-repeat; /* Evita que a imagem se repita */
+            
+        }
+        .titulo-tabela {
+            position: absolute;
+            left: 55%;
+            height: 45px;
+            width: 690px;
+            top: 23%; /* Ajuste a posição vertical acima da tabela */
+            text-align: center;
+            align-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            background-color: #9fff15;
+            color: #000000; /* Mesma cor do cabeçalho */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px
+        }
+        table {
+            position: absolute;
+            left: 55%;
+            top: 30%;
+            border-collapse: collapse;
+            width: 690px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background: #ffffff;
+        }
+        thead {
+            background-color: #88cc11;
+            color: rgb(9, 9, 9);
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        tr:nth-child(even) {
+            background-color: #f3f3f3;
+        }
+        tr:hover {
+            background-color: #e6e6e6;
+            cursor: pointer;
+        }
+        th {
+            font-size: 16px;
+        }
+        td {
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .avatar{
+
+            left: 10%;
+            position: absolute;
+            top: 0%;
+            width: 683px;
+            
+        }
+
+        .botões {
+                position: absolute;
+                left: 55%;
+                top: 10vh;
+                margin-left: auto;
+                display: flex;
+                align-content: space-between;
+                gap: 10px;
+        }
+        .botao {
+            position: relative;
+            background-color: #9fff15; /* Cor contrastante ao roxo */
+            color: black; /* Cor ajustada para contraste com o fundo */
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, transform 0.2s;
+            }
+
+            .botao:hover {
+                background-color: #aaff22; /* Cor mais clara ao passar o mouse */
+                transform: scale(1.05); /* Leve aumento ao passar o mouse */
+            }
+
+            .botao:active {
+                background-color: #88cc11; /* Cor mais escura ao clicar */
+                transform: scale(0.95); /* Leve redução ao clicar */
+            }
+
+
+        .lente-OD{
+            position: absolute;
+            top: 49.2%;
+            left: 16.6%;
+            height: 200px;
+            transform: rotate(225deg);
+        }
+
+        
+        .lente-OE{
+            position: absolute;
+            top: 49.2%;
+            left: 30.9%;
+            height: 200px;
+            transform: rotate(135deg);
+        }
+        .campo-texto {
+                width: 150px;
+                font-size: 18px;
+                padding: 8px;
+                border: 2px solid #ddd;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                outline: none;
+                transition: all 0.3s ease-in-out;
+                text-align: center;
+        }
+            .campo-texto:focus {
+                border-color: #6200ea; /* Cor de destaque */
+                box-shadow: 0 4px 12px rgba(98, 0, 234, 0.4); /* Efeito ao focar */
+            }
+            .campo-texto:disabled {
+                background-color: #f4f4f9; /* Fundo diferente para desativado */
+                border-color: #bbb;
+                color: #666;
+            }
+        .oclusor{
+            position: absolute;
+            top: 50.4%;
+            left: 30.5%;
+            height: 200px;
+            transform: 135deg;
+            z-index: 1; /* Coloca o oclusor acima das lentes */
+            pointer-events: none; /* Desabilita eventos de clique no oclusor */ 
+        }
+        .balao{
+            position: absolute;
+            top: 75%;
+            left: 10%;
+            height: 200px;
+            transform: rotate(0);
+            z-index: 0; /* Coloca o balão abaixo das lentes */
+
+        }
+        .text-balao{
+            position: absolute;
+            top: 78%;
+            left: 15%;
+            height: 200px;
+            transform: rotate(0);
+            z-index: 0; /* Coloca o balão abaixo das lentes */
+            font-size: 40px;
+            color: #000000; /* Cor do texto */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); /* Sombra do texto */
+        }
+        @keyframes fadeInOut {
+        0% { opacity: 0; }
+        50% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+
+    @keyframes fadeInOut {
+        0% { opacity: 0; }
+        50% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+
+    .balao, .text-balao {
+        opacity: 0; /* Inicialmente invisível */
+    }
+
+    .ativo {
+        animation: fadeInOut 3s forwards;
+    }
+    
+
+    </style>
+
+</head>
+<body>
+    
+    <div>
+        <img class="avatar" src="/Imagens/lucas.svg" alt="">
+        <img class="avatar" style="left: 275px; top: 340px; width: 520px;" src="/Imagens/oculosprova.svg" alt="">
+    </div>
+    
+    <img class="lente-OD" id="IDlente-OD" src="/Imagens/lente-negativa.svg" alt="">
+    <h5 class="lente-OD" id="IDlente-OD-text" style="left: 395px; top: 425px;">0.00</h5>
+    
+    <img class="lente-OE" id="IDlente-OE" src="/Imagens/lente-negativa.svg" alt="">
+    <h5 class="lente-OE" id="IDlente-OE-text" style="left: 657px; top: 420px;">0.00</h5>
+    <img class="oclusor" src="/Imagens/oclusor.svg" alt="">
+    <img class="balao" id="balao" src="/Imagens/balão.svg" alt="">
+    <h5 class="text-balao" id="textBalao"> Teste </h5>
+    
+    
+    <div>  
+        <h1 style="top: 17.5%;" class="titulo-tabela">Amplitude de Acomodação</h1>
+        <h1 id="dados-px" class="titulo-tabela">Paciente com 25 anos</h1>
+        <table id="tabela">
+            <thead>
+                <tr>
+                    <th>Olho</th>
+                    <th>Borrado</th>
+                    <th>Recobro</th>
+                    <th>Diagnóstico</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>OD</td>
+                    <td id="borrado-OD">0,00</td>
+                    <td id="recobro-OD">-0,00</td>
+                    <td id="diagnostico-OD">Excesso</td>
+                </tr>
+                <tr>
+                    <td>OE</td>
+                    <td id="borrado-OE" >0,00</td>
+                    <td id="recobro-OE" >-0,00</td>
+                    <td id="diagnostico-OE">Excesso</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h1 style="top: 50%;" id="dados-px" class="titulo-tabela">Anotações</h1>
+        <table style="top: 58%;" id="tabela">
+            <thead>
+                <tr>
+                    <th>Olho</th>
+                    <th>Borrado</th>
+                    <th>Recobro</th>
+                    <th>Diagnóstico</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>OD</td>
+                    <td><input type="text" id="borrado-OD" value="0,00"></td>
+                    <td><input type="text" id="recobro-OD" value="-0,00"></td>
+                    <td><input type="text" id="diagnostico-OD" value="Excesso"></td>
+                </tr>
+                <tr>
+                    <td>OE</td>
+                    <td><input type="text" id="borrado-OE" value="0,00"></td>
+                    <td><input type="text" id="recobro-OE" value="-0,00"></td>
+                    <td><input type="text" id="diagnostico-OE" value="Excesso"></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="botões">
+            <button class="botao" id="btnOlho" onclick="mudarOlho()">Olho Direito</button>
+            
+            <button class="botao" id="negativo" onclick="alterarValor(-0.25)">➖</button>
+            <button style="display: none;" class="botao" id="positivo" onclick="alterarValor(0.25)">➕</button>
+            <input type="text" class="campo-texto" id="campoValor" value="0.00">
+            <button class="botao" onclick="ocultarTabela()">👁️‍🗨️</button>
+            <button class="botao" onclick="aleatorio()">🎲</button>
+        </div>
+        <div class="botões">
+        </div>
+    </div>
+    
+    <script>
+    let olho = "esquerdo";
+    let lenteText = document.getElementById("IDlente-OD-text");
+    let campoValor = document.getElementById("campoValor");
+    const balao = document.getElementById("balao");
+    const textbalao = document.getElementById("textBalao");
+    let valorOD = 0;
+    let valorOE = 0;
+    let recAleatorioOD = 0;
+    let recAleatorioOE = 0;
+
+    function mudarOlho() {
+            const btn = document.getElementById('btnOlho');
+            const oclusor = document.querySelector('.oclusor');
+            if (olho === 'esquerdo') {
+                btn.innerText = 'Olho Esquerdo';
+                olho = 'direito';
+                oclusor.style.left = '15.0%'; // Ajuste a posição do oclusor para o olho direito
+                oclusor.style.transform = 'rotate(90deg)'; // Ajuste a rotação do oclusor para o olho direito
+                lenteText = document.getElementById("IDlente-OE-text");
+                campoValor.value = parseFloat(lenteText.innerText.replace(',', '.')).toFixed(2).replace('.', ',');
+
+                
+            } else if (olho === 'direito') {
+                btn.innerText = 'Olho Direito';
+                olho = 'esquerdo';
+                oclusor.style.left = '30.5%'; // Ajuste a posição do oclusor para o olho direito
+                oclusor.style.transform = 'rotate(360deg)'; // Ajuste a rotação do oclusor para o olho direito
+                lenteText = document.getElementById("IDlente-OD-text");
+                campoValor.value = parseFloat(lenteText.innerText.replace(',', '.')).toFixed(2).replace('.', ',');
+             
+            }
+        }
+    
+    let voltando = false;
+    function alterarValor(valor) {
+        let valorAtual = parseFloat(campoValor.value.replace(',', '.'));
+        valorAtual += valor;
+        campoValor.value = valorAtual.toFixed(2).replace('.', ',');
+        lenteText.innerText = valorAtual.toFixed(2).replace('.', ',');
+        if (valorAtual < 0) {
+            const positivoBtn = document.getElementById("positivo");
+            positivoBtn.style.display = "block";
+        } else {
+            const positivoBtn = document.getElementById("positivo");
+            positivoBtn.style.display = "none";
+        }
+        let borrado = olho === "esquerdo" ? valorOD : valorOE;
+        let recobro = olho === "esquerdo" ? recAleatorioOD : recAleatorioOE;
+        console.log(borrado);
+        if (valorAtual === borrado){
+            textbalao.innerText = "Está Borrado!";
+            voltando = true;
+        } else if (valorAtual > borrado){
+            let resposta = Math.floor(Math.random() * 10);
+            textbalao.innerText = resposta;
+            console.log(resposta);
+        } else if (voltando){
+            textbalao.innerText = "Está Borrado!";
+            if (valorAtual === recobro){
+                textbalao.innerText = "Consigo ver novamente!";
+                voltando = false;
+            } else {
+                textbalao.innerText = resposta;
+            }
+        }
+        document.getElementById("balao").classList.add("ativo");
+        document.getElementById("textBalao").classList.add("ativo");
+        setTimeout(() => {
+            document.getElementById("balao").classList.remove("ativo");
+            document.getElementById("textBalao").classList.remove("ativo");
+        }, 1500); // Tempo em milissegundos (1 segundos)
+
+    }
+
+    function ocultarTabela() {
+        const tabela = document.getElementById("tabela");
+        if (tabela.style.display === "none") {
+            tabela.style.display = "revert";
+        } else {
+            tabela.style.display = "none";
+        }
+    }
+    
+
+    let min = -5, max = 5, passo = 0.25;
+    function aleatorio() {
+        
+        let idade = Math.floor(Math.random() * (80 - 2 + 1)); // Gera uma idade aleatória entre 1 e 100
+        const idadeTexto = document.getElementById("dados-px");
+        let valorEsperado = Math.min((idade * 0.25) - 15, 0);
+        idadeTexto.innerText = "Paciente com " + idade + " anos (esperado: " + valorEsperado.toFixed(2).replace('.', ',') + ")";
+        let difAleatorioOD = Math.min(Math.floor(Math.random() * ((max - min) / passo + 1)) * passo + min, 0);
+        recAleatorioOD = Math.floor(Math.random() * ((2 - 0.25) / passo + 1)) * passo + 0;
+        valorOD = valorEsperado - difAleatorioOD;
+        recAleatorioOD = valorOD + recAleatorioOD;
+
+        console.log( 'valor esperado: ' + valorEsperado + ', dif ' + difAleatorioOD + ', rec ' + recAleatorioOD + ', valor ' + valorOD);
+
+        let difAleatorioOE = Math.floor(Math.random() * ((max - min) / passo + 1)) * passo + min;
+        recAleatorioOE = Math.floor(Math.random() * ((2 - 0.25) / passo + 1)) * passo + 0;
+        valorOE = valorEsperado - difAleatorioOE;
+        recAleatorioOE = valorOE + recAleatorioOE;
+
+        const borradoTextoOD = document.getElementById("borrado-OD");
+        const recobroTextoOD = document.getElementById("recobro-OD");
+        const diagnosticoTextoOD = document.getElementById("diagnostico-OD");
+        const borradoTextoOE = document.getElementById("borrado-OE");
+        const recobroTextoOE = document.getElementById("recobro-OE");
+        const diagnosticoTextoOE = document.getElementById("diagnostico-OE");
+
+        if (recAleatorioOD > 0) {
+        borradoTextoOD.innerText = '0,00';
+        recobroTextoOD.innerText = '0,00';
+        } else if (valorOD < 0) {
+            borradoTextoOD.innerText = valorOD.toFixed(2).replace('.', ',');
+            recobroTextoOD.innerText = recAleatorioOD.toFixed(2).replace('.', ',');
+        }
+
+        if (recAleatorioOE > 0) {
+            borradoTextoOE.innerText = '0,00';
+            recobroTextoOE.innerText = '0,00';
+        } else if (valorOE < 0) {
+            borradoTextoOE.innerText = valorOE.toFixed(2).replace('.', ',');
+            recobroTextoOE.innerText = recAleatorioOE.toFixed(2).replace('.', ',');
+        }
+
+
+    }
+    
+
+    </script>
+</body>
+</html>

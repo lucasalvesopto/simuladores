@@ -1,0 +1,9 @@
+Overlay1
+This simulator is designed to practice basic
+strabismus evaluation of simple comitant deviations.
+You can apply four different tests:
+I. Cover-uncover test
+2. Alternate cover test
+3. Alternate cover test with prism
+4. Simultaneous prism cover test
+

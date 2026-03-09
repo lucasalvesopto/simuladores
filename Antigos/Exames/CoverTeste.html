@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Cover Teste</title>
+    <style>
+        body {
+            background-color: whitesmoke;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            overflow: hidden;
+            background-image: url('/Imagens/background.png');
+            background-size: cover; /* Ajusta a imagem para cobrir toda a tela */
+            background-position: center; /* Centraliza a imagem */
+            background-repeat: no-repeat; /* Evita que a imagem se repita */
+            
+        }
+        .titulo-tabela {
+            position: absolute;
+            left: 55%;
+            height: 45px;
+            width: 450px;
+            top: 23%; /* Ajuste a posição vertical acima da tabela */
+            text-align: center;
+            align-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            background-color: #9fff15;
+            color: #000000; /* Mesma cor do cabeçalho */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px
+        }
+        table {
+            position: absolute;
+            left: 55%;
+            top: 30%;
+            border-collapse: collapse;
+            width: 600px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background: #ffffff;
+        }
+        thead {
+            background-color: #88cc11;
+            color: rgb(9, 9, 9);
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        tr:nth-child(even) {
+            background-color: #f3f3f3;
+        }
+        tr:hover {
+            background-color: #e6e6e6;
+            cursor: pointer;
+        }
+        th {
+            font-size: 16px;
+        }
+        td {
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .oclusor{
+            position: absolute;
+            display: none;
+            height: 250px;
+            width: 250px;
+        } 
+        .avatar{
+            left: 10%;
+            position: absolute;
+            top: 0%;
+            width: 683px;   
+        }
+
+        .botões {
+                position: absolute;
+                left: 55%;
+                top: 15vh;
+                margin-left: auto;
+                display: flex;
+                align-content: space-between;
+                gap: 10px;
+        }
+        .botao {
+            position: relative;
+            background-color: #9fff15; /* Cor contrastante ao roxo */
+            color: black; /* Cor ajustada para contraste com o fundo */
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, transform 0.2s;
+            }
+
+            .botao:hover {
+                background-color: #aaff22; /* Cor mais clara ao passar o mouse */
+                transform: scale(1.05); /* Leve aumento ao passar o mouse */
+            }
+
+            .botao:active {
+                background-color: #88cc11; /* Cor mais escura ao clicar */
+                transform: scale(0.95); /* Leve redução ao clicar */
+            }
+        .prisma{
+            position: absolute;
+            top: 44%;
+            left: 17%;
+            height: 200px;
+            transition: transform 0.3s ease;
+            display: none;
+        }
+        .campo-texto {
+                position: absolute;
+                width: 150px;
+                font-size: 18px;
+                padding: 8px;
+                border: 2px solid #ddd;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                outline: none;
+                transition: all 0.3s ease-in-out;
+                text-align: center;
+        }
+            .campo-texto:focus {
+                border-color: #6200ea; /* Cor de destaque */
+                box-shadow: 0 4px 12px rgba(98, 0, 234, 0.4); /* Efeito ao focar */
+            }
+            .campo-texto:disabled {
+                background-color: #f4f4f9; /* Fundo diferente para desativado */
+                border-color: #bbb;
+                color: #666;
+            }
+            #olhoDireito {
+            position: absolute;
+            left: 180px; /* Posição inicial */
+            top: 0px;
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            transition: left 0.5s ease; /* Adiciona animação suave */
+        }
+
+
+            #olhoEsquerdo{
+            position: absolute;
+            left: 180px; /* Posição inicial */
+            top: 0px;
+            width: 100px;
+            height: 100px;
+            background-color: blue;
+            transition: left 0.5s ease; /* Adiciona animação suave */
+            }
+        
+
+    </style>
+
+</head>
+<body>
+    
+    <div>
+        <img class="avatar" src="/Imagens/fundobranco-para-olhos.svg" alt="">
+        
+        <div id="olhoDireito" >
+            <img class="avatar" src="/Imagens/pupila-OD.svg" alt="">
+            <img class="avatar" id="OD" src="/Imagens/OD.svg" alt="">
+        </div>
+        <div id="olhoEsquerdo" >
+            <img class="avatar" src="/Imagens/pupila-OE.svg" alt="">
+            <img class="avatar" id="OE" src="/Imagens/OE.svg" alt="">
+        </div>
+        <img class="avatar" src="/Imagens/sem-olhos.svg" alt="">
+
+        <img class="prisma" id="IDprisma-OD" src="/Imagens/prisma.svg" alt="">
+        <h5 class="prisma" id="prisma-text" style="left: 387px; top: 430px;">0.00</h5>
+        <img class="oclusor" id="oclusor1" src="/Imagens/oclusor.svg" alt="">
+        <img class="oclusor" id="oclusor2" src="/Imagens/oclusor-translucido.svg" alt="">
+    </div>
+    
+    
+    <div>  
+        <button class="botao" style="left: 1590px; top: 236px;" onclick="ocultarTabela()">👁️‍🗨️</button>
+        <button class="botao" style="left: 1450px; top: 236px;" onclick="aleatorio()">🎲</button>
+        <h1 class="titulo-tabela" id="titulo">Cover Teste</h1>
+        <table id="tabela">
+            <thead>
+                <tr>
+                    <th>Distância</th>
+                    <th>Sem Compensação</th>
+                    <th>Com Compensação</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Longe</td>
+                    <td id="scLonge">-</td>
+                    <td id="ccLonge">-</td>
+                </tr>
+                <tr>
+                    <td>40 cm</td>
+                    <td id="sc40" >-</td>
+                    <td id="cc40" >-</td>
+                </tr>
+                <tr>
+                    <td>20 cm</td>
+                    <td id="sc20" >-</td>
+                    <td id="cc20" >-</td>
+                </tr>
+            </tbody>
+        </table>        
+        <div class="botões">
+            <button class="botao" style="top: -70px;" id="btnOlho" onclick="ModoOclusor('oclusor1')">Oclusor Preto</button>
+            <button class="botao" style="top: -70px;" onclick="ModoOclusor('oclusor2')">Oclusor Translucido</button>
+            <button class="botao" style="left: -340px;" onclick="alterarValor(1)">➕</button>
+            <button class="botao" style="left: -340px;" onclick="alterarValor(-1)">➖</button>
+            <button class="botao" style="left: -340px;" onclick="rotacionar()">🔄️</button>
+            <input type="text" style="left: 220px; top: 5px; " class="campo-texto" id="campoValor" value="0">
+        </div>
+        <div class="botões">
+        </div>
+    </div>
+    
+    <script>
+        let statusOclusor = false;
+        let Prisma = document.getElementById('IDprisma-OD');
+        let prismaText = document.getElementById('prisma-text');
+        let angulo = 0;
+        const tiposDeDesvio = [
+            { nome: "Endoforia", sigla: "E", gp: "1" },
+            { nome: "Exoforia", sigla: "X", gp: "2" },
+            { nome: "Endotropia", sigla: "ET", gp: "1" },
+            { nome: "Endotropia Intermitente", sigla: "E(T)", gp: "1" },
+            { nome: "Exotropia", sigla: "XT", gp: "2" },
+            { nome: "Exotropia Intermitente", sigla: "X(T)", gp: "2" },
+            // { nome: "Hipertropia", sigla: "HT" },
+            // { nome: "Hipotropia", sigla: "HoT" },
+            // { nome: "Hiperforia", sigla: "HF" },
+            // { nome: "Hipoforia", sigla: "HoF" }
+        ];
+        const olhoDeDesvio = [
+            { nome: "Direito", sigla: "D", id: "olhoDireito" },
+            { nome: "Esquerdo", sigla: "E", id: "olhoEsquerdo" },
+            // { nome: "Alternante", sigla: "A", id: "olhoAlternante" }
+        ];
+        const diagnostico = [
+            { nome: "Basica", sigla: "Basica" }, // 0
+            // { nome: "Insuficiência de Convergência", sigla: "Ins. Cv" }, //1
+            { nome: "Excesso de Divergência", sigla: "Exc. Cv" }, //2
+            // { nome: "Excesso de Convergência", sigla: "Exc. Cv" }, //3
+            { nome: "Insuficiência de Divergência", sigla: "Ins. Dv" } //4
+        ]
+
+        let desvioLongePx, desvio40Px, desvio20Px;
+        let desvioNormalPx = 180;
+        let elementoDesvio = document.getElementById('olhoDireito');
+        
+
+        function ModoOclusor(idOclusor) {
+            statusOclusor = !statusOclusor;
+            console.log(statusOclusor);
+            const oclusor = document.getElementById(idOclusor);
+            oclusor.style.display = 'none';
+
+            if (statusOclusor) {
+                oclusor.style.display = "block";
+                document.addEventListener('mousemove', (evento) => {
+                    const x = evento.clientX;
+                    const y = evento.clientY;
+                        oclusor.style.left = `${x - 200}px`;
+                        oclusor.style.top = `${y - 200}px`;
+                    });
+            }
+        }
+        
+        
+            let desvioAtual = parseInt(window.getComputedStyle(elementoDesvio).left, 10); // Posição inicial
+                    // console.log(`Posição inicial (leftAtual): ${desvioNormalPx}`); // Log inicial da posição
+
+                    document.addEventListener('mousemove', (event) => {
+                        const mouseX = event.clientX; // Posição do mouse no eixo X
+                        // console.log(`MouseX: ${mouseX}, LeftAtual: ${desvioNormalPx}`); // Log da posição do mouse e do elemento
+
+                        // Verifica se o mouse está próximo (distância ≤ 20px)
+                        if (Math.abs(mouseX - desvioAtual) <= 20) {
+                            elementoDesvio.style.left = (desvioNormalPx - 50) + "px"; // Move para uma nova posição com animação
+                            // console.log("Mouse está próximo, executando animação para mover 50px à esquerda.");
+                        }
+
+                        // Verifica se o mouse está longe (> 20px) e volta para a posição inicial
+                        if (Math.abs(mouseX - desvioAtual) > 20) {
+                            elementoDesvio.style.left = desvioNormalPx + "px"; // Volta para a posição inicial
+                            // console.log("Mouse está longe, voltando para posição inicial.");
+                        }
+                    });
+        
+
+
+        
+        function alterarValor(passo) {
+            const campo = document.getElementById('campoValor');
+            let valorAtual = parseFloat(campo.value); // Obtém o valor atual sem o sinal            
+            valorAtual += passo; // Incrementa ou decrementa
+            if (valorAtual >= 0) {
+                Prisma.style.display = "block";
+                prismaText.style.display = "block";
+                campo.value = valorAtual.toFixed(2);
+                prismaText.innerText = campo.value;       
+            } else {
+                Prisma.style.display = "none";
+                prismaText.style.display = "none";
+            }
+        }
+        function rotacionar(){
+            angulo += 90; // Incrementa o ângulo em 90 graus
+            Prisma.style.transform = `rotate(${angulo}deg)`; // Aplica a rotação
+        }
+        
+        function aleatorio() {
+            const resultado = document.getElementById('titulo');
+            let nLonge = document.getElementById('scLonge');
+            let n40 = document.getElementById('sc40');
+            let n20 = document.getElementById('sc20');
+            let maiorLonge = 0;
+            let maior40 = 0;
+            let maior20 = 0;
+            elementoDesvio.style.left = desvioNormalPx + "px";
+
+
+            function gerarAleatorio(lista) {
+                const index = Math.floor(Math.random() * lista.length);
+                return lista[index];
+            }
+
+            // Sorteia um tipo de desvio
+            let desvio = gerarAleatorio(tiposDeDesvio);
+
+            // Sorteia o olho
+            let olho = gerarAleatorio(olhoDeDesvio);
+
+            // Define os critérios para diagnósticos com base no tipo de desvio
+            let dxLista = [];
+            while (dxLista.length === 0) { // Continua tentando até encontrar um diagnóstico válido
+                if (desvio.nome === "Endotropia" || desvio.nome === "Endotropia Intermitente") { 
+                    // Diagnósticos válidos para Endotropia e Endotropia Intermitente
+                    dxLista = diagnostico.filter(dx => dx.sigla === "Exc. Cv" || dx.sigla === "Ins. Dv");
+                } else if (desvio.nome === "Exotropia" || desvio.nome === "Exotropia Intermitente") { 
+                    // Diagnósticos válidos para Exotropia e Exotropia Intermitente
+                    dxLista = diagnostico.filter(dx => dx.sigla === "Ins. Cv" || dx.sigla === "Exc. Dv");
+                } else {
+                    // Se não pertencer a Endotropia ou Exotropia, sorteia novamente
+                    desvio = gerarAleatorio(tiposDeDesvio);
+                }
+            }
+            // Sorteia o diagnóstico com base na lista filtrada
+            let dx = gerarAleatorio(dxLista);
+            // Monta o resultado final
+            resultado.innerText = `${desvio.sigla}${olho.sigla} Tipo ${dx.sigla}`;
+            
+                let longe, cm40, cm20;
+
+                if (dx.sigla === 'Ins. Cv' || dx.sigla === 'Exc. Cv') {
+                    // Para Ins. Cv e Exc. Cv: maior para perto (20 > 40 > longe)
+                    longe = gerarAleatorioEntre(1, 20); // Longe é o menor
+                    cm40 = gerarAleatorioEntre(longe + 1, longe + 20); // 40 cm é maior que longe
+                    cm20 = gerarAleatorioEntre(cm40 + 1, cm40 + 20); // 20 cm é o maior
+                } else if (dx.sigla === 'Exc. Dv' || dx.sigla === 'Ins. Dv') {
+                    // Para Exc. Dv e Ins. Dv: maior para longe (longe > 40 > 20)
+                    cm20 = gerarAleatorioEntre(1, 20); // 20 cm é o menor
+                    cm40 = gerarAleatorioEntre(cm20 + 1, cm20 + 20); // 40 cm é maior que 20
+                    longe = gerarAleatorioEntre(cm40 + 1, cm40 + 20); // Longe é o maior
+                } else {
+                    console.error("Diagnóstico não reconhecido.");
+                    return;
+                }
+
+                // Atualiza os valores na tabela
+                nLonge.innerText = `${desvio.sigla}${olho.sigla} ${longe}🔺`;
+                n40.innerText = `${desvio.sigla}${olho.sigla} ${cm40}🔺`;;
+                n20.innerText = `${desvio.sigla}${olho.sigla} ${cm20}🔺 `;;
+                
+                desvioLongePx = longe * 0.45;
+                desvio40Px = cm40 * 0.45;
+                desvio20Px = cm20 * 0.45;
+                elementoDesvio = document.getElementById(olho.id);
+
+                // colocarDesvio
+                if (
+                    (olho.sigla === "D" && desvio.sigla === "2") || 
+                    (olho.sigla === "E" && desvio.sigla === "1")
+                ) {
+                    desvioAtual = desvioNormalPx - desvioLongePx;
+                } else if (
+                    (olho.sigla === "D" && desvio.sigla === "1") || 
+                    (olho.sigla === "E" && desvio.sigla === "2")
+                ) {
+                    desvioAtual = desvioNormalPx + desvioLongePx;
+                }
+
+                elementoDesvio.style.left = desvioAtual + "px";
+                
+
+                console.log(`Resultados Prismáticos: Longe = ${longe}, 40 cm = ${cm40}, 20 cm = ${cm20}`);
+
+            // Função auxiliar para gerar valores aleatórios em um intervalo
+            function gerarAleatorioEntre(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+        }
+
+
+
+
+
+        let StatusTabela = false
+        function ocultarTabela (){
+            const table = document.getElementById('tabela');
+            StatusTabela = !StatusTabela;
+            if (StatusTabela){
+                table.style.display="none";
+            } else{
+                table.style.display="revert";
+            }
+
+        }
+
+
+
+    </script>
+</body>
+</html>

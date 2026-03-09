@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Retinoscopia</title>
+
+    <style>
+        body {
+            background-color: #1a1a1a;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: url('../Imagens/background.png');
+            background-size: cover;
+            /* Fill everything naturally */
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* --- APP CONTAINER (Ratio Locked) --- */
+        #app-container {
+            position: relative;
+            width: 100vw;
+            height: 56.25vw;
+            max-height: 100vh;
+            max-width: 177.78vh;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        /* --- VISUAL STYLES (Restored) --- */
+        .titulo-tabela {
+            text-align: center;
+            align-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            background-color: #9fff15;
+            color: #000000;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+        }
+
+        table {
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background: #ffffff;
+        }
+
+        thead {
+            background-color: #88cc11;
+            color: rgb(9, 9, 9);
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f3f3f3;
+        }
+
+        tr:hover {
+            background-color: #e6e6e6;
+            cursor: pointer;
+        }
+
+        th {
+            font-size: 16px;
+        }
+
+        td {
+            font-size: 14px;
+            text-align: center;
+        }
+
+        #retinoscopioWelch {
+            position: absolute;
+            display: none;
+            z-index: 10001;
+            /* Garante que fique na frente da faixa */
+        }
+
+        #faixa,
+        #faixaRetino {
+            position: absolute;
+            display: none;
+            width: 30px;
+            height: 200px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            /* Centralização para rotação perfeita */
+            transform-origin: center center;
+            margin-left: -15px;
+            /* Metade da largura base */
+            margin-top: -100px;
+            /* Metade da altura */
+        }
+
+        #faixa {
+            background-color: rgb(240, 227, 113);
+            /* Centraliza no container da pupila */
+            left: 50%;
+            top: 50%;
+        }
+
+        #faixaRetino {
+            background-color: rgba(245, 156, 78, 0.4);
+            z-index: 10000;
+        }
+
+        /* Buttons Styling */
+        .botao {
+            position: relative;
+            background-color: #9fff15;
+            color: black;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .botao:hover {
+            background-color: #aaff22;
+            transform: scale(1.05);
+        }
+
+        .botao:active {
+            background-color: #88cc11;
+            transform: scale(0.95);
+        }
+
+        /* Input Styling */
+        .campo-texto {
+            width: 150px;
+            font-size: 18px;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            outline: none;
+            transition: all 0.3s ease-in-out;
+            text-align: center;
+        }
+
+        .campo-texto:focus {
+            border-color: #6200ea;
+            box-shadow: 0 4px 12px rgba(98, 0, 234, 0.4);
+        }
+
+        .campo-texto:disabled {
+            background-color: #f4f4f9;
+            border-color: #bbb;
+            color: #666;
+        }
+
+        /* --- COMPONENTES DO AVATAR (Grupo 1: Canvas Identico) --- */
+        .avatar {
+            position: absolute;
+            left: 2%;
+            top: 0%;
+            width: 40%;
+        }
+
+        /* Os seletores individuais abaixo herdam .avatar. 
+           Como o canvas do SVG é idêntico, o alinhamento é automático. */
+        img[src*="fundobranco-para-olhos.svg"],
+        img[src*="pupila-OD.svg"],
+        img[src*="pupila-OE.svg"],
+        img[src*="contorno-pupila-od.svg"],
+        img[src*="contorno-pupila-oe.svg"],
+        #OD,
+        #OE,
+        img[src*="sem-olhos.svg"],
+        img[src*="oculosprova.svg"] {
+            /* Posição unificada via .avatar */
+        }
+
+        #retinoscopioWelch {
+            position: absolute;
+            left: 92.13%;
+            top: -6.44%;
+        }
+
+        #IDlente-OD-text {
+            position: absolute;
+            left: 8.65%;
+            top: 57.73%;
+            width: 1.21%;
+            transform: rotate(225deg);
+            padding: 20px;
+        }
+
+        #IDlente-OE-text {
+            position: absolute;
+            left: 31.76%;
+            top: 56.90%;
+            width: 1.21%;
+            transform: rotate(135deg);
+            padding: 20px;
+        }
+
+        /* --- LENTES CILÍNDRICAS (Novos Elementos) --- */
+        #IDlente-cil-OD-text {
+            position: absolute;
+            left: 21.65%;
+            /* Ajustado para não sobrepor o esférico */
+            top: 57.73%;
+            width: 1.21%;
+            transform: rotate(225deg);
+            padding: 20px;
+            display: none;
+            color: #ff5252;
+        }
+
+        #IDlente-cil-OE-text {
+            position: absolute;
+            left: 44.76%;
+            /* Ajustado para não sobrepor o esférico */
+            top: 56.90%;
+            width: 1.21%;
+            transform: rotate(135deg);
+            padding: 20px;
+            display: none;
+            color: #ff5252;
+        }
+
+        button.botao {
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #555;
+            color: white;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        #btnToggleTabela {
+            position: absolute;
+            left: 89.09%;
+            top: 20.59%;
+        }
+
+        #btnAleatorio {
+            position: absolute;
+            left: 93.54%;
+            top: 20.59%;
+        }
+
+        /* --- GROUPS --- */
+        #grupoDioptria {
+            position: absolute;
+            left: 60%;
+            top: 26.97%;
+            width: 37.48%;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #grupoForca {
+            position: absolute;
+            left: 60%;
+            top: 48.35%;
+            width: 37.32%;
+            height: auto;
+        }
+
+        #grupoControle {
+            position: absolute;
+            left: 60%;
+            top: 65.22%;
+            width: 66.62%;
+            height: auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* --- CHILDREN RESET --- */
+        .titulo-tabela {
+            text-align: center;
+            align-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            background-color: #9fff15;
+            color: #000000;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+
+            /* RESET POSITION FOR GROUPING */
+            position: static;
+            width: 100%;
+            height: auto;
+            margin: 0 0 5px 0;
+        }
+
+        #tabela {
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background: #ffffff;
+            /* RESET POSITION FOR GROUPING */
+            position: static;
+            width: 100%;
+            height: auto;
+        }
+
+        #tabela2 {
+            /* RESET POSITION FOR GROUPING */
+            position: static;
+            width: 100%;
+            height: 100%;
+        }
+
+        #grupoControle>* {
+            position: static !important;
+            margin: 0;
+            pointer-events: auto !important;
+        }
+
+        /* Limite Caixa must retain position logic from inline or JS? 
+           Original code had inline styles or JS adjusting it. 
+           Wait, #limiteCaixa was in the user dump as excluded? 
+           No, it wasn't in the dump! 
+           Let's keep its original absolute position to be safe 
+        */
+        /* --- LIMITE DO MOVIMENTO DO REFLEXO (PUPILA) --- */
+        #limiteCaixa {
+            position: absolute;
+            left: 9.5% !important;
+            top: 42% !important;
+            width: 10% !important;
+            height: 25% !important;
+            overflow: hidden;
+        }
+
+        /* --- CAMPOS DE RESULTADO (ABSOLUTOS) --- */
+        .grupo-resultado {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            z-index: 20;
+        }
+
+        .titulo-campo {
+            color: #9fff15;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .controles-campo {
+            display: flex;
+            gap: 5px;
+        }
+
+        .botao-mini {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        /* Posições solicitadas */
+        #grupo-esf {
+            left: 60%;
+            top: 75%;
+        }
+
+        #grupo-cil {
+            left: 72%;
+            top: 75%;
+        }
+
+        #grupo-eixo {
+            left: 84%;
+            top: 75%;
+        }
+
+        /* The individual #resultado-esf, #resultado-cil, #resultado-eixo styles are now handled by their parent groups */
+        #resultado-esf,
+        #resultado-cil,
+        #resultado-eixo {
+            top: 78%;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Main App Container for Fixed Aspect Ratio (1920x1080) -->
+    <div id="app-container">
+
+        <div>
+            <img class="avatar" src="../Imagens/fundobranco-para-olhos.svg" alt="">
+
+            <img class="avatar" src="../Imagens/pupila-OD.svg" alt="">
+            <img class="avatar" src="../Imagens/pupila-OE.svg" alt="">
+            <div id="limiteCaixa" class="limite">
+                <div id="faixa"></div>
+            </div>
+            <img class="avatar" src="../Imagens/contorno-pupila-od.svg" alt="">
+            <img class="avatar" src="../Imagens/contorno-pupila-oe.svg" alt="">
+            <img class="avatar" id="OD" src="../Imagens/OD.svg" alt="">
+            <img class="avatar" id="OE" src="../Imagens/OE.svg" alt="">
+
+            <img class="avatar" src="../Imagens/sem-olhos.svg" alt="">
+            <img class="avatar" src="../Imagens/oculosprova.svg" alt="">
+            <img id="retinoscopioWelch" src="../Imagens/retinoscopio.png" alt="">
+        </div>
+
+        <img class="avatar" id="IDlente-OD" src="../Imagens/lente-negativa-od.svg" alt="">
+        <h5 class="lente-OD" id="IDlente-OD-text">0.00</h5>
+
+        <img class="avatar" id="IDlente-OE" src="../Imagens/lente-negativa-oe.svg" alt="">
+        <h5 class="lente-OE" id="IDlente-OE-text">0.00</h5>
+
+        <!-- NOVAS LENTES CILÍNDRICAS -->
+        <img class="avatar" id="IDlente-cil-OD" src="../Imagens/lente-positiva-od-cil.svg" alt=""
+            style="display: none;">
+        <h5 class="lente-OD" id="IDlente-cil-OD-text">0.00</h5>
+
+        <img class="avatar" id="IDlente-cil-OE" src="../Imagens/lente-positiva-oe-cil.svg" alt=""
+            style="display: none;">
+        <h5 class="lente-OE" id="IDlente-cil-OE-text">0.00</h5>
+
+        <div id="faixaRetino"></div>
+
+        <button class="botao" id="btnToggleTabela" onclick="ocultarTabela()">👁️‍🗨️</button>
+        <button class="botao" id="btnAleatorio" onclick="aleatorio()">🎲</button>
+
+        <!-- Seletor de Lente de Trabalho (Posição Fixa conforme solicitado) -->
+        <select class="campo-texto" id="selectTrabalho" onchange="mudarTrabalho(this.value)"
+            style="position: absolute; left: 75%; top: 20.59%; width: auto; z-index: 10;">
+            <option value="2.00">DT 50cm (+2.00)</option>
+            <option value="1.50">DT 67cm (+1.50)</option>
+            <option value="1.00">DT 100cm (+1.00)</option>
+            <option value="0.00">Sem Lente (0.00)</option>
+        </select>
+
+        <!-- Grupo Dioptria -->
+        <div id="grupoDioptria">
+            <h1 class="titulo-tabela">Retinoscopia Estática: DT 50cm</h1>
+            <table id="tabela">
+                <thead>
+                    <tr>
+                        <th>Estatica</th>
+                        <th>Esférico</th>
+                        <th>Cilíndrico</th>
+                        <th>Eixo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>OD</td>
+                        <td id="esf-OD">0,00</td>
+                        <td id="cil-OD">-0,00</td>
+                        <td id="eixo-OD">0</td>
+                    </tr>
+                    <tr>
+                        <td>OE</td>
+                        <td id="esf-OE">0,00</td>
+                        <td id="cil-OE">-0,00</td>
+                        <td id="eixo-OE">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Grupo Força -->
+        <div id="grupoForca">
+            <table id="tabela2">
+                <thead>
+                    <tr>
+                        <th>Primeira Força</th>
+                        <th>Segunda Força</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="PrimeiraF">0,00</td>
+                        <td id="SegundaF">0,00</td>
+                    </tr>
+                    <tr>
+                        <td id="TerceiraF">0,00</td>
+                        <td id="QuartaF">0,00</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+
+        <!-- Bottom Controls Group (Olho e Retino) -->
+        <div id="grupoControle">
+            <button class="botao" id="btnOlho" onclick="mudarOlho()">Olho Direito</button>
+            <button class="botao" onclick="ModoRetino()">Retinoscopio</button>
+        </div>
+
+        <!-- Campos de Resultado com Títulos e Botões -->
+        <div id="grupo-esf" class="grupo-resultado">
+            <span class="titulo-campo">Esférico</span>
+            <div class="controles-campo">
+                <button class="botao botao-mini" onclick="alterarComponente('esf', 0.25)">+</button>
+                <input type="text" class="campo-texto" id="resultado-esf" value="0.00" style="width: 80px;">
+                <button class="botao botao-mini" onclick="alterarComponente('esf', -0.25)">-</button>
+            </div>
+        </div>
+
+        <div id="grupo-cil" class="grupo-resultado">
+            <span class="titulo-campo">Cilíndrico</span>
+            <div class="controles-campo">
+                <button class="botao botao-mini" onclick="alterarComponente('cil', 0.25)">+</button>
+                <input type="text" class="campo-texto" id="resultado-cil" value="0.00" style="width: 80px;">
+                <button class="botao botao-mini" onclick="alterarComponente('cil', -0.25)">-</button>
+            </div>
+        </div>
+
+        <div id="grupo-eixo" class="grupo-resultado">
+            <span class="titulo-campo">Eixo</span>
+            <div class="controles-campo">
+                <button class="botao botao-mini" onclick="alterarComponente('eixo', 5)">+</button>
+                <input type="text" class="campo-texto" id="resultado-eixo" value="0" style="width: 80px;">
+                <button class="botao botao-mini" onclick="alterarComponente('eixo', -5)">-</button>
+            </div>
+        </div>
+
+    </div> <!-- End of #app-container -->
+
+    <script>
+        // --- Auto-Scaling Logic ---
+        function resizeApp() {
+            const container = document.getElementById('app-container');
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            const baseWidth = 1920;
+            const baseHeight = 1080;
+
+            // Calculate scale to fit window while maintaining aspect ratio
+            const scale = Math.min(windowWidth / baseWidth, windowHeight / baseHeight);
+
+            container.style.transform = `scale(${scale})`;
+        }
+
+        window.addEventListener('resize', resizeApp);
+        window.addEventListener('load', resizeApp);
+        // --------------------------
+        let Retino = false;
+        let olhoSelecao = "direito"; // 'direito' ou 'esquerdo'
+
+        // --- CONFIGURAÇÃO MANUAL DE EXAME ---
+        let AJUSTE_ALTURA_GERAL = 100; // Sobe ou desce o conjunto
+        let offsetBase = 6;            // Distância lateral entre as faixas
+        let rotacao = 0;               // Rotação atual das faixas (Scroll do Mouse)
+
+        // Regra Clínica: Valor da Lente de Trabalho (Ex: +2.00 para 50cm, +1.50 para 67cm)
+        let LENTE_TRABALHO = 2.00;
+        // -------------------------------------
+
+        // Estados Refrativos dos Olhos (O "Gabarito" secreto do paciente)
+        let pacienteOD = { esf: 0, cil: 0, eixo: 90 };
+        let pacienteOE = { esf: 0, cil: 0, eixo: 90 };
+
+        // Lentes de Prova (Os valores que você altera nos botões + e -)
+        let lenteOD = { esf: 0.00, cil: 0.00, eixo: 0 };
+        let lenteOE = { esf: 0.00, cil: 0.00, eixo: 0 };
+
+        // Regra Clínica: Distância de Trabalho (DT) de 50cm exige +2.00 D de compensação
+        const COMPENSACAO_DT = 2.00;
+
+        function aleatorio() {
+            // Sorteia o erro do paciente (O que ele 'tem' no olho)
+            pacienteOD.esf = (Math.floor(Math.random() * 41) - 20) * 0.25;
+            pacienteOE.esf = (Math.floor(Math.random() * 41) - 20) * 0.25;
+
+            // Limpa as lentes atuais do usuário
+            lenteOD = { esf: 0.00, cil: 0.00, eixo: 0 };
+            lenteOE = { esf: 0.00, cil: 0.00, eixo: 0 };
+
+            if (elements.resultadoEsf) elements.resultadoEsf.value = "0.00";
+            if (elements.resultadoCil) elements.resultadoCil.value = "0.00";
+            if (elements.resultadoEixo) elements.resultadoEixo.value = "0";
+
+            document.getElementById('IDlente-OD-text').innerText = "0.00";
+            document.getElementById('IDlente-OE-text').innerText = "0.00";
+
+            // Atualiza a tabela de resposta
+            document.getElementById('esf-OD').innerText = (pacienteOD.esf > 0 ? "+" : "") + pacienteOD.esf.toFixed(2).replace('.', ',');
+            document.getElementById('cil-OD').innerText = "0,00";
+            document.getElementById('eixo-OD').innerText = "90";
+
+            document.getElementById('esf-OE').innerText = (pacienteOE.esf > 0 ? "+" : "") + pacienteOE.esf.toFixed(2).replace('.', ',');
+            document.getElementById('cil-OE').innerText = "0,00";
+            document.getElementById('eixo-OE').innerText = "90";
+
+            // Forças OD
+            document.getElementById('PrimeiraF').innerText = (pacienteOD.esf > 0 ? "+" : "") + pacienteOD.esf.toFixed(2).replace('.', ',');
+            document.getElementById('SegundaF').innerText = (pacienteOD.esf > 0 ? "+" : "") + pacienteOD.esf.toFixed(2).replace('.', ',');
+            // Forças OE
+            document.getElementById('TerceiraF').innerText = (pacienteOE.esf > 0 ? "+" : "") + pacienteOE.esf.toFixed(2).replace('.', ',');
+            document.getElementById('QuartaF').innerText = (pacienteOE.esf > 0 ? "+" : "") + pacienteOE.esf.toFixed(2).replace('.', ',');
+
+            console.log("Pacientes gerados. OD:", pacienteOD.esf, "OE:", pacienteOE.esf);
+        }
+
+        // --- CACHE DE ELEMENTOS E ESTADOS ---
+        const elements = {};
+        function cacheElements() {
+            elements.container = document.getElementById('app-container');
+            elements.faixa = document.getElementById('faixa');
+            elements.faixaRetino = document.getElementById('faixaRetino');
+            elements.retinoscopio = document.getElementById('retinoscopioWelch');
+            elements.limiteCaixa = document.getElementById('limiteCaixa');
+            elements.resultadoEsf = document.getElementById('resultado-esf');
+            elements.resultadoCil = document.getElementById('resultado-cil');
+            elements.resultadoEixo = document.getElementById('resultado-eixo');
+            elements.btnToggleTabela = document.getElementById('btnToggleTabela');
+            elements.btnAleatorio = document.getElementById('btnAleatorio');
+            elements.IDlenteODtext = document.getElementById('IDlente-OD-text');
+            elements.IDlenteOEtext = document.getElementById('IDlente-OE-text');
+            // Cache das lentes cilíndricas
+            elements.IDlenteCilOD = document.getElementById('IDlente-cil-OD');
+            elements.IDlenteCilOE = document.getElementById('IDlente-cil-OE');
+            elements.IDlenteCilODtext = document.getElementById('IDlente-cil-OD-text');
+            elements.IDlenteCilOEtext = document.getElementById('IDlente-cil-OE-text');
+        }
+
+        let mouseX = 0, mouseY = 0;
+        let updateRequested = false;
+
+        function updateVisuals() {
+            if (!Retino) {
+                updateRequested = false;
+                return;
+            }
+
+            const rect = elements.container.getBoundingClientRect();
+            const scale = rect.width / 1920;
+
+            const x = (mouseX - rect.left) / scale;
+            const y = (mouseY - rect.top) / scale;
+
+            // --- LÓGICA DE VISIBILIDADE ---
+            const rectLimite = elements.limiteCaixa.getBoundingClientRect();
+            if (mouseX >= rectLimite.left && mouseX <= rectLimite.right) {
+                elements.faixa.style.display = "block";
+            } else {
+                elements.faixa.style.display = "none";
+            }
+
+            // --- LÓGICA REFRATIVA ---
+            const pacienteAtual = (olhoSelecao === 'direito') ? pacienteOD : pacienteOE;
+            const lenteAtual = (olhoSelecao === 'direito') ? lenteOD.esf : lenteOE.esf;
+
+            const residual = (pacienteAtual.esf + LENTE_TRABALHO) - lenteAtual;
+            let fatorProximidade = 1 / (1 + Math.abs(residual) * 3);
+
+            // LARGURA NA NEUTRALIZAÇÃO: Aumentada para garantir que preencha tudo (enorme)
+            let largura = 30 + (800 * fatorProximidade);
+            if (largura > 1000) largura = 1000; // Valor alto para "sumir" com os limites
+
+            elements.faixa.style.width = `${largura}px`;
+
+            // BRILHO AMARELO: Ajustado para não esbranquiçar (removido excesso de brightness e focado no drop-shadow amarelo)
+            let opacidade = 0.4 + (0.6 * fatorProximidade);
+            elements.faixa.style.opacity = opacidade;
+            // Usando hue-rotate e sepia se necessário, ou apenas mantendo o fundo amarelo forte com saturação
+            elements.faixa.style.filter = `blur(3px) saturate(2) drop-shadow(0 0 ${25 * fatorProximidade}px #ffeb3b)`;
+            elements.faixa.style.backgroundColor = `rgb(255, ${210 + (45 * fatorProximidade)}, 0)`; // Amarelo mais intenso no neutro
+
+            // --- POSIÇÃO EXTERNA E ROTAÇÃO ---
+            elements.faixaRetino.style.left = `${x}px`;
+            elements.faixaRetino.style.top = `${y - 120 - AJUSTE_ALTURA_GERAL}px`;
+            elements.faixaRetino.style.transform = `rotate(${rotacao}deg)`;
+
+            // O reflexo interno (#faixa) agora é fixo no centro do limiteCaixa
+            // O movimento é feito APENAS via transform translateX
+            elements.faixa.style.display = "block";
+
+            // --- LÓGICA DE MOVIMENTO NOS MERIDIANOS ---
+            const rad = (rotacao) * (Math.PI / 180);
+            const pLeft = (olhoSelecao === 'direito') ? 183 : 461;
+            const pTop = 460;
+
+            const dx = x - pLeft;
+            const dy = y - (pTop - AJUSTE_ALTURA_GERAL);
+
+            // Projetamos o movimento do mouse no eixo perpendicular à faixa
+            const deslocamentoProjetado = dx * Math.cos(rad) + dy * Math.sin(rad);
+
+            let posFinalProjetada = 0;
+            if (residual >= 0) {
+                // COM: Segue o movimento
+                posFinalProjetada = deslocamentoProjetado;
+            } else {
+                // CONTRA: Inverte o movimento
+                posFinalProjetada = -deslocamentoProjetado;
+            }
+
+            // Aplicamos o deslocamento via Transform
+            // Multiplicamos por (1 - fatorProximidade) para que no ponto neutro ele não se mova (fique centralizado)
+            elements.faixa.style.transform = `rotate(${rotacao}deg) translateX(${posFinalProjetada * (1 - fatorProximidade)}px)`;
+
+            elements.retinoscopio.style.left = `${x - 130}px`;
+            elements.retinoscopio.style.top = `${y - 40 - AJUSTE_ALTURA_GERAL}px`;
+
+            updateRequested = false;
+        }
+
+        function requestVisualUpdate() {
+            if (!updateRequested && Retino) {
+                updateRequested = true;
+                requestAnimationFrame(updateVisuals);
+            }
+        }
+
+        function ModoRetino() {
+            Retino = !Retino;
+            if (Object.keys(elements).length === 0) cacheElements();
+
+            const display = Retino ? "block" : "none";
+            elements.faixa.style.display = display;
+            elements.faixaRetino.style.display = display;
+            elements.retinoscopio.style.display = display;
+
+            if (Retino) {
+                document.addEventListener('mousemove', handleMouseMove);
+                requestVisualUpdate();
+            } else {
+                document.removeEventListener('mousemove', handleMouseMove);
+            }
+        }
+
+        function handleMouseMove(evento) {
+            mouseX = evento.clientX;
+            mouseY = evento.clientY;
+            requestVisualUpdate();
+        }
+
+        let StatusTabela = false;
+        function ocultarTabela() {
+            const table = document.getElementById('tabela');
+            const table2 = document.getElementById('tabela2');
+            StatusTabela = !StatusTabela;
+            const display = StatusTabela ? "none" : "revert";
+            table.style.display = display;
+            table2.style.display = display;
+        }
+
+        function alterarComponente(tipo, passo) {
+            if (Object.keys(elements).length === 0) cacheElements();
+            const lente = (olhoSelecao === 'direito') ? lenteOD : lenteOE;
+            const sufixo = (olhoSelecao === 'direito') ? 'OD' : 'OE';
+            const lenteImg = document.getElementById(`IDlente-${sufixo}`);
+            const text = elements[`IDlente${sufixo}text`];
+
+            if (tipo === 'esf') {
+                lente.esf += passo;
+                elements.resultadoEsf.value = (lente.esf > 0 ? "+" : "") + lente.esf.toFixed(2);
+                text.innerText = Math.abs(lente.esf).toFixed(2);
+                atualizarLenteUI(lente.esf, (olhoSelecao === 'direito' ? 'direito' : 'esquerdo'), lenteImg, text);
+            } else if (tipo === 'cil') {
+                lente.cil += passo;
+                // RESTRIÇÃO: Cilindro pode conter apenas números negativos (ou zero)
+                if (lente.cil > 0) lente.cil = 0.00;
+
+                elements.resultadoCil.value = lente.cil.toFixed(2);
+
+                // Atualiza a UI da lente cilíndrica
+                atualizarCilindroUI(lente.cil, (olhoSelecao === 'direito' ? 'direito' : 'esquerdo'));
+            } else if (tipo === 'eixo') {
+                lente.eixo += passo;
+                if (lente.eixo < 0) lente.eixo = 175;
+                if (lente.eixo > 180) lente.eixo = 0;
+                elements.resultadoEixo.value = lente.eixo;
+            }
+
+            if (Retino) requestVisualUpdate();
+        }
+
+        function atualizarCilindroUI(valor, olho) {
+            const sufixo = (olho === 'direito') ? 'OD' : 'OE';
+            const img = elements[`IDlenteCil${sufixo}`];
+            const text = elements[`IDlenteCil${sufixo}text`];
+
+            if (Math.abs(valor) > 0) {
+                img.style.display = 'block';
+                text.style.display = 'block';
+                text.innerText = Math.abs(valor).toFixed(2);
+            } else {
+                img.style.display = 'none';
+                text.style.display = 'none';
+            }
+        }
+
+        function atualizarLenteUI(valor, olho, img, text) {
+            const sufixo = (olho === 'direito') ? 'od' : 'oe';
+            if (valor > 0) {
+                img.src = `../Imagens/lente-positiva-${sufixo}.svg`;
+                if (olho === 'direito') {
+                    text.style.left = "8.29%"; text.style.top = "42.21%"; text.style.transform = "rotate(315deg)";
+                } else {
+                    text.style.left = "31.15%"; text.style.top = "41.96%"; text.style.transform = "rotate(45deg)";
+                }
+            } else {
+                img.src = `../Imagens/lente-negativa-${sufixo}.svg`;
+                if (olho === 'direito') {
+                    text.style.left = "8.65%"; text.style.top = "57.73%"; text.style.transform = "rotate(225deg)";
+                } else {
+                    text.style.left = "31.76%"; text.style.top = "56.90%"; text.style.transform = "rotate(135deg)";
+                }
+            }
+        }
+
+        function mudarOlho() {
+            if (Object.keys(elements).length === 0) cacheElements();
+            const btn = document.getElementById('btnOlho');
+            let lente;
+
+            if (olhoSelecao === 'esquerdo') {
+                btn.innerText = 'Olho Direito';
+                olhoSelecao = 'direito';
+                elements.limiteCaixa.style.left = '9.5%';
+                lente = lenteOD;
+            } else {
+                btn.innerText = 'Olho Esquerdo';
+                olhoSelecao = 'esquerdo';
+                elements.limiteCaixa.style.left = '24%';
+                lente = lenteOE;
+            }
+
+            elements.resultadoEsf.value = (lente.esf > 0 ? "+" : "") + lente.esf.toFixed(2);
+            elements.resultadoCil.value = lente.cil.toFixed(2);
+            elements.resultadoEixo.value = lente.eixo;
+
+            // Atualiza a visibilidade das lentes cilíndricas ao trocar de olho
+            // Primeiro esconde todas e depois mostra apenas a do olho atual
+            elements.IDlenteCilOD.style.display = 'none';
+            elements.IDlenteCilODtext.style.display = 'none';
+            elements.IDlenteCilOE.style.display = 'none';
+            elements.IDlenteCilOEtext.style.display = 'none';
+
+            atualizarCilindroUI(lente.cil, olhoSelecao);
+
+            if (Retino) requestVisualUpdate();
+        }
+
+        function mudarTrabalho(valor) {
+            LENTE_TRABALHO = parseFloat(valor);
+            console.log("Lente de Trabalho alterada para:", LENTE_TRABALHO);
+            if (Retino) requestVisualUpdate();
+        }
+
+        // --- LÓGICA DE ROTAÇÃO (Scroll do Mouse) ---
+        window.addEventListener('wheel', (evento) => {
+            if (!Retino) return;
+
+            if (evento.deltaY > 0) {
+                rotacao += 5;
+            } else {
+                rotacao -= 5;
+            }
+
+            requestVisualUpdate(); // Atualiza instantaneamente ao girar
+            evento.preventDefault();
+        }, { passive: false });
+
+        window.addEventListener('load', () => {
+            resizeApp();
+            cacheElements();
+        });
+    </script>
+</body>
+
+</html>

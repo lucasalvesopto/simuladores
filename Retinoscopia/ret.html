@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<!-- saved from url=(0105)https://d39c9drjvlsyvf.cloudfront.net/resources/Pediatrics_Center/Retinoscopy-Simulator-migrated/ret.html -->
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>Simulador de Retinoscopia</title>
+
+    <!-- Copyright 2020 American Academy of Ophthalmology -->
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, minimum-scale=0.5, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <link href="./css/style.css" rel="stylesheet" type="text/css">
+    <link href="./css/modern.css" rel="stylesheet" type="text/css">
+    <script src="./js/script.js" type="text/javascript" defer=""></script>
+    <script src="./js/data.js" type="text/javascript" defer=""></script>
+    <script src="./js/vars.js" type="text/javascript" defer=""></script>
+
+
+    <link href="./css/instructions.css" rel="stylesheet" type="text/css">
+    <script src="./js/instructions.js" type="text/javascript" defer=""></script>
+
+    <link href="./css/menu.css" rel="stylesheet" type="text/css">
+    <script src="./js/menu.js" type="text/javascript" defer=""></script>
+
+    <link href="./css/scale.css" rel="stylesheet" type="text/css">
+    <script src="./js/scale.js" type="text/javascript" defer=""></script>
+
+
+</head>
+
+
+
+<body>
+    <a href="../index.html"
+        style="position: absolute; top: 20px; left: 20px; z-index: 9999; text-decoration: none; font-family: 'Inter', sans-serif; background: #4F46E5; color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 8px; cursor: pointer; transition: transform 0.2s, background 0.2s;"
+        onmouseover="this.style.background='#4338CA'; this.style.transform='scale(1.05)';"
+        onmouseout="this.style.background='#4F46E5'; this.style.transform='scale(1)';">
+        <span style="font-size: 1.2em;">&larr;</span> Voltar ao Menu
+    </a>
+
+
+    <!--------- MAIN ----------->
+    <div id="mainContainer" style="transform-origin: 0px 0px; transform: scale(1.69259);">
+
+
+
+
+
+
+
+
+
+
+
+
+        <!------- SIM -------->
+        <div id="retSimContainer">
+
+            <div id="homeButton">
+                <div id="homeButtonImage"></div>
+            </div>
+            <div id="helpButton">?</div>
+
+            <div class="copyright">Simulador de Retinoscopia</div>
+
+
+
+            <div id="patientRxContainer_new">
+
+                <div class="modeTab" id="exploreTab">Explorar</div>
+                <div class="modeTab" id="testTab">Teste</div>
+
+                <div id="patientRxContainerTop_new">
+                    <div id="patientRxContainerTopLeft_new">
+                        <div id="patientRxTitle_new">Paciente</div>
+                        <div id="patientRxSphere_new">
+                            <div class="numInputContainer_new nic_new">
+                                <div class="fieldTitle_new">Esférico</div>
+                                <div class="inputField_new">0.00</div>
+                                <div class="arrowSet_new">
+                                    <div class="arrow_new arrowUp_new"></div>
+                                    <div class="arrow_new arrowDown_new"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="patientRxContainerTopRight_new">
+                        <div id="patientImage_new"></div>
+                    </div>
+                </div>
+                <div id="patientRxContainerBottom_new">
+                    <div class="numInputContainer_new nic_new">
+                        <div class="fieldTitle_new">Cilindro</div>
+                        <div class="inputField_new">0.00</div>
+                        <div class="arrowSet_new">
+                            <div class="arrow_new arrowUp_new"></div>
+                            <div class="arrow_new arrowDown_new"></div>
+                        </div>
+                    </div>
+                    <div class="numInputContainer_new nic_new">
+                        <div class="fieldTitle_new">Eixo</div>
+                        <div class="inputField_new">90°</div>
+                        <div class="arrowSet_new">
+                            <div class="arrow_new arrowUp_new"></div>
+                            <div class="arrow_new arrowDown_new"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="formulaContainer_new">
+                <div class="formulaTitle_new">Erro Refrativo</div>
+                <div class="formulaRow_new">
+                    <div class="formulaNum_new">0.00</div>
+                    <div class="formulaNum_new">0.00</div>
+                    <div class="formulaNum_new">90°</div>
+                </div>
+                <div class="formulaRow_new">
+                    <div class="formulaNum_new fnRed_new">0.00</div>
+                    <div class="formulaNum_new fnRed_new">0.00</div>
+                    <div class="formulaNum_new fnRed_new">180°</div>
+                </div>
+            </div>
+
+
+
+            <div id="workingDistanceContainer_new">
+                <div id="wdcTitle_new">Dist. de trabalho</div>
+                <div class="numInputContainer_new nic2_new">
+                    <div class="inputField_new">0.00</div>
+                    <div class="arrowSet_new">
+                        <div class="arrow_new arrowUp_new"></div>
+                        <div class="arrow_new arrowDown_new"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="toolContainer_new">
+                <div id="tabContainer_new">
+                    <div id="lensTitle_new">Lentes</div>
+                    <div class="toolTab_new" style="background-color: rgb(112, 193, 48);">
+                        <div class="tabText">Lentes Positivas</div>
+                        <div class="lensIcon"></div>
+                    </div>
+                    <div class="toolTab_new tabDisable" style="background-color: rgb(204, 204, 204);">
+                        <div class="tabText">Lentes Negativas</div>
+                        <div class="lensIcon"></div>
+                    </div>
+                </div>
+                <div class="toolInputContainer_new" style="bottom: 0px; display: block;">
+                    <div class="numInputContainer_new nic_new0">
+                        <div class="fieldTitle_new">Esférico</div>
+                        <div class="inputField_new">0.00</div>
+                        <div class="arrowSet_new">
+                            <div class="arrow_new arrowUp_new"></div>
+                            <div class="arrow_new arrowDown_new"></div>
+                        </div>
+                    </div>
+                    <div class="numInputContainer_new nic_new0">
+                        <div class="fieldTitle_new">Cilindro</div>
+                        <div class="inputField_new">0.00</div>
+                        <div class="arrowSet_new">
+                            <div class="arrow_new arrowUp_new"></div>
+                            <div class="arrow_new arrowDown_new"></div>
+                        </div>
+                    </div>
+                    <div class="numInputContainer_new nic_new0">
+                        <div class="fieldTitle_new">Eixo</div>
+                        <div class="inputField_new">90°</div>
+                        <div class="arrowSet_new">
+                            <div class="arrow_new arrowUp_new"></div>
+                            <div class="arrow_new arrowDown_new"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="toolInputContainer_new ticShift_new" style="bottom: -110px; display: none;">
+                    <div class="numInputContainer_new nic_new0">
+                        <div class="fieldTitle_new">Esférico</div>
+                        <div class="inputField_new">0.00</div>
+                        <div class="arrowSet_new">
+                            <div class="arrow_new arrowUp_new"></div>
+                            <div class="arrow_new arrowDown_new"></div>
+                        </div>
+                    </div>
+                    <div class="numInputContainer_new nic_new0">
+                        <div class="fieldTitle_new">Cilindro</div>
+                        <div class="inputField_new">0.00</div>
+                        <div class="arrowSet_new">
+                            <div class="arrow_new arrowUp_new"></div>
+                            <div class="arrow_new arrowDown_new"></div>
+                        </div>
+                    </div>
+                    <div class="numInputContainer_new nic_new0">
+                        <div class="fieldTitle_new">Eixo</div>
+                        <div class="inputField_new">90°</div>
+                        <div class="arrowSet_new">
+                            <div class="arrow_new arrowUp_new"></div>
+                            <div class="arrow_new arrowDown_new"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="lightAngleContainer_new">
+                <div id="lacTitle_new">Fenda</div>
+                <div class="numInputContainer_new nic2_new">
+                    <div class="inputField_new streakInput">90°</div>
+                    <div class="arrowSet_new">
+                        <div class="arrow_new arrowUp_new"></div>
+                        <div class="arrow_new arrowDown_new"></div>
+                    </div>
+
+                    <div class="lightDegreeButton_new ldb_new">45°</div>
+                    <div class="lightDegreeButton_new">90°</div>
+                    <div class="lightDegreeButton_new">135°</div>
+                    <div class="lightDegreeButton_new">180°</div>
+                    <div id="flipIcon" class="lightDegreeButton_new"></div>
+                </div>
+            </div>
+
+
+            <!------------------------------------------------>
+            <div id="eyeContainer">
+
+                <div id="retina" style="opacity: 0.8;"></div>
+                <div id="reflectionContainer" style="inset: auto 180px 55px auto; opacity: 1;">
+                    <div id="reflection"
+                        style="transform: rotate(0deg); top: -200px; left: 100px; width: 0px; height: 600px;"></div>
+                </div>
+
+                <div id="hole"></div>
+                <div class="lens" id="lens0" style="display: none;">
+                    <div class="lensNum" id="lens0Pow">-0.00</div>
+                </div>
+                <div class="lens" id="lens1" style="display: none;">
+                    <div class="lensNum" id="lens1Pow">+0.00</div>
+                </div>
+                <div class="lens" id="lens2" style="display: none;">
+                    <div class="lensNum" id="lens2Pow">-0.00</div>
+                    <div class="lensRect" id="lens2Rect" style="transform: rotate(-180deg);"></div>
+                    <div class="lensNum lensAngle la_red">90°</div>
+                </div>
+                <div class="lens" id="lens3" style="display: none;">
+                    <div class="lensNum" id="lens3Pow">+0.00</div>
+                    <div class="lensRect" id="lens3Rect" style="transform: rotate(-180deg);"></div>
+                    <div class="lensNum lensAngle">90°</div>
+                </div>
+                <div class="refInfo" id="refWidth">Largura: 0.00</div>
+                <div class="refInfo" id="refAngle">Ângulo: 90</div>
+                <div class="refInfo" id="refMotion">Movimento: Neutro</div>
+                <div id="lightBeamContainer" style="width: 200px; height: 200px; top: 55px; left: 180px;">
+                    <div id="lightBeam"
+                        style="width: 1200px; height: 3200px; top: -1500px; left: -500px; transform: rotate(0deg);">
+                    </div>
+                </div>
+
+            </div>
+            <!------------------------------------------------>
+
+            <div id="patientFlash"></div>
+
+
+
+
+
+            <div id="outputContainer" class="invisible">
+                <div class="rxLabel">Largura(px)</div>
+                <div class="numInputContainer tool marg">
+                    <div class="num"></div>
+                    <div class="arrow arrowUp arrowTool"></div>
+                    <div class="arrow arrowDown arrowTool"></div>
+                </div>
+                <div class="rxLabel">Ângulo</div>
+                <div class="numInputContainer tool marg">
+                    <div class="num"></div>
+                    <div class="arrow arrowUp arrowTool"></div>
+                    <div class="arrow arrowDown arrowTool"></div>
+                </div>
+            </div>
+
+            <div id="toggleContainer" class="invisible">
+                <div id="toggleKnob" class="green"></div>
+            </div>
+
+            <div id="resetButton" class="invisible">Resetar</div>
+
+            <div id="resetButton_new">Resetar</div>
+
+            <div id="presetContainer" class="invisible">
+                <div class="presetLabel">Predefinições</div>
+
+                <div class="presetColumn">
+                    <div class="preset" id="preset0">0</div>
+                    <div class="preset" id="preset1" style="background-color: rgb(255, 255, 255);">1</div>
+                    <div class="preset" id="preset2">2</div>
+                    <div class="preset" id="preset3">3</div>
+                    <div class="preset" id="preset4">4</div>
+                    <div class="preset" id="preset5">5</div>
+                    <div class="preset" id="preset6">6</div>
+                </div>
+                <div class="presetColumn">
+                    <div class="preset" id="preset7">7</div>
+                    <div class="preset" id="preset8">8</div>
+                    <div class="preset" id="preset9">9</div>
+                    <div class="preset" id="preset10">10</div>
+                    <div class="preset" id="preset11">11</div>
+                    <div class="preset" id="preset12">12</div>
+                    <div class="preset" id="preset13">13</div>
+                </div>
+            </div>
+            <!------------------------>
+
+
+
+
+
+
+            <!------- SCALE -------->
+            <div id="scaleContainer"></div>
+            <!--------------------->
+
+
+
+
+            <div id="testPanelButton">Teste</div>
+
+            <!--
+           <div id="patientTabs">
+               <div id="psim">SIM</div>
+               <div id="ptest">TEST</div>
+           </div>
+           -->
+
+            <div id="coverButtons"></div>
+
+            <div class="answerUnder"></div>
+
+            <div id="testPanel">
+
+                <div id="refractTestExit">X</div>
+
+                <div class="newRefractive">Novo</div>
+
+                <div class="formulaContainer_new ftest">
+                    <div class="formulaTitle_new fital ftitle">Insira o erro refrativo:</div>
+                    <div id="errorInfoIcon">?</div>
+                    <div class="formulaRow_new">
+                        <input type="text" class="formulaNum_new finput" value="">
+                        <input type="text" class="formulaNum_new finput" value="">
+                        <input type="text" class="formulaNum_new finput" value="">
+                    </div>
+                    <div class="formulaRow_new">
+                        <input type="text" class="formulaNum_new fnRed_new finput" value="">
+                        <input type="text" class="formulaNum_new fnRed_new finput" value="">
+                        <input type="text" class="formulaNum_new fnRed_new finput" value="">
+                    </div>
+                </div>
+
+
+
+
+
+
+                <div class="newRefractive fcheck">Conferir</div>
+
+
+
+                <div class="refractAnswer"></div>
+
+                <div id="coverInputs"></div>
+                <div id="coverCheckAnswer"></div>
+
+                <div id="errorInfoBox">
+                    • Preencha todos os campos<br>
+                    • Insira apenas números<br>
+                    • Insira números dentro dos limites permitidos:<br>
+                    <div id="errorInfoRanges">
+                        - Esférico: -20 a +20<br>
+                        - Cilindrico: -6 a 6<br>
+                        - eixo cilindrico: 0 a 180
+                    </div>
+                    <div id="closeErrorX">X</div>
+                </div>
+
+                <div id="miniAnswerContainer">
+                    <div class="miniRow">
+                        <div class="miniAnswer">+20.00</div>
+                        <div class="miniAnswer">+20.00</div>
+                        <div class="miniAnswer">+20.00</div>
+                    </div>
+                    <div class="miniRow miniRed">
+                        <div class="miniAnswer miniAnswerRed">+20.00</div>
+                        <div class="miniAnswer miniAnswerRed">+20.00</div>
+                        <div class="miniAnswer miniAnswerRed">+20.00</div>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+
+
+
+
+            <!----- INSTRUCTIONS ----->
+            <div id="instructionsAll">
+                <div id="instructionOverlay"></div>
+                <div class="instructionImage ii0"></div>
+                <div class="instructionImage ii1"></div>
+                <div class="instructionImage ii2"></div>
+                <div class="instructionImage ii3"></div>
+                <div class="instructionImage ii4"></div>
+                <div class="instructionImage ii5"></div>
+                <div class="instructionImage ii6"></div>
+                <div class="instructionImage ii7"></div>
+                <div class="instructionImage ii8"></div>
+                <div class="instructionImage ii9"></div>
+                <div id="instructionText">Passo 1: Na aba explorar, insira o erro refrativo do paciente.</div>
+                <div id="instructionExit">Próximo</div>
+                <div id="instructionSkip">Pular</div>
+            </div>
+            <!----------------------->
+
+
+
+
+
+
+
+
+
+            <!------- MENU -------->
+            <div id="menuContainer">
+                <div id="menuBorder"></div>
+                <div id="menuBG">
+                    <div class="menuCircle" id="menuCircle1"></div>
+                    <div class="menuCircle" id="menuCircle2"></div>
+                </div>
+                <div id="moduleTitle">Simulador de Retinoscopia</div>
+                <div class="menuCopyright">© 2020 American Academy of Ophthalmology</div>
+                <div id="creditBoxContainer">
+                    <div class="creditTitle">Faruk H. Örge, MD</div>
+                    <div class="creditTitle">K. David Epley, MD</div>
+                    <div class="creditTitle">Adaptado pelo Profº Lucas</div>
+                </div>
+                <div id="startButtonContainer">
+                    <div class="startButton"></div>
+                    <div class="startButton">Iniciar</div>
+                </div>
+            </div>
+            <!--------------------->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <!------ TEST ------->
+            <div id="checkData"></div>
+            <div id="goal">---</div>
+            <!------------------->
+
+
+
+
+
+
+
+
+
+        </div><!--END: mainContainer-->
+
+
+
+
+
+
+
+
+    </div>
+</body>
+
+</html>

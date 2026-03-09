@@ -1,0 +1,1916 @@
+@charset "ISO-8859-1";
+
+*{
+	padding: 0;
+	margin: 0;
+	border: 0;
+	//cursor:none;
+	-webkit-tap-highlight-color:rgba(0,0,0,0);
+}
+@font-face {
+    font-family: Gotham;
+    src: url(fonts/Gotham-Medium.otf);
+	font-family: GothamBook;
+    src: url(fonts/Gotham-Book.otf);
+}
+html, body{
+	background-color:#333;
+	cursor:pointer;
+	overflow:hidden;
+	width:100%;
+	height:100%;
+	font-family:Gotham, Helvetica, sans-serif;
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+	position:fixed;
+	top:0px;
+	left:0px;
+}
+::selection {
+	background: transparent;
+}
+::-moz-selection {
+	background: transparent;	
+}
+a {
+	color:#000;
+}
+a:visited{
+	color:#000;
+}
+a:hover{
+	color:#000;
+}
+a:active{
+	color:#000;
+}
+
+#bodyContainer{
+
+}
+
+#androidLine{
+	position:absolute;
+	top:440px;
+	height:2px;
+	width:100%;
+	background-color:#0F0;
+	z-index:5000;
+}
+#loadCover{
+	position:absolute;
+	top:0px;
+	left:0px;
+	bottom:0px;
+	right:0px;
+	background-color:#DDD;
+	z-index:9999;
+	border-radius:20px;
+}
+#loadBarContainer{
+	position:absolute;
+	top:50%;
+	left:50%;
+	height:30px;
+	width:300px;
+	margin:-50px 0px 0px -150px;
+	background-color:#000;
+}
+#loadBar{
+	position:absolute;
+	top:5px;
+	left:5px;
+	bottom:5px;
+	background-color:#FFF;
+}
+#imageDisplayer{
+	position:absolute;
+	bottom:20px;
+	left:20px;
+	//width:615px;
+	height:55px;
+	background-color:#FFF;
+	display:none;
+	z-index:10000;
+}
+#mainContainer{
+	position:absolute;
+	left:50%;
+	top:50%;
+	width:900px;
+	height:600px;
+	margin:-300px 0px 0px -450px;
+	//background-color:#F00;	
+}
+#menuContainer{
+	position:absolute;
+	top:0px;
+	left:0px;
+	height:100%;
+	width:100%;
+	z-index:3000;
+	//display:none;
+}
+#loadPatientsCover{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:900px;
+	height:430px;
+	color:#000;
+	font-size:24px;
+	text-align:center;
+	box-sizing:border-box;
+	padding:200px 0px 0px 0px;
+	border-radius:20px;
+	background-color:#999;
+	display:none;
+	//opacity:0.7;
+}
+#loadPatientsText{
+	
+}
+#instructContainer{
+	position:absolute;
+	top:0px;
+	left:0px;
+	height:100%;
+	width:100%;
+	z-index:2700;
+	background-color:#111;
+	cursor:default;
+}
+#instructStart{
+	position:absolute;
+	top:50%;
+	left:50%;
+	height:40px;
+	width:180px;
+	font-size:24px;
+	text-align:center;
+	color:#FFF;
+	box-sizing:border-box;
+	padding:4px 0px 0px 0px;
+	margin:110px 0px 0px -90px;
+	background-color:#666;
+	border-radius:7px;
+	//border:solid 1px #BBB;
+	cursor:pointer;
+}
+#instructNext{
+	position:absolute;
+	top:50%;
+	left:50%;
+	height:40px;
+	width:120px;
+	font-size:24px;
+	text-align:center;
+	box-sizing:border-box;
+	padding:4px 0px 0px 0px;
+	margin:240px 0px 0px 320px;
+	background-color:#EEE;
+	border-radius:7px;
+	cursor:pointer;
+	//display:none;
+}
+#instructSkip{
+	position:absolute;
+	top:50%;
+	left:50%;
+	height:40px;
+	width:220px;
+	font-size:24px;
+	text-align:center;
+	color:#FFF;
+	box-sizing:border-box;
+	padding:4px 0px 0px 0px;
+	margin:160px 0px 0px -110px;
+	background-color:#666;
+	border-radius:7px;
+	//border:solid 1px #BBB;
+	cursor:pointer;
+}
+#instructVideo{
+	position:absolute;
+	top:50%;
+	left:50%;
+	height:40px;
+	width:210px;
+	font-size:24px;
+	text-align:center;
+	color:#FFF;
+	text-decoration:none;
+	box-sizing:border-box;
+	padding:4px 0px 0px 0px;
+	margin:160px 0px 0px -105px;
+	background-color:#666;
+	border-radius:7px;
+	//border:solid 1px #BBB;
+	cursor:pointer;
+}
+#instructExit{
+	position:absolute;
+	top:20px;
+	right:20px;
+	height:35px;
+	width:35px;
+	//box-sizing:border-box;
+	//padding:4px 0px 0px 0px;
+	//margin:-220px 0px 0px 310px;
+	background-image:url(images/iconX.png);
+	background-repeat:no-repeat;
+	background-size:contain;
+	//background-color:#666;
+	cursor:pointer;
+}
+#instructStart:hover{
+	background-color:#777;
+}
+#instructNext:hover{
+	background-color:#FFF;
+}
+#instructSkip:hover{
+	background-color:#777;
+}
+#instructVideo:hover{
+	background-color:#777;
+}
+#screenshotContainer{
+	position:absolute;
+	top:50%;
+	left:50%;
+	height:600px;
+	width:900px;
+	//background-image:url(images/overlaySimBG.jpg);
+	background-repeat:no-repeat;
+	margin:-300px 0px 0px -450px;
+	//background-color:#FF0;
+	//display:none;
+}
+#overlayContainer{
+	position:absolute;
+	top:50%;
+	left:50%;
+	height:600px;
+	width:900px;
+	background-image:url(images/overlay1.png);
+	background-repeat:no-repeat;
+	margin:-300px 0px 0px -450px;
+	//background-color:#000;
+	//display:none;
+}
+#moduleTitle{
+	position:absolute;
+	top:50%;
+	left:50%;
+	height:135px;
+	width:700px;
+	margin:-160px 0px 0px -360px;
+	background-image:url(images/moduleTitle.png);
+	background-repeat:no-repeat;
+	background-size:contain;
+	//background-color:#F0F;
+	opacity:0.7;
+}
+.menuCircle{
+	position:absolute;
+	top:50%;
+	left:50%;
+	height:700px;
+	width:700px;
+	border-radius:350px;
+	background-color:#BBB;
+}
+#menuCircle1{
+	margin:-130px 0px 0px -100px;
+}
+#menuCircle2{
+	margin:200px 0px 0px -700px;
+}
+#menuBG{
+	position:absolute;
+	top:20px;
+	left:20px;
+	bottom:20px;
+	right:20px;
+	border-radius:30px;
+	background-color:#DDD;
+	overflow:hidden;
+	//display:none;
+	//opacity:0.5;
+}
+#menuBorder{
+	width:100%;
+	height:100%;
+	background-color:#333;
+}
+#splashBackground{
+	position:absolute;
+	left:50%;
+	top:50%;
+	margin:-355px 0px 0px -525px;
+	width:1057px;
+	height:710px;
+	background-size:contain;
+	background-image:url(images/splashPage.png);
+	cursor:default;
+	//display:none;
+}
+.menuButton{
+	position:absolute;
+	left:50%;
+	top:50%;
+	width:290px;
+	height:90px;
+	box-sizing:border-box;
+	padding:5px 0px 0px 17px;
+	border-radius:15px;
+}
+#menuReviewButton{
+	margin:-20px 0px 0px 20px;
+	background-color:#659fd5;
+	//opacity:0.5;
+}
+#menuReviewButton:hover{
+	background-color:#8bb7e0;
+}
+#menuReviewButtonTitle{
+	color:#FFF;
+	font-size:28px;
+}
+#menuReviewButtonInfo{
+	color:#2a4b7b;
+	font-size:17px;
+}
+#menuTestButton{
+	margin:83px 0px 0px 20px;
+	background-color:#f2c75c;
+	//opacity:0.5;
+}
+#menuTestButton:hover{
+	background-color:#f5d27d;
+}
+#menuTestButtonTitle{
+	color:#FFF;
+	font-size:28px;
+}
+#menuTestButtonInfo{
+	color:#cd6200;
+	font-size:17px;
+}
+
+
+
+
+
+
+
+
+.menuSubButton{
+	position:absolute;
+	bottom:20px;
+	height:40px;
+	width:220px;
+	left:60px;
+	font-size:21px;
+	text-align:center;
+	color:#888;
+	box-sizing:border-box;
+	padding:7px 0px 0px 0px;
+	border-top-left-radius:10px;
+	border-top-right-radius:10px;
+	background-color:#FFF;
+	cursor:pointer;
+	display:none;
+}
+#startButton{
+	position:absolute;
+	top:135px;
+	left:480px;
+	width:130px;
+	height:44px;
+	color:#FFF;
+	font-size:32px;
+	text-align:center;
+	//margin:70px 0px 0px 170px;
+	border-radius:10px;
+	background-color:#666;
+	cursor:pointer;
+}
+#startButton:hover{
+	background-color:#777;
+}
+#creditContainer{
+	position:absolute;
+	height:195px;
+	width:630px;
+	top:50%;
+	left:50%;
+	//font-family:GothamBook, Helvetica, sans-serif;
+	margin:-20px 0px 0px -315px;
+	//bottom:-50px;
+	//right:100px;
+	border-radius:20px;
+	background-color:#FFF;
+}
+
+#creditTitle{
+	//position:absolute;
+	height:30px;
+	width:180px;
+	font-size:18px;
+	//font-family:Gotham, Helvetica, sans-serif;
+	color:#BBB;
+	//padding:3px 0px 3px 0px;
+	margin:10px 0px 0px 25px;
+	//background-color:#099;
+	//border-bottom:solid 1px #000;
+}
+#creditBoxContainer{
+	position:absolute;
+	width:100%;
+	height:125px;
+	font-size:15px;
+	//font-family:GothamBook, Helvetica, sans-serif;
+	//line-height:15px;
+	//background-color:#0FC;
+}
+p {
+	padding:0px 0px 3px 0px;
+}
+.creditBox{
+	top:40px;
+	width:550px;
+	//box-sizing:border-box;
+	//padding:0px 0px 0px 20px;
+}
+
+#creditBox1{
+	position:absolute;
+	left:25px;
+	//width:370px;
+	//height:100%;
+	//background-color:#0F0;
+}
+#creditBox2{
+	position:absolute;
+	left:310px;
+	//width:370px;
+	//height:100%;
+	//background-color:#FF0;
+}
+.creditBold{
+	font-size:18px;
+	//font-family:Gotham, Helvetica, sans-serif;
+}
+.creditRegular{
+	font-family:GothamBook, Helvetica, sans-serif;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#copyright{
+	position:absolute;
+	height:20px;
+	width:400px;
+	bottom:25px;
+	//left:50%;
+	right:30px;
+	text-align:center;
+	color:#666;
+	//margin:0px 0px 0px -200px;
+	//background-color:#F0F;
+}
+#simContainer{ /*contains canvas and sim UI*/
+	
+}
+#canvas1{
+	//background-color:#CCC;
+	border-radius:20px;
+}
+#canvas2{
+	position:absolute;
+	top:0px;
+	left:0px;
+	border-radius:20px;
+	//background-color:#F0F;
+}
+#canvas3{
+	position:absolute;
+	top:0px;
+	left:0px;
+	//border-radius:20px;
+	//background-color:#F0F;
+}
+#canvas4{
+	position:absolute;
+	top:0px;
+	left:0px;
+	//background-color:#F0F;
+}
+#canvasCover{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:900px;
+	height:430px;
+	background-color:#CCC;
+	display:block;
+	opacity:0.7;
+}
+#testBox {
+	width:900px;
+	font-size:12px;
+	font-family:Courier;
+	color:#000;
+	position: absolute;
+	left: 0px;
+	top: 600px;
+	line-height:20px;
+	z-index:10000;
+	display:none;
+}
+.column{
+	float:left;
+	width:290px;
+	height:145px;
+	margin:5px;
+	background-color:#9F3;
+}
+ul{
+	list-style-type: none;
+	word-wrap:break-word;
+}
+#panel1{ /* TEST: patient selector */
+	position:absolute;
+	width:130px;
+	height:140px;
+	top:440px;
+	left:700px;
+	//left:-1000px;
+	//border-radius:15px;
+	//background-color:#666;
+	display:none;
+}
+#panel2{ /* REVIEW: settings */
+	position:absolute;
+	width:360px;
+	height:140px;
+	top:440px;
+	//top:590px;
+	left:0px;
+	//left:-1000px;
+	//border-radius:15px;
+	//background-color:#666;
+	//opacity:0;
+}
+#panel3{ /* TOOLS */
+	position:absolute;
+	width:363px;
+	height:65px;
+	top:440px;
+	left:535px;
+	//border-radius:15px;
+	//background-color:#666;
+}
+#panel4{ /* TEST: answer options */
+	position:absolute;
+	width:525px;
+	height:140px;
+	top:440px;
+	//top:590px;
+	left:0px;
+	//border-radius:15px;
+	//background-color:#666;
+	//display:none;
+	//z-index:0;
+}
+#panel5{ /* REVIEW: condition description */
+	position:absolute;
+	width:155px;
+	height:140px;
+	top:440px;
+	left:370px;
+	//border-radius:15px;
+	//background-color:#666;
+	//opacity:0;
+}
+.panelBG{
+	background-color:#666;
+	border-radius:9px;
+}
+#homeButton{
+	position:absolute;
+	//top:515px;
+	//right:0px;
+	top:10px;
+	left:10px;
+	width:43px;
+	height:33px;
+	background-color:#666;
+	border-radius:10px;
+}
+#testResetButton{
+	position:absolute;
+	//top:515px;
+	//right:0px;
+	bottom:20px;
+	right:225px;
+	font-size:18px;
+	color:#FFF;
+	text-align:center;
+	box-sizing:border-box;
+	padding:8px 0px 0px 0px;
+	width:140px;
+	height:65px;
+	background-color:#666;
+	border-radius:7px;
+	display:none;
+}
+#testResetButton:hover{
+	background-color:#777;
+}
+#homeButtonImage{
+	position:absolute;
+	top:8px;
+	left:12px;
+	width:20px;
+	height:20px;
+	background-image:url(images/homeButton.png);
+	background-repeat:no-repeat;
+	background-size:contain;
+}
+#modeText{
+	position:absolute;
+	top:545px;
+	right:10px;
+	font-size:25px;
+	color:#659fd5;
+	text-align:right;
+}
+#helpButton{
+	position:absolute;
+	//top:515px;
+	//right:10px;
+	top:10px;
+	right:10px;
+	width:30px;
+	height:30px;
+	background-image:url(images/helpIcon.png);
+	background-repeat:no-repeat;
+	background-size:contain;
+}
+#instructions{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:900px;
+	height:580px;
+	background-image:url(images/instructions.png);
+	display:none;
+}
+#closeInstructions{
+	position:absolute;
+	top:480px;
+	left:350px;
+	width:130px;
+	height:30px;
+	margin-bottom:15px;
+	background-color:#EEE;
+	border-style:solid;
+	border-color:#EEE;
+	border-width:3px;
+	border-radius:10px;
+	font-size:20px;
+	line-height:24px;
+	padding:10px;
+	padding-left:15px;
+}
+
+#toggle_hidden{
+	position:absolute;
+	top:15px;
+	left:-80px;
+	width:64px;
+	height:44px;
+	background-image:url(images/deviationShow.png);
+}
+#patientChange{
+	position:absolute;
+	top:200px;
+	left:0px;
+	width:64px;
+	height:44px;
+	background-image:url(images/patientChange.png);
+}
+#patientQuizState{
+	position:absolute;
+	top:10px;
+	left:35px;
+	width:60px;
+	height:35px;
+	background-image:url(images/patientIncomplete.png);
+	//background-color:#0F0;
+	font-size:24px;
+	font-weight:bold;
+	color:#AAA;
+	text-align:center;
+	padding-top:35px;
+}
+#patientQuizMark{
+	position:absolute;
+	//top:15px;
+	//left:78px;
+	top:55px;
+	left:78px;
+	width:22px;
+	height:22px;
+	background-image:url(images/iconCorrectSM.png);
+	display:none;
+	//background-color:#0F0;
+}
+#patientArrows{
+	position:absolute;
+	top:40px;
+	left:10px;
+	width:110px;
+	height:70px;
+	background-image:url(images/patientArrows.png);
+	//background-color:#F0F;
+}
+#patientPrev{
+	position:absolute;
+	right:70px;
+	bottom:9px;
+	height:36px;
+	width:50px;
+	color:#FFF;
+	border-radius:5px;
+	background-color:#888;
+	display:none;
+}
+#patientPrev:hover{
+	background-color:#999;
+}
+#patientNext{
+	position:absolute;
+	right:10px;
+	bottom:9px;
+	height:36px;
+	width:50px;
+	color:#FFF;
+	border-radius:5px;
+	background-color:#888;
+	display:none;
+}
+#patientNext:hover{
+	background-color:#999;
+}
+#patientPrevImage{
+	position:absolute;
+	top:8px;
+	left:18px;
+	width:10px;
+	height:20px;
+	background-image:url(images/arrowLeft.png);
+	background-repeat:no-repeat;
+	background-size:contain;
+	//background-color:#F0F;
+}
+#patientNextImage{
+	position:absolute;
+	top:8px;
+	left:21px;
+	width:10px;
+	height:20px;
+	background-image:url(images/arrowRight.png);
+	background-repeat:no-repeat;
+	background-size:contain;
+	//background-color:#F0F;
+}
+#diagnose{
+	position:absolute;
+	right:10px;
+	bottom:9px;
+	height:36px;
+	width:125px;
+	color:#FFF;
+	font-size:20px;
+	text-align:center;
+	box-sizing:border-box;
+	padding-top:5px;
+	border-radius:5px;
+	background-color:#888;
+	display:none;
+}
+#diagnose:hover{
+	background-color:#999;
+}
+#quizBG{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:900px;
+	height:580px;
+	background-image:url(images/quizBG.png);
+	display:none;
+}
+#quizButtonContainer{
+	position:absolute;
+	top:55px;
+	left:55px;
+	width:730px;
+	height:440px;
+	//background-color:#FC0;
+	//opacity:0.5;
+	//display:none;
+}
+.quizButton{
+	//position:absolute;
+	width:700px;
+	height:50px;
+	margin-bottom:15px;
+	background-color:#EEE;
+	border-style:solid;
+	border-color:#EEE;
+	border-width:3px;
+	border-radius:10px;
+	font-size:18px;
+	line-height:24px;
+	padding:10px;
+	padding-left:15px;
+}
+#quizExplanation{
+	position:absolute;
+	top:365px;
+	width:620px;
+	height:100px;
+	//background-color:#0FF;
+	font-size:18px;
+	line-height:24px;
+	display:none;
+}
+#quizAnswer1{
+	//left:0px;
+	//top:10px;
+}
+#quizIconContainer{
+	position:absolute;
+	top:55px;
+	left:800px;
+	width:44px;
+	height:320px;
+	//background-color:#F00;
+	//opacity:0.5;
+	//display:none;
+	padding-top:12px;
+}
+.quizIcon{
+	position:absolute;
+	left:0px;
+	width:44px;
+	height:44px;
+	//margin-bottom:43px;
+	background-image:url(images/iconCorrect.png);
+	//display:none;
+}
+#quizIcon1{
+	top:10px;
+}
+#quizIcon2{
+	top:100px;
+}
+#quizIcon3{
+	top:190px;
+}
+#quizIcon4{
+	top:280px;
+}
+#quizScoreContainer{
+	position:absolute;
+	top:430px;
+	left:690px;
+	width:145px;
+	height:90px;
+	//background-color:#888;
+	//opacity:0.5;
+	border-style:solid;
+	border-color:#AAA;
+	border-width:1px;
+	border-radius:30px;
+	display:none;
+}
+.closeWindow{
+	position:absolute;
+	top:0px;
+	left:830px;
+	width:70px;
+	height:70px;
+	//background-color:#FC0;
+	//opacity:0.5;
+	//display:none;
+}
+#closeQuizBottom{
+	position:absolute;
+	top:520px;
+	left:0px;
+	width:900px;
+	height:60px;
+	//background-color:#FC0;
+	//opacity:0.5;
+	//display:none;
+}
+
+#levelsBG{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:900px;
+	height:580px;
+	background-image:url(images/levelsBG.png);
+	display:none;
+}
+#levelsContainer{
+	position:absolute;
+	top:165px;
+	left:197px;
+}
+.levelIcon{
+	position:absolute;
+	width:60px;
+	height:35px;
+	background-image:url(images/patientIncomplete.png);
+	font-size:24px;
+	font-weight:bold;
+	color:#DDDDDD;
+	text-align:center;
+	padding-top:35px;
+	border-radius:10px;
+}
+#level0{
+	top:0px;
+	left:0px;
+}
+#level1{
+	top:0px;
+	left:110px;
+}
+#level2{
+	top:0px;
+	left:220px;
+}
+#level3{
+	top:0px;
+	left:330px;
+}
+#level4{
+	top:0px;
+	left:440px;
+}
+#level5{
+	top:110px;
+	left:0px;
+}
+#level6{
+	top:110px;
+	left:110px;
+}
+#level7{
+	top:110px;
+	left:220px;
+}
+#level8{
+	top:110px;
+	left:330px;
+}
+#level9{
+	top:110px;
+	left:440px;
+}
+#closeLevels{
+	position:absolute;
+	top:100px;
+	left:700px;
+	width:70px;
+	height:70px;
+	//background-color:#FC0;
+	//opacity:0.5;
+	//display:none;
+}
+
+#scoreBG{
+	position:absolute;
+	top:455px;
+	left:15px;
+	width:495px;
+	height:113px;
+	background-color:#FFF;
+	border-radius:7px;
+	//background-image:url(images/quizBG.png);
+	display:none;
+	//opacity:0.5;
+}
+#scoreTitle{
+	position:absolute;
+	top:35px;
+	left:33px;
+	font-size:30px;
+	//font-weight:bold;
+	color:#555;
+	//text-align:center;
+	//margin-top:10px;
+}
+#scoreNumber{
+	position:absolute;
+	top:35px;
+	left:135px;
+	font-size:30px;
+	//font-weight:bold;
+	color:#555;
+	//text-align:center;
+	//margin-top:10px;
+}
+#scorePercent{
+	position:absolute;
+	top:280px;
+	left:380px;
+	font-size:50px;
+	font-weight:bold;
+	color:#333;
+	text-align:center;
+	margin-top:10px;
+}
+.continueBT{
+	position:absolute;
+	right:45px;
+	bottom:40px;
+	height:36px;
+	width:200px;
+	color:#FFF;
+	font-size:20px;
+	text-align:center;
+	box-sizing:border-box;
+	padding-top:5px;
+	border-radius:5px;
+	background-color:#888;
+}
+.continueBT:hover{
+	background-color:#999;
+}
+#continueScore{
+	
+}
+#domBG{
+	position:absolute;
+	top:10px;
+	left:10px;
+	width:85px;
+	height:44px;
+	background-color:#FFF;
+	//padding:10px;
+	//border-radius:7px;
+}
+.innerPanelBG{
+	border-radius:6px;
+}
+#dom_OD{
+	position:absolute;
+	top:6px;
+	left:5px;
+	width:35px;
+	height:25px;
+	//background-color:#FFF;
+	text-align:center;
+	padding-top:8px;
+	border-radius:4px;
+	font-size:18px;
+	font-weight:bold;
+	//color:#333;
+}
+#dom_OS{
+	position:absolute;
+	top:6px;
+	left:45px;
+	width:35px;
+	height:25px;
+	//background-color:#BBB;
+	text-align:center;
+	padding-top:8px;
+	border-radius:4px;
+	font-size:18px;
+	font-weight:bold;
+	//color:#CCC;
+}
+#toggle_dominant{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:85px;
+	height:44px;
+	//background-color:#FCC;
+}
+
+
+
+
+
+#inputBG{
+	position:absolute;
+	top:10px;
+	left:105px;
+	width:225px;
+	height:100px;
+	background-color:#FFF;
+	padding:10px;
+	//border-radius:10px;
+}
+#conditionMask{
+	position:absolute;
+	top:10px;
+	left:10px;
+	width:320px;
+	height:120px;
+	//background-color:#F0F;
+	//padding:10px;
+	border-radius:10px;
+	overflow:hidden;
+}
+#conditionList{
+	position:absolute;
+	//top:10px;
+	left:10px;
+	width:320px;
+	height:900px;
+	//background-color:#F0F;
+	//padding:10px;
+	//border-radius:10px;
+}
+
+
+.letters{
+	position:absolute;
+	font-size:16px;
+	font-weight:bold;
+	//color:#666;
+}
+#letterX{
+	top:7px;
+	left:105px;
+}
+#letterY{
+	top:7px;
+	left:180px;
+}
+#tropia{
+	top:35px;
+	right:175px;
+}
+#phoria{
+	top:85px;
+	right:175px;
+}
+.inputField{
+	position:absolute;
+	top:27px;
+	border:solid 1px;
+	color:#333;
+	border-radius:5px;
+	border-color:#666;
+	width:60px;
+	//height:23px;
+	height:29px;
+	font-size:20px;
+	font-weight:bold;
+	padding-left:5px;
+	padding-top:5px;
+	background-image:url(images/arrows.png);
+	background-repeat:no-repeat;
+	background-position:right;
+	box-shadow:inset 0 0 1px 1px #BBB;
+}
+.arrow{
+	position:absolute;
+	width:66px;
+	height:25px;
+	background-color:#FF0;
+	border:solid 1px #000;
+	opacity:0;
+}
+#inputFieldX{
+	left:85px;
+}
+#inputFieldY{
+	left:155px;
+}
+#custom_tropia_Y_add{
+	top:17px;
+	left:155px;
+}
+#custom_tropia_Y_sub{
+	top:42px;
+	left:155px;
+}
+#custom_tropia_X_add{
+	top:17px;
+	left:85px;
+}
+#custom_tropia_X_sub{
+	top:42px;
+	left:85px;
+}
+
+#inputFieldX_h{
+	top:75px;
+	left:85px;
+}
+#inputFieldY_h{
+	top:75px;
+	left:155px;
+}
+#custom_phoria_Y_add{
+	top:67px;
+	left:155px;
+}
+#custom_phoria_Y_sub{
+	top:92px;
+	left:155px;
+}
+#custom_phoria_X_add{
+	top:67px;
+	left:85px;
+}
+#custom_phoria_X_sub{
+	top:92px;
+	left:85px;
+}
+
+#disableAxisCover{
+	position:absolute;
+	width:70px;
+	height:120px;
+	left:80px;
+	top:0px;
+	background-color:#FFF;
+	opacity:0.8;
+}
+
+
+
+#tool_prism_add{
+	top:0px;
+	left:55px;
+}
+#tool_prism_sub{
+	top:25px;
+	left:55px;
+}
+#toggle_target{
+	position:absolute;
+	top:10px;
+	left:10px;
+	width:58px;
+	height:44px;
+	background-image:url(images/targetOn.png);
+	background-repeat:no-repeat;
+	background-color:#FFF;
+	background-position:center center;
+	//border-radius:10px;
+}
+#toggle_occluder{
+	position:absolute;
+	top:10px;
+	left:78px;
+	width:58px;
+	height:44px;
+	background-image:url(images/occluderOn.png);
+	background-repeat:no-repeat;
+	background-color:#FFF;
+	background-position:center center;
+	//border-radius:10px;
+}
+#simult_toggle{
+	position:absolute;
+	top:10px;
+	left:138px;
+	width:42px;
+	height:44px;
+	background-image:url(images/simultOff.png);
+}
+#prismSetBG{
+	position:absolute;
+	top:10px;
+	left:183px;
+	width:150px;
+	height:25px;
+	background-color:#FFF;
+	padding:10px;
+	//border-radius:10px;
+}
+#input_diopters{
+	top:6px;
+	left:55px;
+}
+#toggle_prism{
+	position:absolute;
+	top:6px;
+	left:15px;
+	width:64px;
+	height:44px;
+	background-image:url(images/prismOn.png);
+	background-repeat:no-repeat;
+}
+#rotate_prism{
+	position:absolute;
+	top:4px;
+	left:123px;
+	width:64px;
+	height:44px;
+	background-image:url(images/prismRotateOn.png);
+	background-repeat:no-repeat;
+}
+#loadingCover{
+	position:absolute;
+	width:900px;
+	height:600px;
+	left:0px;
+	top:0px;
+	background-color:#666;
+}
+#loadingText{
+	position:absolute;
+	width:300px;
+	left:50%;
+	top:230px;
+	margin-left:-150px;
+	color:#FFF;
+	font-size:24px;
+	text-align:center;
+	//background-color:#FFDE01;
+}
+
+#panelHide{
+	position:absolute;
+	top:590px;
+	left:0px;
+	width:900px;
+	height:200px;
+	background-color:#333;
+	display:block;
+	//opacity:0.8;
+}
+
+#conditionContainer{
+	position:absolute;
+	top:10px;
+	left:10px;
+	width:135px;
+	height:120px;
+	color:#555;
+	font-size:16px;
+	font-weight:bold;
+	text-align:center;
+	background-color:#FFF;
+	//border-radius:10px;
+}
+#quizAnswerContainer{
+	position:absolute;
+	top:10px;
+	left:10px;
+	width:505px;
+	height:120px;
+	//color:#555;
+	//font-size:16px;
+	//font-weight:bold;
+	//text-align:center;
+	background-color:#FFF;
+	//border-radius:10px;
+}
+.spacer{
+	height:12px;
+}
+#tropiaContainer{
+	position:absolute;
+	top:15px;
+	left:0px;
+	width:135px;
+	height:40px;
+	//background-color:#F0F;
+}
+#dashes{
+	position:absolute;
+	top:52px;
+	left:0px;
+	width:135px;
+	height:10px;
+	//background-color:#F00;
+
+}
+#phoriaContainer{
+	position:absolute;
+	top:73px;
+	left:0px;
+	width:135px;
+	height:40px;
+	//background-color:#00F;
+
+}
+#quizDiopterColumn{
+	position:absolute;
+	top:0px;
+	left:15px;
+	width:70px;
+	height:140px;
+	//background:#FF0;
+}
+#quizEyeColumn{
+	position:absolute;
+	top:0px;
+	left:95px;
+	width:75px;
+	height:140px;
+	//background:#F0F;
+}
+#quizConditionColumn{
+	position:absolute;
+	top:0px;
+	left:175px;
+	width:195px;
+	height:140px;
+	//background:#0FF;
+}
+.quizTitle{
+	position:absolute;
+	top:3px;
+	left:0px;
+	color:#333;
+}
+.quizDiopInput{
+	//background-color:#0A0;
+}
+#quizDiopterInput1{
+	top:28px;
+	left:0px;
+}
+#quizDiopterInput2{
+	top:75px;
+	left:0px;
+}
+.quizButton{
+	position:absolute;
+	left:0px;
+	background-color:#FFF;
+	border-radius:3px;
+	height:29px;
+	color:#444;
+	padding:0px;
+	padding-left:8px;
+	padding-top:5px;
+	font-weight:bold;
+	//border-style:none;
+	//text-align: center;
+	border:solid 1px #333;
+	box-shadow:inset 0 0 1px 1px #BBB;
+}
+.quizEyeMenu{
+	position:absolute;
+	left:0px;
+	width:55px;
+	background-color:#FFF;
+	border-radius:3px;
+	height:108px;
+	color:#444;
+	padding:0px;
+	padding-left:8px;
+	//padding-top:5px;
+	font-weight:bold;
+	//border-style:none;
+	//text-align: center;
+	font-size:18px;
+	border:solid 1px #000;
+	box-shadow:inset 0 0 1px 1px #BBB;
+}
+.quizConditionMenu{
+	position:absolute;
+	left:0px;
+	width:173px;
+	background-color:#FFF;
+	border-radius:3px;
+	height:181px;
+	color:#444;
+	padding:0px;
+	padding-left:8px;
+	//padding-top:5px;
+	font-weight:bold;
+	border-style:none;
+	//text-align: center;
+	font-size:18px;
+	border:solid 1px #333;
+	box-shadow:inset 0 0 1px 1px #BBB;
+}
+#quizEyeField1{
+	width:55px;
+	top:28px;
+	//background-color:#FF0;
+	//color:#FFF;
+	color:#333;
+}
+#quizEyeField2{
+	width:55px;
+	top:75px;
+	//color:#FFF;
+	color:#333;
+}
+#quizEyeButton1{/* hit spot */
+	top:25px;
+	left:0px;
+	height:36px;
+}
+#quizEyeButton2{/* hit spot */
+	top:70px;
+	left:0px;
+	height:36px;
+}
+#quizConditionField1{
+	width:173px;
+	top:28px;
+	//color:#FFF;
+	color:#333;
+}
+#quizConditionField2{
+	width:173px;
+	top:75px;
+	//color:#FFF;
+	color:#333;
+}
+#quizConditionButton1{/* hit spot */
+	top:25px;
+	left:0px;
+	height:36px;
+	width:180px;
+}
+#quizConditionButton2{/* hit spot */
+	top:70px;
+	left:0px;
+	height:36px;
+	width:180px;
+}
+#quiz_arrowUp_diop1{
+	top:18px;
+	left:0px;
+}
+#quiz_arrowDown_diop1{
+	top:43px;
+	left:0px;
+}
+#quiz_arrowUp_diop2{
+	top:68px;
+	left:0px;
+}
+#quiz_arrowDown_diop2{
+	top:93px;
+	left:0px;
+}
+#quizEyeMenu1{
+	top:-46px;
+	//left:10px;
+	display:none;
+}
+#quizEyeMenu2{
+	top:1px;
+	//left:10px;
+	display:none;
+}
+#left{
+	position:absolute;
+	top:8px;
+	width:47px;
+	//background-color:#F00;
+}
+#right{
+	position:absolute;
+	top:44px;
+	width:47px;
+	//background-color:#F00;
+}
+#none2{
+	position:absolute;
+	top:80px;
+	width:47px;
+	padding-bottom:2px;
+	//background-color:#F00;
+}
+#quizLine{
+	position:absolute;
+	top:27px;
+	//color:#999;
+	font-size:14px;
+}
+#quizLine2{
+	position:absolute;
+	top:63px;
+	//color:#999;
+	font-size:14px;
+}
+#left1button{
+	top:-2px;
+	left:0px;
+	height:36px;
+	width:60px;
+}
+#right1button{
+	top:34px;
+	left:0px;
+	height:36px;
+	width:60px;
+}
+#none1button{
+	top:70px;
+	left:0px;
+	height:36px;
+	width:60px;
+}
+#left2button{
+	top:-2px;
+	left:0px;
+	height:36px;
+	width:60px;
+}
+#right2button{
+	top:34px;
+	left:0px;
+	height:36px;
+	width:60px;
+}
+#none2button{
+	top:70px;
+	left:0px;
+	height:36px;
+	width:60px;
+}
+#patch{
+	position:absolute;
+	top:35px;
+	left:-5px;
+	width:75px;
+	height:40px;
+	background-color:#666;
+	display:none;
+	opacity:0.5;
+}
+#quizConditionMenu1{
+	top:-119px;
+	//left:10px;
+	display:none;
+}
+#quizConditionMenu2{
+	top:-72px;
+	//left:10px;
+	display:none;
+}
+#eso{
+	position:absolute;
+	top:9px;
+	width:47px;
+	//background-color:#F00;
+}
+#exo{
+	position:absolute;
+	top:45px;
+	width:47px;
+	//background-color:#F00;
+}
+#hyper{
+	position:absolute;
+	top:81px;
+	width:47px;
+	//background-color:#F00;
+}
+#hypo{
+	position:absolute;
+	top:117px;
+	width:47px;
+	//background-color:#F00;
+}
+#none{
+	position:absolute;
+	top:153px;
+	width:47px;
+	//background-color:#F00;
+}
+#quizLineCond1{
+	position:absolute;
+	top:28px;
+	font-size:14px;
+}
+#quizLineCond2{
+	position:absolute;
+	top:64px;
+	font-size:14px;
+}
+#quizLineCond3{
+	position:absolute;
+	top:100px;
+	font-size:14px;
+}
+#quizLineCond4{
+	position:absolute;
+	top:136px;
+	font-size:14px;
+}
+#eso1button{
+	top:0px;
+	left:0px;
+	height:36px;
+	width:177px;
+}
+#exo1button{
+	top:36px;
+	left:0px;
+	height:36px;
+	width:177px;
+}
+#hyper1button{
+	top:72px;
+	left:0px;
+	height:36px;
+	width:177px;
+}
+#hypo1button{
+	top:108px;
+	left:0px;
+	height:36px;
+	width:177px;
+}
+#noneC1button{
+	top:144px;
+	left:0px;
+	height:36px;
+	width:177px;
+}
+#eso2button{
+	top:0px;
+	left:0px;
+	height:36px;
+	width:177px;
+}
+#exo2button{
+	top:36px;
+	left:0px;
+	height:36px;
+	width:177px;
+}
+#hyper2button{
+	top:72px;
+	left:0px;
+	height:36px;
+	width:177px;
+}
+#hypo2button{
+	top:108px;
+	left:0px;
+	height:36px;
+	width:177px;
+}
+#noneC2button{
+	top:144px;
+	left:0px;
+	height:36px;
+	width:177px;
+}
+
+
+#submitButton{
+	position:absolute;
+	right:10px;
+	bottom:9px;
+	height:36px;
+	width:125px;
+	color:#FFF;
+	font-size:20px;
+	text-align:center;
+	box-sizing:border-box;
+	padding-top:5px;
+	border-radius:5px;
+	background-color:#888;
+}
+#submitButton:hover{
+	background-color:#999;
+}
+#incompleteMessage{
+	position:absolute;
+	left:370px;
+	bottom:55px;
+	height:36px;
+	width:125px;
+	color:#C00;
+	font-size:14px;
+	//background-color:#CCC;
+	display:none;
+}
+#patientNumber{
+	position:absolute;
+	left:368px;
+	bottom:55px;
+	height:44px;
+	width:125px;
+	color:#333;
+	text-align:right;
+	font-size:24px;
+	//background-color:#CCC;
+	//border:solid 1px #333;
+}
+#patientOf{
+	font-size:18px;
+}
+#closeQuizMenu{
+	//top:-440px;
+	top:1000px;
+	left:-150px;
+	height:600px;
+	width:900px;
+}
+#panel4cover{
+	position:absolute;
+	width:365px;
+	height:140px;
+	top:440px;
+	left:150px;
+	border-radius:15px;
+	background-color:#666;
+	opacity:0;
+}
+#correctMark{
+	position:absolute;
+	top:90px;
+	left:45px;
+	width:40px;
+	height:40px;
+	background-image:url(images/correctMark.png);
+	display:none;
+}
+#incorrectMark{
+	position:absolute;
+	top:90px;
+	left:45px;
+	width:40px;
+	height:40px;
+	background-image:url(images/incorrectMark.png);
+	display:none;
+}
+.quizAnswerTitlePos{
+	top:0px;
+}
+/*
+@media screen and (max-height: 500px){
+	html, body {
+		zoom: 0.8;
+    	-moz-transform: scale(0.8);
+	}
+}
+*/
+/*
+@media screen and (max-height: 600px){
+#menuBG{
+	bottom:auto;
+	height:560px;
+}
+@media screen and (max-width: 900px){
+#menuBG{
+	right:auto;
+	width:860px;
+}
+}
+*/
+/*
+html,body {
+  min-width: 900px;
+  min-height: 600px;
+}
+*/
+/*
+@media screen and (max-width: 930px){
+#copyright{
+	margin:0px 0px 0px -170px;
+}
+}
+*/
+#screenDimensions{
+	display:none;
+}

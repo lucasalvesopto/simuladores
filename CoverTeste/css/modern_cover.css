@@ -1,0 +1,199 @@
+/* MODERN UI OVERRIDES - COVER TEST (Standardized - Clean Light Theme) */
+
+/* 1. Global Reset & Typography */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+html,
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+    background-color: #f9fafb !important;
+    /* Light Gray (Gray 50) */
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* Prevent scrollbars */
+}
+
+/* 2. Main Container Shadow & Polish */
+#mainContainer {
+    background-color: #ffffff !important;
+    /* White surface */
+    border-radius: 24px !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid #e5e7eb !important;
+    /* Gray 200 */
+}
+
+/* 3. Menu Standardization */
+#menuContainer {
+    background-color: transparent !important;
+    z-index: 3000;
+}
+
+#menuBG {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    /* White with slight transparency */
+    backdrop-filter: blur(8px);
+    /* Frosted glass effect */
+    border-radius: 24px !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+}
+
+#menuBorder {
+    display: none !important;
+}
+
+#moduleTitle {
+    /* filter: brightness(0) invert(1); REMOVED: Keep original title color (likely dark) for light bg */
+    opacity: 0.9 !important;
+    top: 30% !important;
+}
+
+/* 4. Menu Buttons (Standardized) */
+.menuButton {
+    height: 90px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+    transition: all 0.2s ease-in-out !important;
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+.menuButton:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+}
+
+#menuReviewButton {
+    /* Explore Mode relative to #menuTestButton */
+    background-color: #ffffff !important;
+    /* White card */
+    top: 55% !important;
+    left: 50% !important;
+    margin: 0 !important;
+    transform: translate(-105%, 0) !important;
+}
+
+#menuTestButton {
+    /* Test Mode */
+    background-color: #ffffff !important;
+    /* White card */
+    top: 55% !important;
+    left: 50% !important;
+    margin: 0 !important;
+    transform: translate(5%, 0) !important;
+}
+
+/* Button Text Styling - Colored for emphasis on white buttons */
+#menuReviewButtonTitle {
+    color: #2563eb !important;
+    /* Blue 600 */
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+}
+
+#menuTestButtonTitle {
+    color: #d97706 !important;
+    /* Amber 600 */
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+}
+
+#menuReviewButtonInfo,
+#menuTestButtonInfo {
+    color: #6b7280 !important;
+    /* Gray 500 */
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+
+/* 5. Sim UI Elements */
+.panelBG,
+.innerPanelBG {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
+    border-radius: 12px !important;
+}
+
+/* Fix text colors in panels since bg is now white */
+#patientQuizState,
+.quizTitle,
+div {
+    color: #1f2937;
+    /* Default to dark gray */
+}
+
+/* Specific text overrides if needed */
+#scoreTitle,
+#scoreNumber {
+    color: #111827 !important;
+}
+
+/* Credits / Footer */
+#copyright {
+    color: #6b7280 !important;
+    /* Gray 500 */
+    font-size: 13px !important;
+    bottom: 25px !important;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+/* Legacy credit button hidden/removed */
+#creditButtonNew {
+    display: none !important;
+}
+
+/* 6. Font Size Adjustments */
+.quizConditionMenu,
+.quizEyeMenu,
+.quizButton {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    color: #374151 !important;
+    /* Dark Gray text */
+}
+
+/* Adjust line spacing markers */
+[id^="quizLine"] {
+    font-size: 12px !important;
+    letter-spacing: -1px !important;
+    opacity: 0.3;
+    color: #9ca3af !important;
+}
+
+/* Modal / Tutorial Light Theme */
+#instructionBox {
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
+}
+
+.instruction-btn-primary {
+    background-color: #2563eb !important;
+    /* Blue 600 */
+    color: white !important;
+}
+
+.instruction-btn-secondary {
+    background-color: #f3f4f6 !important;
+    /* Gray 100 */
+    color: #4b5563 !important;
+    /* Gray 600 */
+}

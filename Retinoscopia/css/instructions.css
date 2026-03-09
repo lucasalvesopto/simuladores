@@ -1,0 +1,161 @@
+@charset "UTF-8";
+
+
+#instructionsAll {
+    display: none;
+}
+
+#instructionOverlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(17, 24, 39, 0.9);
+    /* Dark modern bg */
+    opacity: 1;
+    /* Reset to 1 for better control */
+    z-index: 4000;
+}
+
+.instructionImage {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    width: 607px;
+    height: 350px;
+    margin-left: -303px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+}
+
+.ii0 {
+    background-image: url(../images/instr0.png);
+    display: block;
+}
+
+.ii1 {
+    background-image: url(../images/instr1.png);
+}
+
+.ii2 {
+    background-image: url(../images/instr2.png);
+}
+
+.ii3 {
+    background-image: url(../images/instr3.png);
+}
+
+.ii4 {
+    background-image: url(../images/instr4.png);
+}
+
+.ii5 {
+    background-image: url(../images/instr5.png);
+}
+
+.ii6 {
+    background-image: url(../images/instr6.png);
+}
+
+.ii7 {
+    background-image: url(../images/instr7.png);
+}
+
+.ii8 {
+    background-image: url(../images/instr8.png);
+}
+
+.ii9 {
+    background-image: url(../images/instr9.png);
+}
+
+#instructionText {
+    position: absolute;
+    top: 420px;
+    left: 50%;
+    width: 600px;
+    height: auto;
+    color: #f3f4f6;
+    font-family: "Inter", sans-serif;
+    font-size: 14px;
+    /* Reduced size */
+    line-height: 1.5;
+    margin-left: -300px;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+#instructionExit {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    width: auto;
+    min-width: 80px;
+    height: 48px;
+    /* Fixed height for consistency */
+    padding: 0 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #111827;
+    text-align: center;
+    background-color: #ffffff;
+    border-radius: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Inter", sans-serif;
+    text-transform: uppercase;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.1s;
+}
+
+#instructionExit:hover {
+    transform: scale(1.05);
+    background-color: #f3f4f6;
+}
+
+#instructionSkip {
+    position: absolute;
+    bottom: 45px;
+    right: 140px;
+    /* Positioned left of Next button */
+    font-size: 13px;
+    color: #9ca3af;
+    text-decoration: none;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+}
+
+#instructionSkip:hover {
+    color: white;
+    text-decoration: double;
+}
+
+.copyright {
+    display: none;
+}
+
+/* Z-Index Fixes */
+#instructionOverlay {
+    z-index: 4000 !important;
+}
+
+.instructionImage,
+#instructionText,
+#instructionExit,
+#instructionSkip {
+    z-index: 4001 !important;
+    /* Must be higher than overlay */
+}
+
+
+/* Start Hidden Override */
+#instructionExit,
+#instructionSkip {
+    display: none;
+}

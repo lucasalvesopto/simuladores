@@ -1,0 +1,223 @@
+﻿@charset "UTF-8";
+
+#menuContainer {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    z-index: 3000;
+    font-family: "Inter", sans-serif;
+}
+
+#moduleTitle {
+    position: absolute;
+    top: 80px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 42px;
+    font-weight: 800;
+    color: #111827;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+}
+
+#menuBG {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    overflow: hidden;
+}
+
+.menuCircle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 700px;
+    width: 700px;
+    border-radius: 350px;
+    background-color: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+#menuCircle1 { margin: -130px 0px 0px -100px; }
+#menuCircle2 { margin: 200px 0px 0px -700px; }
+
+.startButton {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 80px 0 0 0;
+    width: auto;
+    min-width: 160px;
+    height: 56px;
+    color: #FFF;
+    font-size: 18px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    border-radius: 28px;
+    background-color: #4F46E5;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.4);
+    transition: all 0.2s;
+}
+
+.startButton:hover {
+    background-color: #4338ca;
+    transform: translate(-50%, -52%);
+    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.5);
+}
+
+#creditBoxContainer {
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: #4b5563;
+}
+
+.creditTitle {
+    font-size: 14px;
+    margin: 5px 0;
+    font-weight: 500;
+}
+
+.menuCopyright {
+    position: absolute;
+    bottom: 15px;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+
+/* Fix for duplicate start buttons */
+.startButton:empty {
+    display: none !important;
+}
+
+/* Smoother hover without position shift */
+.startButton:hover {
+    transform: translate(-50%, -50%) scale(1.05) !important; /* Keep centered, just scale */
+    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.5);
+}
+
+
+/* Modern Branding Background */
+#menuBG {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #93c5fd 100%) !important;
+    /* Deep blue to light blue gradient for a medical/professional feel */
+}
+
+/* Ensure text readability on new background */
+.menuCopyright, #creditBoxContainer, .creditTitle {
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+}
+
+#moduleTitle {
+    color: white !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4) !important;
+}
+
+
+/* PREMIUM REDESIGN - OVERRIDE */
+
+/* 1. Background - Slate/Neutral Dark */
+#menuBG {
+    background: #0f172a !important; /* Deep Slate/Black */
+    /* Optional: subtle radial gradient for depth */
+    background: radial-gradient(circle at top right, #1e293b 0%, #0f172a 100%) !important;
+}
+
+/* 2. Typography - Elegant & Clean */
+#moduleTitle {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 300 !important; /* Lighter weight for elegance */
+    letter-spacing: 2px !important;
+    text-transform: uppercase !important;
+    color: #e2e8f0 !important; /* Off-white */
+    text-shadow: none !important; /* Remove heavy shadow */
+}
+
+/* 3. Start Button - Sophisticated */
+.startButton {
+    background-color: #10b981 !important; /* Emerald Green - Clean Medical feel */
+    background: linear-gradient(145deg, #10b981 0%, #059669 100%) !important;
+    color: white !important;
+    font-weight: 500 !important;
+    letter-spacing: 1px !important;
+    border-radius: 8px !important; /* Slightly less rounded, more modern */
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    transition: all 0.3s ease !important;
+}
+
+.startButton:hover {
+    transform: translate(-50%, -50%) translateY(-2px) !important;
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4) !important;
+    filter: brightness(1.1);
+}
+
+/* 4. Credits - High Contrast/Clean */
+.menuCopyright, .creditTitle {
+    color: #94a3b8 !important; /* Slate 400 */
+    font-weight: 400 !important;
+    letter-spacing: 0.5px !important;
+}
+
+.creditTitle[style*='color: #4F46E5'] {
+    color: #38bdf8 !important; /* Sky blue for adaptation credit */
+}
+
+
+/* ULTRA-CLEAN LIGHT THEME - OVERRIDE */
+
+/* 1. Background - Light & Airy */
+#menuBG {
+    background: #f8fafc !important; /* Slate 50 */
+    background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%) !important; /* White to soft grey */
+}
+
+/* 2. Typography - Dark Contrast */
+#moduleTitle {
+    color: #1e293b !important; /* Slate 800 */
+    text-shadow: none !important;
+    font-weight: 600 !important;
+}
+
+/* 3. Start Button - Clean & Sharp */
+.startButton {
+    background: #2563eb !important; /* Royal Blue - Professional */
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3) !important;
+    color: white !important;
+}
+
+.startButton:hover {
+    background: #1d4ed8 !important; /* Darker Blue */
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4) !important;
+}
+
+/* 4. Credits - Darker Grey */
+.menuCopyright, .creditTitle {
+    color: #64748b !important; /* Slate 500 */
+    text-shadow: none !important;
+}
+
+.creditTitle[style*='color: #4F46E5'] {
+    color: #0ea5e9 !important; /* Sky 500 */
+}
+

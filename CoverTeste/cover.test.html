@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<!-- saved from url=(0106)https://d39c9drjvlsyvf.cloudfront.net/resources/Pediatrics_Center/Strabismus-Simulator-migrated/index.html -->
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+	<title>Simulador de Estrabismo (Cover Test)</title>
+
+	<link href="./css/style.css" rel="stylesheet" type="text/css">
+	<link href="./css/modern_cover.css" rel="stylesheet" type="text/css">
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+
+	<script type="text/javascript" src="./js/jquery-2.1.4.min.js.baixados" defer=""></script>
+	<script type="text/javascript" src="./js/Script.js.baixados" defer=""></script>
+	<!-- Fonte Inter para modernização -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+	<a href="../index.html"
+		style="position: absolute; top: 20px; left: 20px; z-index: 9999; text-decoration: none; font-family: 'Inter', sans-serif; background: #4F46E5; color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 8px; cursor: pointer; transition: transform 0.2s, background 0.2s;"
+		onmouseover="this.style.background='#4338CA'; this.style.transform='scale(1.05)';"
+		onmouseout="this.style.background='#4F46E5'; this.style.transform='scale(1)';">
+		<span style="font-size: 1.2em;">&larr;</span> Voltar ao Menu
+	</a>
+
+
+
+
+	<!--<div id="bodyContainer">-->
+
+
+
+
+	<!--<div id="androidLine"></div>-->
+
+
+	<!--
+<div id="imageDisplayer">
+</div>
+-->
+	<!--<div id="loadCover">   
+    <div id="loadBarContainer">
+    	<div id="loadBar"></div>
+    	</div>
+</div>-->
+
+
+
+
+
+
+
+	<div id="screenDimensions"></div>
+
+
+
+	<div id="mainContainer" style="transform: none; top: 50%; left: 50%; margin: -300px 0px 0px -450px;">
+
+
+		<canvas id="canvas1" width="900" height="430"></canvas>
+		<canvas id="canvas2" width="900" height="430"></canvas>
+		<canvas id="canvas3" width="900" height="430"></canvas>
+		<canvas id="canvas4" width="900" height="430"></canvas>
+
+
+		<div id="testBox">
+			<div class="column">
+				<ul>
+					<li id="list0">eyeOS.num.y.o = 0</li>
+					<li id="list1">eyeOD.num.y.o = 0</li>
+					<li id="list2">-</li>
+					<li id="list3">-</li>
+					<li id="list4">-</li>
+					<li id="list5">-</li>
+					<li id="list6">-</li>
+				</ul>
+			</div>
+
+			<div class="column">
+				<ul>
+					<li id="list7">-</li>
+					<li id="list8">-</li>
+					<li id="list9">-</li>
+					<li id="list10">-</li>
+					<li id="list11">-</li>
+					<li id="list12">-</li>
+					<li id="list13">-</li>
+				</ul>
+			</div>
+
+			<div class="column">
+				<ul>
+					<li id="list14">-</li>
+					<li id="list15">-</li>
+					<li id="list16">-</li>
+					<li id="list17">-</li>
+					<li id="list18">-</li>
+					<li id="list19">-</li>
+					<li id="list20">-</li>
+				</ul>
+			</div>
+		</div>
+
+
+
+
+		<div id="panel1" class="panelBG" style="top: 440px;">
+			<!--<div id="toggle_hidden"></div>-->
+			<!--<div id="patientChange"></div>-->
+			<div id="patientArrows"></div>
+			<div id="patientQuizState">1</div>
+			<div id="patientQuizMark"></div>
+
+
+			<div id="correctMark"></div>
+			<div id="incorrectMark"></div>
+			<!--<div id="toggle_dominant"></div>-->
+			<!--<div id="dom_OS">OE</div>-->
+			<!--<div id="crossOut"></div>-->
+		</div>
+
+		<div id="panel2" class="panelBG" style="top: 610px;">
+
+			<div id="domBG" class="innerPanelBG">
+				<div id="dom_OD" style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);">OD</div>
+				<div id="dom_OS" style="background-color: rgb(204, 204, 204); color: rgb(221, 221, 221);">OE</div>
+				<div class="arrow" id="toggle_dominant"></div>
+			</div>
+
+			<div id="inputBG" class="innerPanelBG">
+				<div class="letters" id="letterX">X</div>
+				<div class="letters" id="letterY">Y</div>
+				<div class="letters" id="tropia">Tropia</div>
+				<div class="letters" id="phoria">Foria</div>
+
+				<div class="inputField" id="inputFieldX">0</div>
+				<div class="arrow" id="custom_tropia_X_add"></div>
+				<div class="arrow" id="custom_tropia_X_sub"></div>
+
+				<div class="inputField" id="inputFieldY">0</div>
+				<div class="arrow" id="custom_tropia_Y_add"></div>
+				<div class="arrow" id="custom_tropia_Y_sub"></div>
+
+				<div class="inputField" id="inputFieldX_h">0</div>
+				<div class="arrow" id="custom_phoria_X_add"></div>
+				<div class="arrow" id="custom_phoria_X_sub"></div>
+
+				<div class="inputField" id="inputFieldY_h">-25</div>
+				<div class="arrow" id="custom_phoria_Y_add"></div>
+				<div class="arrow" id="custom_phoria_Y_sub"></div>
+
+				<div id="disableAxisCover" style="left: 83px;"></div>
+			</div>
+		</div>
+
+		<div id="panel3" class="panelBG">
+			<div id="toggle_target" class="innerPanelBG"
+				style="background-image: url(&quot;./images/targetOn.png&quot;); background-color: rgb(255, 255, 255);">
+			</div>
+			<div id="toggle_occluder" class="innerPanelBG"
+				style="background-image: url(&quot;./images/occluderOn.png&quot;); background-color: rgb(255, 255, 255);">
+			</div>
+			<div id="simult_toggle" style="background-image: url(&quot;./images/simultOff.png&quot;);"></div>
+			<div id="prismSetBG" class="innerPanelBG" style="background-color: rgb(255, 255, 255);">
+				<div class="inputField" id="input_diopters"
+					style="color: rgb(0, 0, 0); border-color: rgb(102, 102, 102); background-color: rgb(255, 255, 255); box-shadow: rgb(187, 187, 187) 0px 0px 1px 1px inset; background-image: url(&quot;./images/arrows.png&quot;);">
+					20</div>
+				<div id="toggle_prism" style="background-image: url(&quot;./images/prismOn.png&quot;);"></div>
+				<div id="rotate_prism" style="background-image: url(&quot;./images/prismRotateOn.png&quot;);"></div>
+				<div class="arrow" id="tool_prism_add"></div>
+				<div class="arrow" id="tool_prism_sub"></div>
+			</div>
+		</div>
+
+
+
+
+		<div id="panel4" class="panelBG" style="top: 440px;">
+			<div id="quizAnswerContainer" class="innerPanelBG">
+				<!----------------------------------------------------------------->
+				<div class="arrow" id="closeQuizMenu"></div>
+				<!----------------------------------------------------------------->
+				<div id="quizDiopterColumn">
+					<div class="quizTitle" id="quizDiopterTitle">Δ</div>
+					<div class="inputField quizDiopInput" id="quizDiopterInput1"
+						style="background-image: url(&quot;./images/arrows.png&quot;); border-color: rgb(102, 102, 102); box-shadow: rgb(187, 187, 187) 0px 0px 1px 1px inset; background-color: rgb(255, 255, 255);">
+						0</div>
+					<div class="inputField quizDiopInput" id="quizDiopterInput2"
+						style="background-image: url(&quot;./images/arrows.png&quot;); border-color: rgb(102, 102, 102); box-shadow: rgb(187, 187, 187) 0px 0px 1px 1px inset; background-color: rgb(255, 255, 255);">
+						0</div>
+					<div class="arrow" id="quiz_arrowUp_diop1" style="top: 18px;"></div>
+					<div class="arrow" id="quiz_arrowDown_diop1" style="top: 43px;"></div>
+					<div class="arrow" id="quiz_arrowUp_diop2" style="top: 68px;"></div>
+					<div class="arrow" id="quiz_arrowDown_diop2" style="top: 93px;"></div>
+				</div>
+				<!----------------------------------------------------------------->
+				<div id="quizEyeColumn">
+					<div class="quizTitle" id="quizEyeTitle">Olho</div>
+					<div class="quizButton" id="quizEyeField1"
+						style="border-color: rgb(102, 102, 102); box-shadow: rgb(187, 187, 187) 0px 0px 1px 1px inset; background-color: rgb(255, 255, 255);">
+						N/A</div>
+					<div class="quizButton" id="quizEyeField2"
+						style="border-color: rgb(102, 102, 102); box-shadow: rgb(187, 187, 187) 0px 0px 1px 1px inset; background-color: rgb(255, 255, 255);">
+						N/A</div>
+					<div class="arrow" id="quizEyeButton1" style="top: 25px;"></div>
+					<div class="arrow" id="quizEyeButton2" style="top: 70px;"></div>
+
+
+					<div class="quizEyeMenu" id="quizEyeMenu1">
+						<div id="left">Esquerdo</div>
+						<div id="quizLine">- - - - -</div>
+						<div id="right">Direito</div>
+						<div id="quizLine2">- - - - -</div>
+						<div id="none2">N/A</div>
+						<div class="arrow" id="left1button"></div>
+						<div class="arrow" id="right1button"></div>
+						<div class="arrow" id="none1button"></div>
+					</div>
+
+					<div class="quizEyeMenu" id="quizEyeMenu2">
+						<div id="left">Esquerdo</div>
+						<div id="quizLine">- - - - -</div>
+						<div id="right">Direito</div>
+						<div id="quizLine2">- - - - -</div>
+						<div id="none2">N/A</div>
+						<div class="arrow" id="left2button"></div>
+						<div class="arrow" id="right2button"></div>
+						<div class="arrow" id="none2button"></div>
+					</div>
+				</div>
+
+				<!----------------------------------------------------------------->
+				<div id="quizConditionColumn">
+
+					<div class="quizTitle" id="quizConditionTitle">Condição</div>
+					<div class="quizButton" id="quizConditionField1"
+						style="border-color: rgb(102, 102, 102); box-shadow: rgb(187, 187, 187) 0px 0px 1px 1px inset; background-color: rgb(255, 255, 255);">
+						N/A</div>
+					<div class="quizButton" id="quizConditionField2"
+						style="border-color: rgb(102, 102, 102); box-shadow: rgb(187, 187, 187) 0px 0px 1px 1px inset; background-color: rgb(255, 255, 255);">
+						N/A</div>
+					<div class="arrow" id="quizConditionButton1" style="top: 25px;"></div>
+					<div class="arrow" id="quizConditionButton2" style="top: 70px;"></div>
+
+
+					<div class="quizConditionMenu" id="quizConditionMenu1">
+						<div id="eso">Endotropia</div>
+						<div id="quizLineCond1">- - - - - - - - - - - - - - - - -</div>
+						<div id="exo">Exotropia</div>
+						<div id="quizLineCond2">- - - - - - - - - - - - - - - - -</div>
+						<div id="hyper">Hipertropia</div>
+						<div id="quizLineCond3">- - - - - - - - - - - - - - - - -</div>
+						<div id="hypo">Hipotropia</div>
+						<div id="quizLineCond4">- - - - - - - - - - - - - - - - -</div>
+						<div id="none">N/A</div>
+						<div class="arrow" id="eso1button"></div>
+						<div class="arrow" id="exo1button"></div>
+						<div class="arrow" id="hyper1button"></div>
+						<div class="arrow" id="hypo1button"></div>
+						<div class="arrow" id="noneC1button"></div>
+					</div>
+
+					<div class="quizConditionMenu" id="quizConditionMenu2">
+						<div id="eso">Esoforia</div>
+						<div id="quizLineCond1">- - - - - - - - - - - - - - - - -</div>
+						<div id="exo">Exoforia</div>
+						<div id="quizLineCond2">- - - - - - - - - - - - - - - - -</div>
+						<div id="hyper">Hiperforia</div>
+						<div id="quizLineCond3">- - - - - - - - - - - - - - - - -</div>
+						<div id="hypo">Hipoforia</div>
+						<div id="quizLineCond4">- - - - - - - - - - - - - - - - -</div>
+						<div id="none">N/A</div>
+						<div class="arrow" id="eso2button"></div>
+						<div class="arrow" id="exo2button"></div>
+						<div class="arrow" id="hyper2button"></div>
+						<div class="arrow" id="hypo2button"></div>
+						<div class="arrow" id="noneC2button"></div>
+					</div>
+
+				</div>
+
+
+
+				<div id="incompleteMessage">Selecione pelo menos uma condição.</div>
+				<div id="submitButton" style="display: block;">Enviar</div>
+				<div id="diagnose" style="display: none;">Enviar</div>
+				<div id="patientNumber"><span id="patientN">1</span><span id="patientOf"> de </span>3</div>
+				<div id="patientNext" style="display: none;">
+					<div id="patientNextImage"></div>
+				</div>
+				<div id="patientPrev" style="display: none;">
+					<div id="patientPrevImage"></div>
+				</div>
+
+			</div><!--quizAnswerContainer end-->
+
+		</div><!--panel 4 end-->
+
+
+
+
+		<div id="panel5" class="panelBG" style="top: 610px; left: 370px;">
+			<div id="conditionContainer" class="innerPanelBG">
+				<div id="tropiaContainer">
+					<div id="diopterID_tropia"> </div>
+					<!--<div id="dominant_tropia">Left</div>-->
+					<div id="conditionID_tropia"> </div>
+				</div>
+				<div id="dashes">- - - - - - - - - - -</div>
+				<div id="phoriaContainer">
+					<div id="diopterID_phoria">25Δ Left</div>
+					<!--<div id="dominant_phoria">Right</div>-->
+					<div id="conditionID_phoria">Hypophoria</div>
+				</div>
+			</div>
+		</div>
+
+
+
+		<div id="homeButton">
+			<div id="homeButtonImage"></div>
+		</div>
+		<div id="modeText" style="color: rgb(242, 199, 92);">Modo Teste</div>
+		<div id="helpButton"></div>
+		<div id="testResetButton" style="display: none;">Tentar<br>Novamente</div>
+
+
+
+		<div id="scoreBG" style="display: none;">
+			<div id="scoreTitle">Pontos:</div>
+			<div id="scoreNumber">0/3</div>
+			<!--<div class="closeWindow" id="closeScore"></div>-->
+			<div class="continueBT" id="continueScore">Revisar Respostas</div>
+		</div>
+
+		<!--
+<div id="loadingCover">
+<div id="loadingText">Carregando</div>
+</div>
+-->
+
+		<div id="panelHide"></div>
+
+
+		<div id="loadPatientsCover">Gerando novos pacientes...</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		<div id="instructContainer" style="display: none;">
+
+			<div id="screenshotContainer" style="background-image: url(&quot;./images/overlaySimBG2.jpg&quot;);"></div>
+			<div id="overlayContainer" style="background-image: url(&quot;./images/overlay1.png&quot;);">
+
+				<div id="instructStart" style="display: block;">Instruções</div>
+				<div id="instructSkip" style="display: block;">Iniciar Simulador</div>
+				<div id="instructNext" style="display: none;">Próximo ►</div>
+				<div id="instructVideo" style="display: none;">Video Tutorial</div>
+
+			</div>
+
+			<div id="instructExit"></div>
+
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		<div id="menuContainer" style="display: block;">
+
+			<div id="menuBorder"></div>
+			<div id="menuBG"></div>
+
+			<div id="moduleTitle"
+				style="background: none !important; color: #1f2937 !important; font-size: 48px; font-weight: 800; text-align: center; width: 100%; top: 25%;">
+				Cover Test</div>
+			<!--<div id="moduleTitle"></div>-->
+
+			<div class="menuButton" id="menuReviewButton">
+				<div id="menuReviewButtonTitle">Modo Explorar</div>
+				<div id="menuReviewButtonInfo">Aprenda como vários desvios<br>aparecem no cover test</div>
+			</div>
+
+			<div class="menuButton" id="menuTestButton">
+				<div id="menuTestButtonTitle">Modo Teste</div>
+				<div id="menuTestButtonInfo">Avalie estrabismo em<br>três pacientes aleatórios</div>
+			</div>
+
+			<div id="creditContainer" style="display: none;">
+				<div id="creditBoxContainer">
+					<div id="creditTitle">Créditos</div>
+					<div class="creditBox" id="creditBox1">
+						<p class="creditBold">Faruk H. Örge, MD</p>
+						<div class="creditRegular">
+							<p>William R. and Margaret E. Althans Professor and Director</p>
+							<p>Center for Pediatric Ophthalmology and Adult Strabismus</p>
+							<p>University Hospitals Eye Institute</p>
+							<p>Department of Ophthalmology and Visual Sciences</p>
+							<p>Case Western Reserve University School of Medicine</p>
+						</div>
+					</div>
+				</div>
+				<div id="startButton">Voltar</div>
+			</div>
+
+			<!--<div class="menuSubButton" id="creditButtonNew" style="display: block;">Créditos</div>-->
+
+			<div id="copyright" style="text-align: center; width: 100%; bottom: 20px;">
+				Adaptado por Professor Lucas Alves<br>
+				<span style="font-size: 11px; opacity: 0.8;">Faculdade Fasup</span>
+			</div>
+
+		</div><!-- END: menuContainer-->
+
+
+
+
+	</div><!--mainContainer-->
+
+
+
+	<!--</div>end: body container-->
+
+
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>
