@@ -91,6 +91,8 @@ function init(){
 	var symb = "";
 	var degr = "";
 	var currentPreset = 0;
+	var retOpacity;
+	var streakOpacity;
 	
 	
 	
@@ -997,12 +999,12 @@ function init(){
 		eyeContW = dim[0][0];
 		eyeContH = dim[0][1];
 		
-		retOpacity = 0.8;
-		var retColor;
-			
 		retFade();
 		
-		document.getElementById("retina").style.opacity = retOpacity - (Math.abs((a/data.perc)-margin-eyeContW/2) + Math.abs((b/data.perc)-margin-eyeContH/2))*0.005;
+		var distFactor = (Math.abs((a/data.perc)-margin-eyeContW/2) + Math.abs((b/data.perc)-margin-eyeContH/2));
+
+		document.getElementById("retina").style.opacity = retOpacity - distFactor * 0.005;
+		document.getElementById("reflectionContainer").style.opacity = streakOpacity - distFactor * 0.01;
 			
 		}//END: if dragging
 		}
@@ -1133,51 +1135,32 @@ function init(){
 	
 	function retFade(){
 		
-		refW = vars.aa[11][1]/pixelMultiplier;
+		var error = vars.aa[11][1];
 		
-		/*
-		if (refW===0){
-				retOpacity = 0.8;
-			}
-			if (refW < 0 || refW > 0){
-				retOpacity = 0.4;
-
-			}
-			if (refW < -3 || refW > 3){
-				retOpacity = 0;
-			}
-			*/
-		
-		var widthZeroOpacity = 6;
 		var maxOpacity = 0.75;
 		var correctedOpacity = 0.8;
 		
-		var widthZeroOpacityStreak = 20;
-		var widthFullOpacityStreak = 1;
-		var correctedOpacityStreak = 1;
+		// Se não estiver arrastando, escondemos o reflexo completamente
+		// Isso evita que a neutralização seja vista apenas mudando as lentes sem mover o retinoscópio
+		if (!dragging) {
+			document.getElementById("retina").style.opacity = 0;
+			document.getElementById("reflectionContainer").style.opacity = 0;
+			return;
+		}
+
+		// Opacidade da retina (brilho de fundo) - máximo na neutralização
+		retOpacity = maxOpacity / (1 + Math.abs(error) * 0.5);
 		
-		retOpacity = maxOpacity-Math.abs(refW)/widthZeroOpacity*maxOpacity;
-		
-		var streakOpacity;
-			
-		if (refW===0){
+		if (Math.abs(error) < 0.1){
 			retOpacity = correctedOpacity;
 		}
 		
-		//console.log(retOpacity);
-		
-		//document.getElementById("retina").style.opacity = retOpacity;
 		document.getElementById("retina").style.opacity = retOpacity;
 		
-		streakOpacity = 1;
-		
-		if (Math.abs(refW) > widthFullOpacityStreak){
-			streakOpacity = correctedOpacityStreak-Math.abs(refW)/(widthZeroOpacityStreak-widthFullOpacityStreak);
-		}
+		// Opacidade da faixa (streak) - mais nítida perto da neutralização
+		streakOpacity = 1.0 / (1 + Math.abs(error) * 0.2);
 		
 		document.getElementById("reflectionContainer").style.opacity = streakOpacity;
-		
-		//console.log();
 	}
 	
 	
@@ -1365,10 +1348,10 @@ function init(){
 	//////////////////////////////////////////////////////////
 	function displayReflectInfo(){
 		var mot;
-		if (vars.aa[11][1] === 0){mot="neutral"}
-		else if (vars.aa[11][1] > 0){mot="against"}
-		else if (vars.aa[11][1] < 0){mot="with"}
-		document.getElementById("refMotion").innerHTML = "motion: "+mot;
+		if (Math.abs(vars.aa[11][1]) < 0.05){mot="neutro"}
+		else if (vars.aa[11][1] > 0){mot="contra"}
+		else if (vars.aa[11][1] < 0){mot="a favor"}
+		document.getElementById("refMotion").innerHTML = "Movimento: "+mot;
 	}
 	
 	
@@ -1624,124 +1607,45 @@ function init(){
 			PC=vars.aa[1][1],//patient cylinder
 			PA=vars.aa[2][1],//patient angle
 			WD=vars.aa[3][1],//working distance
-			SM=vars.aa[7][1]*-1,//minus sphere
-			SP=vars.aa[4][1],//plus sphere
-			LA=vars.aa[10][1],//light angle
-			CM=vars.aa[8][1]*-1,//minus cylinder
-		   CMA=vars.aa[9][1],//minus cylinder angle
-			CP=vars.aa[5][1],//plus cylinder
-		   CPA=vars.aa[6][1],//plus cylinder angle
-		    RW=vars.aa[11][1];//reflex width
+			LA=vars.aa[10][1];//light angle
 
+		var S_lens, C_lens, A_lens;
 		
-		
-		var PALA;
-		var CPALA;
-		var CMALA;
-		var RW;
-
-		
-		
-		/////////////////////////////////////////////
 		if (!plusMode){
-			
-			
-			if (PA-LA < 0){
-				PALA = 180 + PA-LA;
-			} else {
-				PALA = PA-LA;
-			}
-
-			if (PALA > 90){
-				PALA = 180-PALA;
-			}
-
-
-			if (CPA-LA < 0){
-				CPALA = 180 + CPA-LA;
-			} else {
-				CPALA = CPA-LA;
-			}
-
-			if (CPALA > 90){
-				CPALA = 180-CPALA;
-			}
-
-
-			RW =
-			((PS-SP)*-2) -
-			(WD*2) + 
-			((PALA-CPALA)/45) *
-			PC+(CP-PC) *
-			(2-(CPALA-0)/45);
-	
-			
-		/////////////////////////////////////////////
-		} else if (plusMode){
-	
-			
-			if (PA-LA < 0){
-				PALA = 180 + PA-LA;
-			} else {
-				PALA = PA-LA;
-			}
-
-			if (PALA > 90){
-				PALA = 180-PALA;
-			}
-
-
-			if (CMA-LA < 0){
-				CMALA = 180 + CMA-LA;
-			} else {
-				CMALA = CMA-LA;
-			}
-
-			if (CMALA > 90){
-				CMALA = 180-CMALA;
-			}
-
-
-			RW =
-			((PS-SM)*-2) -
-			(WD*2) + 
-			((PALA-CMALA)/45) *
-			PC+(CM-PC) *
-			(2-(CMALA-0)/45);
-	
+			// Container 0: Lentes Positivas
+			S_lens = vars.aa[4][1];
+			C_lens = vars.aa[5][1];
+			A_lens = vars.aa[6][1];
+		} else {
+			// Container 1: Lentes Negativas
+			S_lens = vars.aa[7][1] * -1;
+			C_lens = vars.aa[8][1] * -1;
+			A_lens = vars.aa[9][1];
 		}
-		/////////////////////////////////////////////		
 		
+		// Cálculo da potência no meridiano de movimento (perpendicular à fenda)
+		// Se a fenda está em LA, o movimento é em LA+90.
+		var p_rad = (LA + 90 - PA) * Math.PI / 180;
+		var V_patient = PS + PC * Math.pow(Math.sin(p_rad), 2);
 		
-		//console.log(SP, SM, " --- ", CP, CM, " --- ", CPA, CMA);
+		var l_rad = (LA + 90 - A_lens) * Math.PI / 180;
+		var V_lens = S_lens + C_lens * Math.pow(Math.sin(l_rad), 2);
 		
+		// Erro refrativo para a retinoscopia: V_lens - V_patient - WD
+		// (Neutralização quando V_lens = V_patient + WD)
+		var TotalError = V_lens - V_patient - WD;
 		
-		RW = RW * pixelMultiplier;
+		vars.aa[11][1] = TotalError;
 		
-		
-		
-		
-		
-		vars.aa[11][1] = RW;
-		//vars.aa[11][1] = "</br>" + result.toFixed(2) + " * " + pixelMultiplier + " = </br>" + RW.toFixed(2);
-
-		// width = 
-		//           -120-
-		//90 = 120
-		//0/180 = 60
-		
-		//console.log("--> "+RW);
-		//NEW STUFF:
-		//var angleDifference = vars.aa[2][1] - vars.aa[6][1];
-		//var segNum = Math.abs(angleDifference/5);
-		
-		//var reflexSegmentWidth = vars.aa[11][1]/18;
-		//vars.aa[11][1] = Math.abs(vars.aa[11][1]-(reflexSegmentWidth*segNum));
+		// Largura visual: inversamente proporcional ao valor absoluto do erro
+		// Erro 0 = Largura máxima (~180px com pixelMultiplier 30)
+		var visualWidthFactor = 6 / (1 + Math.abs(TotalError) * 2);
+		var visualWidth = visualWidthFactor * pixelMultiplier;
 		
 		var newBeamHeight = 600;
 		document.getElementById("reflection").style.top = (newBeamHeight - beamRefCont)/2*-1+"px";
-		document.getElementById("reflection").style.left = (beamRefCont - Math.abs(RW))/2+"px";
-		document.getElementById("reflection").style.width = Math.abs(RW)+"px";
+		document.getElementById("reflection").style.left = (beamRefCont - visualWidth)/2+"px";
+		document.getElementById("reflection").style.width = visualWidth+"px";
 		document.getElementById("reflection").style.height = newBeamHeight+"px";
 	}
 	
@@ -1762,8 +1666,8 @@ function init(){
 		calcFormula();
 		resizeReflection();
 		displayReflectInfo();
-		document.getElementById("refWidth").innerHTML = "width: "+vars.aa[11][1].toFixed(2);
-		document.getElementById("refAngle").innerHTML = "angle: "+vars.aa[12][1];
+		document.getElementById("refWidth").innerHTML = "Erro (D): "+vars.aa[11][1].toFixed(2);
+		document.getElementById("refAngle").innerHTML = "Ângulo: "+vars.aa[12][1];
 		//document.getElementById("startCover").style.display = "none";
 		
 		document.getElementById("checkData").innerHTML = "";
