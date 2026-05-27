@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <title>Virtual Refractor</title>
+    <link rel="shortcut icon" href="img/favicon.ico" />
+    <link rel="stylesheet" href="css/webgl.css" />
+    <script src="js/webgl-progress.js"></script>
+    <script src="unity/webgl/UnityLoader.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script>
+        var gameInstance = UnityLoader.instantiate("gameContainer", "unity/webgl/vro.json", {onProgress: UnityProgress});
+
+        function updateUnitySize() {
+            var height = Math.max($(window).height() * 0.98, 700);
+            var width = (960 / 700) * height;
+
+            $("#gameContainer").height(height);
+            $("#gameContainer").width(width);
+        }
+
+        $(window).resize(updateUnitySize);
+        $(function () {
+            updateUnitySize()
+        });
+
+    </script>
+    <style type="text/css">
+        body {
+            font-family: Helvetica, Verdana, Arial, sans-serif;
+            background-color: black;
+            color: black;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="webgl-content">
+        <div id="gameContainer" style="width: 960px; height: 600px; margin: 0 auto;"></div>
+    </div>
+</body></html>

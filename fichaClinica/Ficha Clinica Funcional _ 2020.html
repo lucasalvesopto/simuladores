@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Ficha Clínica Funcional - FASUP 2020</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Arial&display=swap');
+        body { font-family: 'Arial', sans-serif; font-size: 11px; color: black; }
+        .table-oficina { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        .table-oficina th, .table-oficina td { border: 1px solid black; padding: 2px 4px; }
+        .bg-gray-header { background-color: #D9D9D9; font-weight: bold; text-transform: uppercase; font-size: 10px; }
+        input, textarea { border: none; outline: none; background: transparent; width: 100%; font-family: inherit; font-size: 11px; }
+        .section-box { border: 1px solid black; padding: 4px; margin-bottom: 8px; }
+        .label-bold { font-weight: bold; }
+        @media print { .no-print { display: none; } }
+    </style>
+</head>
+<body class="bg-gray-100 p-2">
+
+    <div class="max-w-[1000px] mx-auto bg-white p-6 shadow-xl border border-gray-400">
+        
+        <div class="flex justify-between items-center border-b-2 border-black mb-4 pb-2">
+            <div class="text-2xl font-bold italic">FASUP</div>
+            <div class="text-right">
+                <h1 class="text-sm font-bold uppercase text-center">Ficha Clínica Funcional _ 2020</h1>
+            </div>
+        </div>
+
+        <table class="table-oficina">
+            <tr>
+                <td colspan="2">Data: <input type="text" class="inline w-32" value="/ / 2026"></td>
+                <td colspan="2" class="label-bold">Sexo: ( )Feminino ( )Masculino</td>
+            </tr>
+            <tr><td colspan="4">Nome: <input type="text"></td></tr>
+            <tr>
+                <td>RG: <input type="text"></td>
+                <td colspan="3">Data de Nascimento: <input type="text"></td>
+            </tr>
+            <tr>
+                <td>Idade: <input type="text"></td>
+                <td colspan="3">Origem: <input type="text"></td>
+            </tr>
+            <tr>
+                <td>Profissão: <input type="text"></td>
+                <td colspan="3">Passatempo: <input type="text"></td>
+            </tr>
+            <tr>
+                <td>Endereço: <input type="text"></td>
+                <td colspan="3">Telefone: <input type="text"></td>
+            </tr>
+        </table>
+
+        <div class="flex flex-wrap lg:flex-nowrap gap-4">
+            <div class="w-full lg:w-1/2">
+                <div class="bg-gray-header p-1 border border-black mb-1">2. Anamnese</div>
+                <div class="section-box h-[180px]">
+                    <p class="label-bold">MC:</p>
+                    <textarea class="h-16"></textarea>
+                    <p class="label-bold mt-2">Tempo de queixa:</p>
+                    <input type="text">
+                    <p class="label-bold mt-2 text-[9px]">Antecedentes Pessoais/Familiares GERAIS:</p>
+                    <table class="w-full text-[9px] mt-1 border border-black">
+                        <tr><td class="border border-black">Vasculares</td><td class="border border-black"><input type="text"></td></tr>
+                        <tr><td class="border border-black">Diabetes</td><td class="border border-black"><input type="text"></td></tr>
+                        <tr><td class="border border-black">Neuro/Imunes</td><td class="border border-black"><input type="text"></td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="w-full lg:w-1/2">
+                <div class="bg-gray-header p-1 border border-black mb-1">3. Lensometria</div>
+                <table class="table-oficina text-center">
+                    <tr class="bg-gray-header text-[9px]">
+                        <th>OLHO</th><th>ESF</th><th>CIL</th><th>EIXO</th><th>ADD</th><th>PRISMA</th>
+                    </tr>
+                    <tr><td class="bg-gray-header text-[9px]">OD VL</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                    <tr><td class="bg-gray-header text-[9px]">OE VL</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                    <tr><td class="bg-gray-header text-[9px]">OD VP</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                    <tr><td class="bg-gray-header text-[9px]">OE VP</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                </table>
+                <div class="section-box text-[9px]">
+                    <p class="label-bold">Obs:</p>
+                    <input type="text">
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap lg:flex-nowrap gap-4 mt-2">
+            <div class="w-full lg:w-3/5">
+                <div class="bg-gray-header p-1 border border-black mb-1">4. Acuidade Visual</div>
+                <table class="table-oficina text-center">
+                    <tr class="bg-gray-header text-[9px]">
+                        <th>VL</th><th>SC</th><th>PH</th><th>CC</th><th>VP</th><th>SC</th><th>CC</th>
+                    </tr>
+                    <tr><td class="bg-gray-header">OD</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td class="bg-gray-header">OD</td><td><input type="text"></td><td><input type="text"></td></tr>
+                    <tr><td class="bg-gray-header">OE</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td class="bg-gray-header">OE</td><td><input type="text"></td><td><input type="text"></td></tr>
+                    <tr><td class="bg-gray-header">AO</td><td><input type="text"></td><td>-</td><td><input type="text"></td><td class="bg-gray-header">AO</td><td><input type="text"></td><td><input type="text"></td></tr>
+                </table>
+            </div>
+
+            <div class="w-full lg:w-2/5">
+                <div class="bg-gray-header p-1 border border-black mb-1">5. Motilidade Ocular</div>
+                <table class="table-oficina">
+                    <tr><td class="bg-gray-header text-[9px]">Kappa</td><td>OD: <input type="text" class="w-12 inline"></td><td>OE: <input type="text" class="w-12 inline"></td></tr>
+                    <tr><td colspan="3" class="text-[9px]"><span class="label-bold">Hirschberg:</span> <input type="text" class="inline w-32"></td></tr>
+                    <tr><td class="bg-gray-header text-[9px]">Ducções</td><td>OD: <input type="text"></td><td>OE: <input type="text"></td></tr>
+                    <tr><td colspan="3" class="text-[9px]"><span class="label-bold">Versões:</span> <input type="text" class="inline w-32"></td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-2">
+            <div class="bg-gray-header p-1 border border-black mb-1">Avaliação Dinâmica Pupilomotora</div>
+            <table class="table-oficina text-center">
+                <tr class="bg-gray-header text-[9px]">
+                    <th>Olho</th><th>Fotomotor</th><th>Consensual</th><th>Acomodativo</th>
+                </tr>
+                <tr><td>OD</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                <tr><td>OE</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                <tr><td colspan="4" class="text-left font-bold italic">Balanço: PIRRLANMG <input type="text" class="inline w-2/3"></td></tr>
+            </table>
+        </div>
+
+        <div class="flex flex-wrap lg:flex-nowrap gap-4 mt-2">
+            <div class="w-full lg:w-1/2">
+                <div class="bg-gray-header p-1 border border-black mb-1">15. Rx Final</div>
+                <table class="table-oficina text-center">
+                    <tr class="bg-gray-header text-[9px]"><th>OLHO</th><th>ESF</th><th>CIL</th><th>EIXO</th><th>AV</th></tr>
+                    <tr><td class="bg-gray-header">OD</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                    <tr><td class="bg-gray-header">OE</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                </table>
+                <div class="flex border border-black p-1 text-[9px] gap-4">
+                    <div>ADD: <input type="text" class="w-12 border-b border-black"></div>
+                    <div>DP: <input type="text" class="w-12 border-b border-black"></div>
+                </div>
+            </div>
+
+            <div class="w-full lg:w-1/2">
+                <div class="bg-gray-header p-1 border border-black mb-1">16. Diagnóstico / Conduta</div>
+                <div class="section-box text-[9px] h-[85px]">
+                    <p><span class="label-bold italic">Diagnóstico:</span> <input type="text"></p>
+                    <p><span class="label-bold italic">Conduta:</span> <textarea class="h-8"></textarea></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-2 gap-20">
+            <div class="text-center border-t border-black pt-1 text-[9px]">Assinatura e Carimbo Acadêmico</div>
+            <div class="text-center border-t border-black pt-1 text-[9px]">Assinatura Supervisor</div>
+        </div>
+
+        <div class="no-print mt-6 flex justify-center gap-4">
+            <button onclick="window.print()" class="bg-blue-700 text-white px-6 py-2 rounded font-bold uppercase text-xs">Imprimir Prontuário</button>
+            <button type="submit" class="bg-green-700 text-white px-6 py-2 rounded font-bold uppercase text-xs">Simular Caso</button>
+        </div>
+    </div>
+
+</body>
+</html>
