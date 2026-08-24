@@ -1,0 +1,401 @@
+/* =========================================
+   CONFIGURAÇÕES GERAIS DA PÁGINA
+========================================= */
+:root {
+    --bg-color: #0f172a; /* Azul escuro/Slate */
+    --panel-bg: rgba(255, 255, 255, 0.05);
+    --panel-border: rgba(255, 255, 255, 0.1);
+    --accent-orange: #ea580c;
+    --panel-header-bg: #1e6075;
+    --text-color: #f8fafc;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.simulator-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* =========================================
+   LENTE VERDE (VISUALIZAÇÃO DO AVALIADOR)
+========================================= */
+.eyepiece-view {
+    position: relative;
+    /* Tamanho do fundo verde (lente). Se quiser maior ou menor, altere estes dois valores (ex: 60vmin, 85vmin) */
+    width: 75vmin; 
+    height: 75vmin;
+    background-color: #1a3d16; /* Tom de verde escuro igual ao da imagem */
+    border-radius: 50%; /* Faz o formato ser um círculo perfeito */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Corta e esconde tudo o que sair de dentro do círculo verde */
+}
+
+/* =========================================
+   CRUZ PRETA CENTRAL (FOCO DA OCULAR)
+========================================= */
+.crosshair-vertical {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2px; /* Espessura da linha vertical da cruz preta */
+    height: 40px; /* Tamanho da linha vertical da cruz preta */
+    background-color: #000; /* Cor da cruz (preta) */
+    transition: filter 0.1s; /* Suaviza o efeito de embaçamento (blur) */
+}
+
+.crosshair-horizontal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px; /* Tamanho da linha horizontal da cruz preta */
+    height: 2px; /* Espessura da linha horizontal da cruz preta */
+    background-color: #000;
+    transition: filter 0.1s;
+}
+
+/* =========================================
+   MIRAS (CÍRCULOS COM SINAIS DE + E -)
+========================================= */
+
+/* Estilo geral do círculo das miras */
+.mire-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* Tamanho de cada círculo das miras. Se quiser maior, aumente estes dois (ex: 15vmin) */
+    width: 10vmin; 
+    height: 10vmin;
+    /* Cor e espessura da linha do círculo da mira. #a8cfa8 é um verde claro/menta */
+    border: 2px solid #a8cfa8; 
+    border-radius: 50%;
+}
+
+/* Posições individuais de cada mira */
+.mire-central {
+    /* Fica exatamente no centro, não precisa mudar nada */
+}
+
+.mire-vertical {
+    /* Move a mira vertical para cima. Para afastar mais do centro, aumente o 12vmin (ex: 15vmin) */
+    top: calc(50% - 12vmin);
+}
+
+.mire-horizontal {
+    /* Move a mira horizontal para a esquerda. Para afastar mais, aumente o 12vmin (ex: 15vmin) */
+    left: calc(50% - 12vmin);
+}
+
+/* =========================================
+   SINAIS DAS MIRAS (MENOS E MAIS)
+========================================= */
+
+.mire-sign {
+    position: absolute;
+    background-color: transparent;
+}
+
+/* Estilo do sinal de MENOS (-) */
+.mire-sign.minus {
+    width: 8px; /* Tamanho do traço de menos */
+    height: 2px; /* Espessura do traço de menos */
+    background-color: #a8cfa8; /* Mesma cor do círculo */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.mire-sign.minus.top {
+    top: -8px; /* O quão longe o menos de cima fica da borda do círculo */
+}
+
+.mire-sign.minus.bottom {
+    bottom: -8px; /* O quão longe o menos de baixo fica da borda do círculo */
+}
+
+/* Estilo base do sinal de MAIS (+) */
+.mire-sign.plus {
+    width: 8px; /* Tamanho geral ocupado pelo sinal de mais */
+    height: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.mire-sign.plus::before, .mire-sign.plus::after {
+    content: '';
+    position: absolute;
+    background-color: #a8cfa8; /* Mesma cor do círculo */
+}
+
+/* Traço horizontal do sinal de MAIS */
+.mire-sign.plus::before {
+    width: 8px; /* Tamanho */
+    height: 2px; /* Espessura */
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+}
+
+/* Traço vertical do sinal de MAIS */
+.mire-sign.plus::after {
+    width: 2px; /* Espessura */
+    height: 8px; /* Tamanho */
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+}
+
+.mire-sign.plus.left {
+    left: -12px; /* O quão longe o mais da esquerda fica da borda do círculo */
+}
+
+.mire-sign.plus.right {
+    right: -12px; /* O quão longe o mais da direita fica da borda do círculo */
+}
+
+/* =========================================
+   NOVO LAYOUT GRID
+========================================= */
+.app-layout {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto auto;
+    gap: 30px;
+    align-items: center;
+    width: 95vw;
+    height: 95vh;
+}
+
+.col-ocular { grid-column: 1; display: flex; align-items: flex-start; margin-top: 50px; }
+.col-vert { grid-column: 2; display: flex; justify-content: center; height: 100%; align-items: center; }
+.col-center {
+    grid-column: 3; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: space-between;
+    height: 100%;
+}
+.col-horiz { grid-column: 4; display: flex; justify-content: center; height: 100%; align-items: center; }
+.col-knobs { 
+    grid-column: 5; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 40px; 
+    margin-top: 50px;
+}
+
+/* =========================================
+   TAMBORES (EIXO, VERTICAL, HORIZONTAL)
+========================================= */
+.drum-container {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+}
+
+.drum-container.vertical { width: 115px; height: 70vh; }
+.drum-container.horizontal { width: 100%; height: 70px; }
+.col-center .drum-container { width: 450px; height: auto; }
+
+.drum-title {
+    background: var(--panel-header-bg);
+    color: white;
+    text-align: center;
+    padding: 8px 5px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.drum-window {
+    position: relative;
+    flex-grow: 1;
+    overflow: hidden;
+    background: white;
+    color: black;
+    box-shadow: inset 0 20px 20px -10px rgba(0,0,0,0.6), inset 0 -20px 20px -10px rgba(0,0,0,0.6);
+}
+
+.horizontal-window {
+    box-shadow: inset 20px 0 20px -10px rgba(0,0,0,0.6), inset -20px 0 20px -10px rgba(0,0,0,0.6);
+}
+
+/* TRUQUE MÁGICO: Sliders nativos invisíveis sobrepondo as janelas */
+.hidden-slider, .hidden-slider-vert, .hidden-slider-horiz {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0; /* Totalmente transparente */
+    cursor: pointer;
+    z-index: 10;
+}
+.hidden-slider-vert {
+    -webkit-appearance: slider-vertical;
+    writing-mode: bt-lr;
+}
+
+/* A faixa de números que vai se mover via JS */
+.drum-track {
+    position: absolute;
+    display: flex;
+}
+.drum-container.vertical .drum-track {
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    top: 50%;
+    margin-top: -15px; /* Metade dos 30px do item para cravar no meio exato */
+}
+.drum-container.horizontal .drum-track {
+    flex-direction: row;
+    height: 100%;
+    align-items: center;
+    left: 50%;
+    margin-left: -25px; /* Metade dos 50px do item */
+}
+
+.drum-tick {
+    font-family: monospace;
+    font-size: 1.1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.drum-container.vertical .drum-tick { height: 30px; }
+.drum-container.horizontal .drum-tick { width: 50px; }
+
+/* Setas Indicadoras */
+.drum-pointer {
+    position: absolute;
+    width: 0; height: 0; z-index: 5;
+}
+.left-pointer {
+    top: 50%; left: 0; transform: translateY(-50%);
+    border-top: 10px solid transparent; border-bottom: 10px solid transparent; border-left: 15px solid var(--accent-orange);
+}
+.right-pointer {
+    top: 50%; right: 0; transform: translateY(-50%);
+    border-top: 10px solid transparent; border-bottom: 10px solid transparent; border-right: 15px solid var(--accent-orange);
+}
+.bottom-pointer {
+    bottom: 0; left: 50%; transform: translateX(-50%);
+    border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 15px solid var(--accent-orange);
+}
+
+/* =========================================
+   BOTÕES GIRATÓRIOS (KNOBS)
+========================================= */
+.knob-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.knob {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1e6075, #113845);
+    border: 3px solid #0f2d38;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.6), inset 0 2px 5px rgba(255,255,255,0.3);
+    position: relative;
+}
+
+.knob-indicator {
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 16px;
+    background-color: var(--accent-orange);
+    border-radius: 3px;
+    box-shadow: 0 0 5px rgba(234, 88, 12, 0.8);
+}
+
+.knob-label {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #cbd5e1;
+}
+.knob-label span { color: white; font-size: 1rem; }
+.knob-container .hidden-slider {
+    width: 120px; /* Slider largo por cima do knob para ser fácil girar */
+    left: -25px;
+}
+
+/* Esquerda/Direita (Lateral Slider) */
+.slider-window {
+    background: #0b1f28; /* Fundo escuro igual os knobs */
+    height: 35px;
+    position: relative;
+    border-radius: 4px;
+}
+.slider-thumb {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background: radial-gradient(circle, var(--accent-orange), #a33b05);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 8px rgba(0,0,0,0.8), inset 0 2px 4px rgba(255,255,255,0.4);
+    pointer-events: none; /* A barra invisível por cima que recebe os cliques */
+}
+
+/* =========================================
+   PAINEL DO PROFESSOR
+========================================= */
+.teacher-panel {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+}
+.teacher-panel button {
+    background: var(--accent-orange);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    transition: background 0.2s, transform 0.1s;
+}
+.teacher-panel button:hover {
+    background: #c24102;
+    transform: scale(1.05);
+}
+.teacher-panel button:active {
+    transform: scale(0.95);
+}

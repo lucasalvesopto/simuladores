@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Ceratometria</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Painel do Professor -->
+    <div class="teacher-panel">
+        <button id="btn-gerar-paciente">Gerar Paciente (Aleatório)</button>
+    </div>
+
+    <div class="app-layout">
+        <!-- Coluna 1: Ocular -->
+        <div class="col-ocular">
+            <div class="knob-container">
+                <div class="knob" id="knob-ocular"><div class="knob-indicator"></div></div>
+                <div class="knob-label">Ocular<br><span id="ocular-value">0.00</span> D</div>
+                <input type="range" class="hidden-slider" id="ocular-range" min="-10" max="10" value="0" step="0.25">
+            </div>
+        </div>
+
+        <!-- Coluna 2: Tambor Vertical -->
+        <div class="col-vert">
+            <div class="drum-container vertical">
+                <div class="drum-title">Tambor<br>vertical</div>
+                <div class="drum-window">
+                    <div class="drum-track" id="track-vert"></div>
+                    <div class="drum-pointer left-pointer"></div>
+                    <input type="range" class="hidden-slider-vert" id="vertical-range" min="36" max="52" value="44" step="0.25">
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna 3: Centro (Eixo, Lente, Lateral) -->
+        <div class="col-center">
+            <!-- Eixo no topo -->
+            <div class="drum-container horizontal">
+                <div class="drum-title">eixo</div>
+                <div class="drum-window horizontal-window">
+                    <div class="drum-track horiz-track" id="track-eixo"></div>
+                    <div class="drum-pointer bottom-pointer"></div>
+                    <input type="range" class="hidden-slider-horiz" id="eixo-range" min="-90" max="90" value="0" step="1">
+                </div>
+            </div>
+
+            <!-- Lente Central -->
+            <div class="simulator-container">
+                <div class="eyepiece-view">
+                    <!-- Cruz central -->
+                    <div class="crosshair-vertical"></div>
+                    <div class="crosshair-horizontal"></div>
+                    
+                    <!-- Grupo de Miras Móveis (Joystick) -->
+                    <div class="mires-group" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0;">
+                        <!-- Mira Horizontal -->
+                        <div class="mire-circle mire-horizontal">
+                            <div class="mire-sign minus top"></div>
+                            <div class="mire-sign minus bottom"></div>
+                            <div class="mire-sign plus left"></div>
+                            <div class="mire-sign plus right"></div>
+                        </div>
+
+                        <!-- Mira Vertical -->
+                        <div class="mire-circle mire-vertical">
+                            <div class="mire-sign minus top"></div>
+                            <div class="mire-sign minus bottom"></div>
+                            <div class="mire-sign plus left"></div>
+                            <div class="mire-sign plus right"></div>
+                        </div>
+
+                        <!-- Mira Central -->
+                        <div class="mire-circle mire-central">
+                            <div class="mire-sign minus top"></div>
+                            <div class="mire-sign minus bottom"></div>
+                            <div class="mire-sign plus left"></div>
+                            <div class="mire-sign plus right"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lateral na base -->
+            <div class="drum-container horizontal">
+                <div class="drum-title">Esquerda e direita</div>
+                <div class="drum-window horizontal-window slider-window">
+                    <div class="slider-thumb" id="thumb-lateral"></div>
+                    <input type="range" class="hidden-slider-horiz" id="lateral-range" min="-10" max="10" value="0" step="0.1">
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna 4: Tambor Horizontal -->
+        <div class="col-horiz">
+            <div class="drum-container vertical">
+                <div class="drum-title">Tambor<br>horizontal</div>
+                <div class="drum-window">
+                    <div class="drum-track" id="track-horiz"></div>
+                    <div class="drum-pointer right-pointer"></div>
+                    <input type="range" class="hidden-slider-vert" id="horizontal-range" min="36" max="52" value="44" step="0.25">
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna 5: Altura, Queixeira, Foco -->
+        <div class="col-knobs">
+            <div class="knob-container">
+                <div class="knob" id="knob-altura"><div class="knob-indicator"></div></div>
+                <div class="knob-label">altura<br><span id="altura-value">5.0</span> D</div>
+                <input type="range" class="hidden-slider" id="altura-range" min="1" max="10" value="5" step="0.1">
+            </div>
+            <div class="knob-container">
+                <div class="knob" id="knob-queixeira"><div class="knob-indicator"></div></div>
+                <div class="knob-label">queixeira<br><span id="queixeira-value">5.0</span> D</div>
+                <input type="range" class="hidden-slider" id="queixeira-range" min="1" max="10" value="5" step="0.1">
+            </div>
+            <div class="knob-container">
+                <div class="knob" id="knob-foco"><div class="knob-indicator"></div></div>
+                <div class="knob-label">foco<br><span id="foco-value">5.0</span> D</div>
+                <input type="range" class="hidden-slider" id="foco-range" min="0" max="10" value="5" step="0.1">
+            </div>
+        </div>
+    </div>
+    
+    <script src="ui.js"></script>
+    <script src="comandos.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
