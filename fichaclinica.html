@@ -1,0 +1,1993 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha Clínica do Paciente</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .section-card:target {
+            animation: highlightSecao 2.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes highlightSecao {
+            0% { box-shadow: 0 0 0 3px #38BDF8, 0 12px 35px rgba(56, 189, 248, 0.4); transform: scale(1.01); }
+            100% { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); transform: scale(1); }
+        }
+
+        :root {
+            --primary: #4F46E5;
+            --primary-light: #818CF8;
+            --secondary: #06B6D4;
+            --emerald: #10B981;
+            --amber: #F59E0B;
+            --rose: #F43F5E;
+            --bg-dark: #0F172A;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --border-card: rgba(255, 255, 255, 0.1);
+            --text-light: #F8FAFC;
+            --text-muted: #94A3B8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1E1B4B 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Blobs de fundo */
+        .blob {
+            position: fixed;
+            filter: blur(90px);
+            z-index: -1;
+            opacity: 0.45;
+            pointer-events: none;
+        }
+
+        .blob-1 {
+            background: var(--primary);
+            width: 450px;
+            height: 450px;
+            border-radius: 50%;
+            top: -100px;
+            left: -100px;
+        }
+
+        .blob-2 {
+            background: var(--emerald);
+            width: 380px;
+            height: 380px;
+            border-radius: 50%;
+            bottom: -50px;
+            right: -50px;
+        }
+
+        .header-nav {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .btn-nav {
+            background: rgba(30, 41, 59, 0.8);
+            color: white;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid var(--border-card);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-nav:hover {
+            background: rgba(79, 70, 229, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border-card);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            padding: 2.5rem;
+        }
+
+        header.page-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #818CF8, #34D399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        /* Grade de Seções da Ficha */
+        .sections-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .section-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 18px;
+            padding: 1.8rem;
+            position: relative;
+            transition: border-color 0.3s;
+        }
+
+        .section-card:hover {
+            border-color: rgba(129, 140, 248, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 0.8rem;
+        }
+
+        .section-title-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .section-title-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+            flex-wrap: wrap;
+        }
+
+        .section-title .badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .section-title .badge a.badge-link {
+            color: inherit;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .section-title .badge:hover {
+            filter: brightness(1.25);
+            transform: translateY(-1px);
+        }
+
+        .btn-header-save {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-header-save:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-header-save:active {
+            transform: translateY(0);
+        }
+
+        .btn-header-sim {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(56, 189, 248, 0.12);
+            color: #38BDF8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 8px;
+            padding: 6px 13px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-header-sim:hover {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: #38BDF8;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+        }
+
+        .btn-header-sim:active {
+            transform: translateY(0);
+        }
+
+        .section-anamnese .section-title {
+            color: #38BDF8;
+        }
+
+        .section-cera .section-title {
+            color: #EC4899;
+        }
+
+        .section-rx .section-title {
+            color: #FBBF24;
+        }
+
+        .section-acc .section-title {
+            color: #34D399;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #CBD5E1;
+        }
+
+        .form-group label span.hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: normal;
+        }
+
+        /* Tabelas de Acuidade Visual */
+        .table-av-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .table-av-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .table-av-wrapper {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 1.2rem;
+        }
+
+        .table-av-wrapper h4 {
+            font-size: 0.95rem;
+            color: #38bdf8;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .table-av {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .table-av th,
+        .table-av td {
+            padding: 8px 6px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .table-av th {
+            color: #94a3b8;
+            font-weight: 700;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table-av td.row-label {
+            font-weight: 700;
+            color: #fbbf24;
+            text-align: left;
+            width: 45px;
+        }
+
+        .table-av input {
+            width: 100%;
+            max-width: 85px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 6px 8px;
+            color: #f8fafc;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-align: center;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+
+        .table-av input:focus {
+            outline: none;
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
+
+        .input-control {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .input-control:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+            background: rgba(15, 23, 42, 1);
+        }
+
+        .highlight-input {
+            border-color: rgba(245, 158, 11, 0.5);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .info-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1.2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #34D399;
+        }
+
+        .actions-bar {
+            margin-top: 2.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+        }
+
+        .btn-action {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+        }
+
+        .btn-random {
+            background: linear-gradient(135deg, #6366F1, #4F46E5);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-random:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-sim {
+            background: rgba(255, 255, 255, 0.08);
+            color: #CBD5E1;
+            border: 1px solid var(--border-card);
+            text-decoration: none;
+        }
+
+        .btn-sim:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(16, 185, 129, 0.95);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            .actions-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        /* =========================================================================
+           PRONTUÁRIO OFICIAL DE MEO: DUCÇÕES & VERSÕES (GRADE CLÍNICA ALINHADA)
+           ========================================================================= */
+        .prontuario-meo-container {
+            margin-top: 1.5rem;
+            background: rgba(15, 23, 42, 0.75);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+            font-family: inherit;
+        }
+
+        /* 1. Linha da Tabela de Ducções */
+        .meo-grid-duccoes {
+            display: grid;
+            grid-template-columns: 140px 1fr 1fr;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(30, 41, 59, 0.85);
+        }
+
+        .meo-cel-duccoes-th {
+            padding: 10px 16px;
+            font-weight: 900;
+            font-size: 0.95rem;
+            color: #F8FAFC;
+            letter-spacing: 1px;
+            border-right: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+        }
+
+        .meo-cel-olho {
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            border-right: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .meo-cel-olho:last-child {
+            border-right: none;
+        }
+
+        .meo-label-olho {
+            font-weight: 900;
+            font-size: 1.05rem;
+            color: #F8FAFC;
+            letter-spacing: 0.5px;
+        }
+
+        .spec-letra-grupo {
+            display: inline-flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        /* Letras S P E C clicáveis de prontuário */
+        .spec-letra {
+            font-size: 1.25rem;
+            font-weight: 800;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s ease;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #38BDF8;
+            position: relative;
+            display: inline-block;
+        }
+
+        .spec-letra:hover {
+            background: rgba(56, 189, 248, 0.18);
+            transform: scale(1.15);
+        }
+
+        .spec-letra.cortada, .spec-letra.cortado {
+            color: #64748B;
+            text-decoration: line-through;
+            text-decoration-color: #EF4444;
+            text-decoration-thickness: 3px;
+            opacity: 0.5;
+        }
+
+        .spec-letra.cortada:hover, .spec-letra.cortado:hover {
+            opacity: 0.85;
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        /* 2. Linha das Versões (Duplo H Perfeitamente Centralizado sob OD e OE) */
+        .meo-grid-versoes {
+            display: grid;
+            grid-template-columns: 140px 1fr 1fr;
+            align-items: center;
+            padding: 20px 0;
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .meo-label-versoes {
+            padding-left: 16px;
+            font-weight: 900;
+            font-size: 1.05rem;
+            color: #F8FAFC;
+            align-self: start;
+            padding-top: 8px;
+        }
+
+        .meo-col-h {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Diagrama H Fiel à Imagem Médica */
+        .h-diagrama-canvas {
+            position: relative;
+            width: 220px;
+            height: 140px;
+        }
+
+        .h-svg-tracos {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* Caixinhas Quadradas Fiel à Imagem Médica */
+        .h-quadradinho-input {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background: #0F172A;
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            border-radius: 4px;
+            color: #F8FAFC;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 800;
+            text-align: center;
+            transform: translate(-50%, -50%);
+            outline: none;
+            transition: all 0.2s ease;
+            z-index: 2;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .h-quadradinho-input:focus {
+            border-color: #38BDF8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+            background: #1E293B;
+            transform: translate(-50%, -50%) scale(1.15);
+        }
+
+        .h-quadradinho-input.hiper {
+            border-color: #38BDF8;
+            color: #38BDF8;
+            background: rgba(56, 189, 248, 0.18);
+        }
+
+        .h-quadradinho-input.hipo {
+            border-color: #F87171;
+            color: #F87171;
+            background: rgba(239, 68, 68, 0.18);
+        }
+
+        /* Coordenadas precisas do Duplo H (canvas 220x140) */
+        .h-pos-sup-esq { left: 70px; top: 18px; }
+        .h-pos-sup-dir { left: 150px; top: 18px; }
+        .h-pos-lat-esq { left: 18px; top: 70px; }
+        .h-pos-lat-dir { left: 202px; top: 70px; }
+        .h-pos-inf-esq { left: 70px; top: 122px; }
+        .h-pos-inf-dir { left: 150px; top: 122px; }
+
+        @media (max-width: 680px) {
+            .meo-grid-duccoes, .meo-grid-versoes {
+                grid-template-columns: 1fr;
+            }
+            .meo-cel-duccoes-th, .meo-cel-olho {
+                border-right: none;
+                border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="header-nav">
+        <a href="index.html" class="btn-nav">
+            ⬅ Menu Principal
+        </a>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn-nav" onclick="abrirModalFichaClinica(event)"
+                style="border-color: rgba(56, 189, 248, 0.6); background: rgba(56, 189, 248, 0.2); color: #38BDF8; font-weight: 700; cursor: pointer;">
+                📑 Menu de Seções (21)
+            </button>
+            <a href="Simulador-AcuidadeVisual/acuidade.html" class="btn-nav"
+                style="border-color: rgba(56, 189, 248, 0.4);">
+                👁️ 4. Acuidade
+            </a>
+            <a href="Simulador-MEO/MEO.html" class="btn-nav"
+                style="border-color: rgba(56, 189, 248, 0.4); background: rgba(14, 165, 233, 0.2);">
+                🎯 5. MEO
+            </a>
+            <a href="Simulador-Ceratometria/ceratometria.html" class="btn-nav"
+                style="border-color: rgba(236, 72, 153, 0.4);">
+                🔬 8. Ceratometria
+            </a>
+            <a href="Simulador-Retinoscopia/retinoscopia.html" class="btn-nav"
+                style="border-color: rgba(14, 165, 233, 0.4);">
+                🔦 10. Retinoscopia
+            </a>
+            <a href="Simulador-AmplitudeAcomodacao/amplitude.html" class="btn-nav">
+                📏 11. Amplitude
+            </a>
+            <a href="Simulador-FlexibilidadeAcomodativa/flexibilidade.html" class="btn-nav"
+                style="border-color: rgba(16, 185, 129, 0.4);">
+                🔄 11. Flexibilidade
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="page-header">
+            <h1>📋 Ficha Clínica do Paciente</h1>
+            <p class="subtitle">Gerencie os parâmetros vitais e resultados dos exames para todos os simuladores
+                clínicos.</p>
+        </header>
+
+        <form id="form-ficha" class="sections-grid" onsubmit="salvarFicha(event)">
+            <!-- Seção 1 e 2: Anamnese e Dados Gerais -->
+            <div class="section-card section-anamnese" id="secao-anamnese">
+                <div class="section-title">
+                    <span>👤 1 e 2. Identificação e Anamnese</span>
+                    <span class="badge">Dados Gerais</span>
+                    <div class="section-title-actions">
+                        <button type="button" class="btn-header-save" onclick="salvarFicha(event)" title="Salvar dados da Ficha Clínica">💾 Salvar</button>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="idade">Idade do Paciente (anos) <span class="hint">(Altera a voz, acomodação e
+                                demanda)</span></label>
+                        <input type="number" id="idade" class="input-control highlight-input" min="5" max="90" step="1"
+                            required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção 4: Acuidade Visual -->
+            <div class="section-card" id="secao-av" style="border-left: 4px solid #38BDF8;">
+                <div class="section-title">
+                    <span style="color: #38BDF8;">👁️ 4. Acuidade Visual (AV)</span>
+                    <span class="badge" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8;">
+                        <a href="Simulador-AcuidadeVisual/acuidade.html" class="badge-link" title="Abrir Simulador de Acuidade Visual">👁️ Abrir Acuidade ➔</a>
+                    </span>
+                    <div class="section-title-actions">
+                        <a href="Simulador-AcuidadeVisual/acuidade.html" class="btn-header-sim" title="Ir para o Simulador de Acuidade Visual">👁️ Ir ao Teste ➔</a>
+                        <button type="button" class="btn-header-save" onclick="salvarFicha(event)" title="Salvar dados da Ficha Clínica">💾 Salvar</button>
+                    </div>
+                </div>
+
+                <div class="table-av-container">
+                    <!-- Visão de Longe -->
+                    <div class="table-av-wrapper">
+                        <h4>🔭 Visão de Longe (VL - 6m / Snellen)</h4>
+                        <table class="table-av">
+                            <thead>
+                                <tr>
+                                    <th>Olho</th>
+                                    <th>SC (s/ corr.)</th>
+                                    <th>PH (Pinhole)</th>
+                                    <th>CC (c/ corr.)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="row-label">OD</td>
+                                    <td><input type="text" id="avLongeScOD" placeholder="20/40"></td>
+                                    <td><input type="text" id="avLongePhOD" placeholder="20/20"></td>
+                                    <td><input type="text" id="avLongeCcOD" placeholder="20/20"></td>
+                                </tr>
+                                <tr>
+                                    <td class="row-label">OE</td>
+                                    <td><input type="text" id="avLongeScOE" placeholder="20/50"></td>
+                                    <td><input type="text" id="avLongePhOE" placeholder="20/20"></td>
+                                    <td><input type="text" id="avLongeCcOE" placeholder="20/20"></td>
+                                </tr>
+                                <tr>
+                                    <td class="row-label">AO</td>
+                                    <td><input type="text" id="avLongeScAO" placeholder="20/30"></td>
+                                    <td><input type="text" id="avLongePhAO" placeholder="20/20"></td>
+                                    <td><input type="text" id="avLongeCcAO" placeholder="20/20"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Visão de Perto -->
+                    <div class="table-av-wrapper">
+                        <h4>📖 Visão de Perto (VP - 40cm / Jaeger)</h4>
+                        <table class="table-av">
+                            <thead>
+                                <tr>
+                                    <th>Olho</th>
+                                    <th>SC (s/ corr.)</th>
+                                    <th>CC (c/ corr.)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="row-label">OD</td>
+                                    <td><input type="text" id="avPertoScOD" placeholder="J2"></td>
+                                    <td><input type="text" id="avPertoCcOD" placeholder="J1"></td>
+                                </tr>
+                                <tr>
+                                    <td class="row-label">OE</td>
+                                    <td><input type="text" id="avPertoScOE" placeholder="J3"></td>
+                                    <td><input type="text" id="avPertoCcOE" placeholder="J1"></td>
+                                </tr>
+                                <tr>
+                                    <td class="row-label">AO</td>
+                                    <td><input type="text" id="avPertoScAO" placeholder="J2"></td>
+                                    <td><input type="text" id="avPertoCcAO" placeholder="J1"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção 5: Motilidade Ocular (MEO) -->
+            <div class="section-card" id="secao-meo" style="border-left: 4px solid #38BDF8;">
+                <div class="section-title">
+                    <span style="color: #38BDF8;">🎯 5. Motilidade Ocular (MEO)</span>
+                    <span class="badge" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8;">
+                        <a href="Simulador-MEO/MEO.html" class="badge-link" title="Abrir Simulador de Motilidade Ocular (MEO)">🎯 Abrir Simulador MEO ➔</a>
+                    </span>
+                    <div class="section-title-actions">
+                        <a href="Simulador-MEO/MEO.html" class="btn-header-sim" title="Abrir Simulador MEO">🎯 Ir ao Teste ➔</a>
+                        <button type="button" class="btn-header-save" onclick="salvarFicha(event)" title="Salvar dados da Ficha Clínica">💾 Salvar</button>
+                    </div>
+                </div>
+
+                <!-- 1. Alinhamento Ocular: Hirschberg & Cover Teste -->
+                <div style="font-size: 0.88rem; font-weight: 700; color: #38BDF8; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 6px;">
+                    <span>👁️ Alinhamento Ocular (Hirschberg & Cover Teste)</span>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="meoHirschberg">Reflexo de Hirschberg / Cover Teste</label>
+                        <select id="meoHirschberg" class="input-control highlight-input">
+                            <option value="Centrado (Ortoforia)">Centrado nas pupilas (Ortoforia - 0°)</option>
+                            <option value="Desvio Temporal (Endotropia)">Desvio Temporal / Endotropia (ET)</option>
+                            <option value="Desvio Nasal (Exotropia)">Desvio Nasal / Exotropia (XT)</option>
+                            <option value="Desvio Inferior (Hipertropia)">Desvio Inferior / Hipertropia (HT)</option>
+                            <option value="Desvio Superior (Hipotropia)">Desvio Superior / Hipotropia (HoT)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="meoOlhoDesvio">Olho com Desvio (Tropia)</label>
+                        <select id="meoOlhoDesvio" class="input-control highlight-input" style="border-color: #38BDF8;">
+                            <option value="OE (Olho Esquerdo)">Olho Esquerdo (OE) - Monocular</option>
+                            <option value="OD (Olho Direito)">Olho Direito (OD) - Monocular</option>
+                            <option value="AO (Bilateral / Alternante)">Ambos os Olhos (AO / Alternante)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="meoHirschbergGraus">Magnitude do Desvio (Graus)</label>
+                        <select id="meoHirschbergGraus" class="input-control highlight-input"
+                            style="border-color: #38BDF8;">
+                            <option value="0°">0°</option>
+                            <option value="7°">7°</option>
+                            <option value="15°">15°</option>
+                            <option value="30°">30°</option>
+                            <option value="45°">45°</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 2. Quebra de Linha Exclusiva para o Ângulo Kappa (não mistura com Cover Teste) -->
+                <div style="margin-top: 1.4rem; padding-top: 1.1rem; border-top: 1px dashed rgba(255, 255, 255, 0.12);">
+                    <div style="font-size: 0.88rem; font-weight: 700; color: #94A3B8; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 6px;">
+                        <span>📐 Ângulo Kappa (Monocular OD / OE)</span>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="meoKappaOD">Ângulo Kappa OD</label>
+                            <select id="meoKappaOD" class="input-control">
+                                <option value="+5° (Fisiológico Nasal)">+5° Nasal / +0.5mm (Fisiológico)</option>
+                                <option value="0° (Nulo / Centrado)">0° Nulo (Centro Pupilar)</option>
+                                <option value="-5° (Temporal)">-5° Temporal / Negativo</option>
+                                <option value="+10° (Nasal Acentuado)">+10° Nasal Acentuado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="meoKappaOE">Ângulo Kappa OE</label>
+                            <select id="meoKappaOE" class="input-control">
+                                <option value="+5° (Fisiológico Nasal)">+5° Nasal / +0.5mm (Fisiológico)</option>
+                                <option value="0° (Nulo / Centrado)">0° Nulo (Centro Pupilar)</option>
+                                <option value="-5° (Temporal)">-5° Temporal / Negativo</option>
+                                <option value="+10° (Nasal Acentuado)">+10° Nasal Acentuado</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Prontuário Clínico Oficial: Ducções Monoculares (SPEC) e Versões Binoculares (Duplo H) -->
+                <div class="prontuario-meo-container">
+                    <!-- Linha 1: Tabela de Ducções -->
+                    <div class="meo-grid-duccoes">
+                        <div class="meo-cel-duccoes-th">DUCÇÕES</div>
+                        <div class="meo-cel-olho">
+                            <span class="meo-label-olho">OD:</span>
+                            <div class="spec-letra-grupo" id="spec-group-od">
+                                <span class="spec-letra" data-olho="od" data-letra="S" onclick="toggleSPEC('od', 'S')" title="S = Suave (Clique para cortar se alterado)">S</span>
+                                <span class="spec-letra" data-olho="od" data-letra="P" onclick="toggleSPEC('od', 'P')" title="P = Preciso (Clique para cortar se alterado)">P</span>
+                                <span class="spec-letra" data-olho="od" data-letra="E" onclick="toggleSPEC('od', 'E')" title="E = Extenso (Clique para cortar se alterado)">E</span>
+                                <span class="spec-letra" data-olho="od" data-letra="C" onclick="toggleSPEC('od', 'C')" title="C = Completo (Clique para cortar se alterado)">C</span>
+                            </div>
+                        </div>
+                        <div class="meo-cel-olho">
+                            <span class="meo-label-olho">OE:</span>
+                            <div class="spec-letra-grupo" id="spec-group-oe">
+                                <span class="spec-letra" data-olho="oe" data-letra="S" onclick="toggleSPEC('oe', 'S')" title="S = Suave (Clique para cortar se alterado)">S</span>
+                                <span class="spec-letra" data-olho="oe" data-letra="P" onclick="toggleSPEC('oe', 'P')" title="P = Preciso (Clique para cortar se alterado)">P</span>
+                                <span class="spec-letra" data-olho="oe" data-letra="E" onclick="toggleSPEC('oe', 'E')" title="E = Extenso (Clique para cortar se alterado)">E</span>
+                                <span class="spec-letra" data-olho="oe" data-letra="C" onclick="toggleSPEC('oe', 'C')" title="C = Completo (Clique para cortar se alterado)">C</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Linha Intermediária: Alterações Motoras (Paresia, Paralisia e Músculo Afetado) -->
+                    <div class="meo-subsecao-motor" style="padding: 14px 20px; background: rgba(30, 41, 59, 0.45); border-bottom: 2px solid rgba(255, 255, 255, 0.3);">
+                        <div style="font-size: 0.9rem; font-weight: 800; color: #38BDF8; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span>⚡ Alterações Motoras (Paresia & Paralisia Muscular)</span>
+                            </div>
+                            <div id="badge-anotacao-motora" style="font-size: 0.82rem; font-weight: 800; padding: 4px 12px; border-radius: 6px; background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.5); color: #34D399;">
+                                Movimentação Ocular Normal
+                            </div>
+                        </div>
+
+                        <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px;">
+                            <div class="form-group">
+                                <label for="meoEstadoMotor">Condição Motora</label>
+                                <select id="meoEstadoMotor" class="input-control highlight-input" onchange="atualizarAnotacaoClinicaMotora()">
+                                    <option value="normal">Normal (Movimento íntegro e suave)</option>
+                                    <option value="paresia">Paresia (Ultrapassa a linha média ocular)</option>
+                                    <option value="paralisia">Paralisia (Não supera a linha média ocular)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="meoOlhoMotor">Olho Acometido</label>
+                                <select id="meoOlhoMotor" class="input-control highlight-input" onchange="atualizarAnotacaoClinicaMotora()">
+                                    <option value="nenhum">Nenhum (Movimentação binocular normal)</option>
+                                    <option value="od">OD (Olho Direito)</option>
+                                    <option value="oe">OE (Olho Esquerdo)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="meoMusculoMotor">Músculo Extraocular</label>
+                                <select id="meoMusculoMotor" class="input-control highlight-input" onchange="atualizarAnotacaoClinicaMotora()">
+                                    <option value="RL">Reto Lateral (RL - Abdução / fora)</option>
+                                    <option value="RM">Reto Medial (RM - Adução / dentro)</option>
+                                    <option value="RS">Reto Superior (RS - Elevação)</option>
+                                    <option value="RI">Reto Inferior (RI - Depressão)</option>
+                                    <option value="OS">Oblíquo Superior (OS - Depressão em adução)</option>
+                                    <option value="OI">Oblíquo Inferior (OI - Elevação em adução)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="meoGrauMotor">Grau no Duplo H</label>
+                                <select id="meoGrauMotor" class="input-control" onchange="atualizarAnotacaoClinicaMotora()">
+                                    <option value="-2">-2 (Moderado / Típico de Paresia)</option>
+                                    <option value="-1">-1 (Leve / Paresia incipiente)</option>
+                                    <option value="-3">-3 (Severo / Paralisia total)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 10px; font-size: 0.8rem; color: #94A3B8; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                            <div>
+                                📝 <strong>Anotação no Prontuário:</strong> 
+                                <span id="txt-registro-oficial" style="color: #38BDF8; font-weight: 800;">Movimentação Ocular Normal</span>
+                            </div>
+                            <span style="color: #64748B; font-size: 0.76rem;">Paresia = Ultrapassa linha média | Paralisia = Não supera linha média</span>
+                        </div>
+                    </div>
+
+                    <!-- Linha 2: Versões (Duplo H Perfeitamente Centralizado sob OD e OE) -->
+                    <div class="meo-grid-versoes">
+                        <div class="meo-label-versoes">Versões:</div>
+                        
+                        <!-- H do Olho Direito (OD) -->
+                        <div class="meo-col-h">
+                            <div class="h-diagrama-canvas" style="position: relative; width: 220px; height: 140px;">
+                                <svg class="h-svg-tracos" viewBox="0 0 220 140" width="220" height="140" style="position: absolute; top: 0; left: 0; width: 220px; height: 140px; pointer-events: none;">
+                                    <line x1="18" y1="70" x2="202" y2="70" stroke="rgba(255, 255, 255, 0.7)" stroke-width="2.2" stroke-linecap="square" />
+                                    <line x1="70" y1="18" x2="70" y2="122" stroke="rgba(255, 255, 255, 0.7)" stroke-width="2.2" stroke-linecap="square" />
+                                    <line x1="150" y1="18" x2="150" y2="122" stroke="rgba(255, 255, 255, 0.7)" stroke-width="2.2" stroke-linecap="square" />
+                                </svg>
+                                <input type="text" id="h_od_sup_esq" class="h-quadradinho-input h-pos-sup-esq" maxlength="3" placeholder="" oninput="colorirHInput(this)" title="Superior Temporal OD">
+                                <input type="text" id="h_od_sup_dir" class="h-quadradinho-input h-pos-sup-dir" maxlength="3" placeholder="" oninput="colorirHInput(this)" title="Superior Nasal OD">
+                                <input type="text" id="h_od_lat_esq" class="h-quadradinho-input h-pos-lat-esq" maxlength="3" placeholder="" oninput="colorirHInput(this)" title="Lateral Temporal OD">
+                                <input type="text" id="h_od_lat_dir" class="h-quadradinho-input h-pos-lat-dir" maxlength="3" placeholder="" oninput="colorirHInput(this)" title="Lateral Nasal OD">
+                                <input type="text" id="h_od_inf_esq" class="h-quadradinho-input h-pos-inf-esq" maxlength="3" placeholder="" oninput="colorirHInput(this)" title="Inferior Temporal OD">
+                                <input type="text" id="h_od_inf_dir" class="h-quadradinho-input h-pos-inf-dir" maxlength="3" placeholder="" oninput="colorirHInput(this)" title="Inferior Nasal OD">
+                            </div>
+                        </div>
+
+                        <!-- H do Olho Esquerdo (OE) -->
+                        <div class="meo-col-h">
+                            <div class="h-diagrama-canvas" style="position: relative; width: 220px; height: 140px;">
+                                <svg class="h-svg-tracos" viewBox="0 0 220 140" width="220" height="140" style="position: absolute; top: 0; left: 0; width: 220px; height: 140px; pointer-events: none;">
+                                    <line x1="18" y1="70" x2="202" y2="70" stroke="rgba(255, 255, 255, 0.7)" stroke-width="2.2" stroke-linecap="square" />
+                                    <line x1="70" y1="18" x2="70" y2="122" stroke="rgba(255, 255, 255, 0.7)" stroke-width="2.2" stroke-linecap="square" />
+                                    <line x1="150" y1="18" x2="150" y2="122" stroke="rgba(255, 255, 255, 0.7)" stroke-width="2.2" stroke-linecap="square" />
+                                </svg>
+                                <input type="text" id="h_oe_sup_esq" class="h-quadradinho-input h-pos-sup-esq" maxlength="3" placeholder="" oninput="colorirHInput(this)" title="Superior Nasal OE">
+                                <input type="text" id="h_oe_sup_dir" class="h-quadradinho-input h-pos-sup-dir" maxlength="3" placeholder="" oninput="colorirHInput(this)" title="Superior Temporal OE">
+                                <input type="text" id="h_oe_lat_esq" class="h-quadradinho-input h-pos-lat-esq" maxlength="3" placeholder="" oninput="colorirHInput(this)" title="Lateral Nasal OE">
+                                <input type="text" id="h_oe_lat_dir" class="h-quadradinho-input h-pos-lat-dir" maxlength="3" placeholder="" oninput="colorirHInput(this)" title="Lateral Temporal OE">
+                                <input type="text" id="h_oe_inf_esq" class="h-quadradinho-input h-pos-inf-esq" maxlength="3" placeholder="" oninput="colorirHInput(this)" title="Inferior Nasal OE">
+                                <input type="text" id="h_oe_inf_dir" class="h-quadradinho-input h-pos-inf-dir" maxlength="3" placeholder="" oninput="colorirHInput(this)" title="Inferior Temporal OE">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção 8: Ceratometria -->
+            <div class="section-card section-cera" id="secao-cera">
+                <div class="section-title">
+                    <span>🔬 8. Ceratometria (Curvatura Corneana)</span>
+                    <span class="badge">
+                        <a href="Simulador-Ceratometria/ceratometria.html" class="badge-link" title="Abrir Simulador de Ceratometria">🔬 Abrir Ceratometria ➔</a>
+                    </span>
+                    <div class="section-title-actions">
+                        <a href="Simulador-Ceratometria/ceratometria.html" class="btn-header-sim" style="border-color: rgba(236, 72, 153, 0.4); color: #F472B6; background: rgba(236, 72, 153, 0.12);" title="Ir para o Simulador de Ceratometria">🔬 Ir ao Teste ➔</a>
+                        <button type="button" class="btn-header-save" onclick="salvarFicha(event)" title="Salvar dados da Ficha Clínica">💾 Salvar</button>
+                    </div>
+                </div>
+
+                <div
+                    style="margin-bottom: 0.8rem; font-weight: 700; color: #38BDF8; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
+                    <span>👁️ Olho Direito (OD)</span>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="ceraHorizOD">Tambor Horizontal OD</label>
+                        <input type="number" id="ceraHorizOD" class="input-control highlight-input" step="0.25" min="36"
+                            max="52" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ceraVertOD">Tambor Vertical OD</label>
+                        <input type="number" id="ceraVertOD" class="input-control highlight-input" step="0.25" min="36"
+                            max="52" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ceraEixoOD">Eixo OD</label>
+                        <input type="number" id="ceraEixoOD" class="input-control" step="1" min="0" max="180"
+                            value="180">
+                    </div>
+                </div>
+
+                <div
+                    style="margin-top: 1.5rem; margin-bottom: 0.8rem; font-weight: 700; color: #34D399; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
+                    <span>👁️ Olho Esquerdo (OE)</span>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="ceraHorizOE">Tambor Horizontal OE</label>
+                        <input type="number" id="ceraHorizOE" class="input-control highlight-input" step="0.25" min="36"
+                            max="52" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ceraVertOE">Tambor Vertical OE</label>
+                        <input type="number" id="ceraVertOE" class="input-control highlight-input" step="0.25" min="36"
+                            max="52" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ceraEixoOE">Eixo OE</label>
+                        <input type="number" id="ceraEixoOE" class="input-control" step="1" min="0" max="180"
+                            value="180">
+                    </div>
+                </div>
+
+                <div class="info-pill">
+                    <div class="info-item">
+                        <span class="info-label">Astigmatismo Corneano OD</span>
+                        <span class="info-value" id="val-astigOD" style="color: #38BDF8;">-- D</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Astigmatismo Corneano OE</span>
+                        <span class="info-value" id="val-astigOE" style="color: #34D399;">-- D</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção 10: Retinoscopia Estática -->
+            <div class="section-card section-rx" id="secao-rx-estatica">
+                <div class="section-title">
+                    <span>👓 10. Retinoscopia Estática</span>
+                    <span class="badge">
+                        <a href="Simulador-Retinoscopia/retinoscopia.html" class="badge-link" title="Abrir Simulador de Retinoscopia">🔦 Abrir Retinoscopia ➔</a>
+                    </span>
+                    <div class="section-title-actions">
+                        <a href="Simulador-Retinoscopia/retinoscopia.html" class="btn-header-sim" style="border-color: rgba(245, 158, 11, 0.4); color: #FBBF24; background: rgba(245, 158, 11, 0.12);" title="Ir para o Simulador de Retinoscopia">🔦 Ir ao Teste ➔</a>
+                        <button type="button" class="btn-header-save" onclick="salvarFicha(event)" title="Salvar dados da Ficha Clínica">💾 Salvar</button>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="rxEsfOD">Esférico OD</label>
+                        <input type="text" inputmode="decimal" id="rxEsfOD" class="input-control highlight-input"
+                            placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="rxCilOD">Cilíndrico OD</label>
+                        <input type="text" inputmode="decimal" id="rxCilOD" class="input-control" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="rxEixoOD">Eixo OD</label>
+                        <input type="number" id="rxEixoOD" class="input-control" step="1" min="0" max="180">
+                    </div>
+                </div>
+                <div class="form-grid" style="margin-top: 1rem;">
+                    <div class="form-group">
+                        <label for="rxEsfOE">Esférico OE</label>
+                        <input type="text" inputmode="decimal" id="rxEsfOE" class="input-control" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="rxCilOE">Cilíndrico OE</label>
+                        <input type="text" inputmode="decimal" id="rxCilOE" class="input-control" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="rxEixoOE">Eixo OE</label>
+                        <input type="number" id="rxEixoOE" class="input-control" step="1" min="0" max="180">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção 10: Retinoscopia Dinâmica -->
+            <div class="section-card" id="secao-rx-dinamica" style="border-left: 4px solid #F59E0B;">
+                <div class="section-title">
+                    <span>🔦 10. Retinoscopia Dinâmica (MEM / Mohindra)</span>
+                    <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #FBBF24;">
+                        <a href="Simulador-Retinoscopia/retinoscopia.html" class="badge-link" title="Abrir Simulador de Retinoscopia">🔦 Abrir Retinoscopia ➔</a>
+                    </span>
+                    <div class="section-title-actions">
+                        <a href="Simulador-Retinoscopia/retinoscopia.html" class="btn-header-sim" style="border-color: rgba(245, 158, 11, 0.4); color: #FBBF24; background: rgba(245, 158, 11, 0.12);" title="Ir para o Simulador de Retinoscopia">🔦 Ir ao Teste ➔</a>
+                        <button type="button" class="btn-header-save" onclick="salvarFicha(event)" title="Salvar dados da Ficha Clínica">💾 Salvar</button>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="rxDinEsfOD">Esférico OD</label>
+                        <input type="text" inputmode="decimal" id="rxDinEsfOD" class="input-control highlight-input"
+                            placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="rxDinCilOD">Cilíndrico OD</label>
+                        <input type="text" inputmode="decimal" id="rxDinCilOD" class="input-control" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="rxDinEixoOD">Eixo OD</label>
+                        <input type="number" id="rxDinEixoOD" class="input-control" step="1" min="0" max="180">
+                    </div>
+                </div>
+                <div class="form-grid" style="margin-top: 1rem;">
+                    <div class="form-group">
+                        <label for="rxDinEsfOE">Esférico OE</label>
+                        <input type="text" inputmode="decimal" id="rxDinEsfOE" class="input-control highlight-input"
+                            placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="rxDinCilOE">Cilíndrico OE</label>
+                        <input type="text" inputmode="decimal" id="rxDinCilOE" class="input-control" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="rxDinEixoOE">Eixo OE</label>
+                        <input type="number" id="rxDinEixoOE" class="input-control" step="1" min="0" max="180">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção 11: Amplitude de Acomodação -->
+            <div class="section-card section-acc" id="secao-acc">
+                <div class="section-title">
+                    <span>📏 11. Amplitude de Acomodação (Método de Sheard / Donders)</span>
+                    <span class="badge">
+                        <a href="Simulador-AmplitudeAcomodacao/amplitude.html" class="badge-link" title="Abrir Simulador de Amplitude">📏 Abrir Amplitude ➔</a>
+                    </span>
+                    <div class="section-title-actions">
+                        <a href="Simulador-AmplitudeAcomodacao/amplitude.html" class="btn-header-sim" style="border-color: rgba(52, 211, 153, 0.4); color: #34D399; background: rgba(52, 211, 153, 0.12);" title="Ir para o Simulador de Amplitude">📏 Ir ao Teste ➔</a>
+                        <button type="button" class="btn-header-save" onclick="salvarFicha(event)" title="Salvar dados da Ficha Clínica">💾 Salvar</button>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="estadoAccOD">Estado Acc OD</label>
+                        <input type="number" id="estadoAccOD" class="input-control highlight-input" step="0.25" min="0"
+                            max="20" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="estadoAccOE">Estado Acc OE</label>
+                        <input type="number" id="estadoAccOE" class="input-control highlight-input" step="0.25" min="0"
+                            max="20" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="recobroOD">Recobro OD</label>
+                        <input type="number" id="recobroOD" class="input-control highlight-input" step="0.25" min="0"
+                            max="3" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="recobroOE">Recobro OE</label>
+                        <input type="number" id="recobroOE" class="input-control highlight-input" step="0.25" min="0"
+                            max="3" required>
+                    </div>
+                </div>
+
+                <div class="info-pill">
+                    <div class="info-item">
+                        <span class="info-label">Amplitude Esperada (Fórmula: 15 - Idade/4)</span>
+                        <span class="info-value" id="val-aaEsperado">-- D</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Diagnóstico Calculado OD</span>
+                        <span class="info-value" id="val-dxOD" style="color: #60A5FA;">--</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Diagnóstico Calculado OE</span>
+                        <span class="info-value" id="val-dxOE" style="color: #60A5FA;">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Barra de Ações -->
+            <div class="actions-bar">
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button type="submit" class="btn-action btn-save">
+                        💾 Salvar na Ficha Clínica
+                    </button>
+                </div>
+                <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                    <a href="Simulador-AcuidadeVisual/acuidade.html" class="btn-action btn-sim"
+                        style="border-color: rgba(56, 189, 248, 0.4);">
+                        4. Acuidade Visual ➔
+                    </a>
+                    <a href="Simulador-MEO/MEO.html" class="btn-action btn-sim"
+                        style="border-color: rgba(56, 189, 248, 0.4); background: rgba(14, 165, 233, 0.2);">
+                        5. Motilidade (MEO) ➔
+                    </a>
+                    <a href="Simulador-Ceratometria/ceratometria.html" class="btn-action btn-sim"
+                        style="border-color: rgba(236, 72, 153, 0.4);">
+                        8. Ceratometria ➔
+                    </a>
+                    <a href="Simulador-Retinoscopia/retinoscopia.html" class="btn-action btn-sim"
+                        style="border-color: rgba(14, 165, 233, 0.4);">
+                        10. Retinoscopia ➔
+                    </a>
+                    <a href="Simulador-AmplitudeAcomodacao/amplitude.html" class="btn-action btn-sim">
+                        11. Amplitude ➔
+                    </a>
+                    <a href="Simulador-FlexibilidadeAcomodativa/flexibilidade.html" class="btn-action btn-sim"
+                        style="border-color: rgba(16, 185, 129, 0.4);">
+                        11. Flexibilidade ➔
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="toast" class="toast">
+        <span>✅</span>
+        <span id="toast-msg">Dados salvos com sucesso na Ficha Clínica!</span>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'pacienteData';
+
+        function carregarDados() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            let data = null;
+            if (raw) {
+                try { data = JSON.parse(raw); } catch (e) { console.error("Erro ao analisar pacienteData:", e); }
+            }
+            if (!data) {
+                data = gerarDadosPadrao();
+                salvarNoLocalStorage(data);
+            } else {
+                let alterado = false;
+                if (!data.ceratometria) {
+                    data.ceratometria = gerarCeratometriaPadrao();
+                    alterado = true;
+                }
+                if (!data.motilidadeOcular) {
+                    data.motilidadeOcular = {
+                        hirschberg: "Centrado (Ortoforia)",
+                        hirschbergGraus: "0°",
+                        kappaOD: "+5° (Fisiológico Nasal)",
+                        kappaOE: "+5° (Fisiológico Nasal)",
+                        duccoes: "SPEC (Suaves, Precisos, Extensos e Constantes)",
+                        versoes: "Normais e Simétricas (Sem hipo/hiperfunções)"
+                    };
+                    alterado = true;
+                } else if (!data.motilidadeOcular.hirschbergGraus) {
+                    data.motilidadeOcular.hirschbergGraus = data.motilidadeOcular.hirschberg?.includes('Ortoforia') ? "0°" : "15°";
+                    alterado = true;
+                }
+                if (alterado) salvarNoLocalStorage(data);
+            }
+            preencherFormulario(data);
+            calcularValoresDinamicos();
+        }
+
+        function gerarCeratometriaPadrao() {
+            const k1_od = parseFloat((41.5 + Math.floor(Math.random() * 15) * 0.25).toFixed(2));
+            const astig_od = parseFloat((Math.floor(Math.random() * 6) * 0.25).toFixed(2));
+            const k2_od = parseFloat((k1_od + astig_od).toFixed(2));
+            const k1_oe = parseFloat((41.5 + Math.floor(Math.random() * 15) * 0.25).toFixed(2));
+            const astig_oe = parseFloat((Math.floor(Math.random() * 6) * 0.25).toFixed(2));
+            const k2_oe = parseFloat((k1_oe + astig_oe).toFixed(2));
+            return {
+                od: { horizontal: k1_od, vertical: k2_od, eixo: 180 },
+                oe: { horizontal: k1_oe, vertical: k2_oe, eixo: 180 }
+            };
+        }
+
+        function gerarDadosPadrao() {
+            const idade = Math.floor(Math.random() * 31) + 10;
+            const aaEsperado = 15 - (idade / 4);
+            const varOD = (Math.floor(Math.random() * 9) - 4) * 0.25;
+            const varOE = (Math.floor(Math.random() * 9) - 4) * 0.25;
+
+            const rxOD = { esf: 0.00, cil: 0.00, eixo: 0 };
+            const rxOE = { esf: 0.00, cil: 0.00, eixo: 0 };
+
+            // Retinoscopia Dinâmica com Lag acomodativo de +0.75 D padrão
+            const rxDinamica = {
+                od: { esf: parseFloat((rxOD.esf + 0.75).toFixed(2)), cil: rxOD.cil, eixo: rxOD.eixo },
+                oe: { esf: parseFloat((rxOE.esf + 0.75).toFixed(2)), cil: rxOE.cil, eixo: rxOE.eixo }
+            };
+
+            const acuidadeVisual = {
+                longe: {
+                    od: { sc: "20/40", ph: "20/20", cc: "20/20" },
+                    oe: { sc: "20/50", ph: "20/20", cc: "20/20" },
+                    ao: { sc: "20/30", ph: "20/20", cc: "20/20" }
+                },
+                perto: {
+                    od: { sc: "J2", cc: "J1" },
+                    oe: { sc: "J3", cc: "J1" },
+                    ao: { sc: "J2", cc: "J1" }
+                }
+            };
+
+            return {
+                idade: idade,
+                ceratometria: gerarCeratometriaPadrao(),
+                acuidadeVisual: acuidadeVisual,
+                motilidadeOcular: {
+                    hirschberg: "Centrado (Ortoforia)",
+                    olhoDesvio: "OE (Olho Esquerdo)",
+                    hirschbergGraus: "0° (Centrado / Ortoforia)",
+                    kappaOD: "+5° (Fisiológico Nasal)",
+                    kappaOE: "+5° (Fisiológico Nasal)",
+                    duccoesOD: "SPEC",
+                    duccoesOE: "SPEC",
+                    duccoes: "SPEC (Suaves, Precisos, Extensos e Constantes)",
+                    versoesH: {
+                        od: { supEsq: "0", supDir: "0", latEsq: "0", latDir: "0", infEsq: "0", infDir: "0" },
+                        oe: { supEsq: "0", supDir: "0", latEsq: "0", latDir: "0", infEsq: "0", infDir: "0" }
+                    },
+                    versoesObs: "",
+                    versoes: "Normais e Simétricas (Sem hipo/hiperfunções)"
+                },
+                rxOD: rxOD,
+                rxOE: rxOE,
+                rxDinamica: rxDinamica,
+                amplitude: {
+                    estadoAccOD: parseFloat(Math.max(1.0, Math.round((aaEsperado + varOD) * 4) / 4).toFixed(2)),
+                    estadoAccOE: parseFloat(Math.max(1.0, Math.round((aaEsperado + varOE) * 4) / 4).toFixed(2)),
+                    recobroOD: parseFloat((Math.floor(Math.random() * 4 + 1) * 0.25).toFixed(2)),
+                    recobroOE: parseFloat((Math.floor(Math.random() * 4 + 1) * 0.25).toFixed(2))
+                }
+            };
+        }
+
+        function preencherFormulario(data) {
+            document.getElementById('idade').value = data.idade ?? 40;
+            document.getElementById('ceraHorizOD').value = (data.ceratometria?.od?.horizontal ?? 44.00).toFixed(2);
+            document.getElementById('ceraVertOD').value = (data.ceratometria?.od?.vertical ?? 44.00).toFixed(2);
+            document.getElementById('ceraEixoOD').value = data.ceratometria?.od?.eixo ?? 180;
+            document.getElementById('ceraHorizOE').value = (data.ceratometria?.oe?.horizontal ?? 44.00).toFixed(2);
+            document.getElementById('ceraVertOE').value = (data.ceratometria?.oe?.vertical ?? 44.00).toFixed(2);
+            document.getElementById('ceraEixoOE').value = data.ceratometria?.oe?.eixo ?? 180;
+
+            // Acuidade Visual - Longe
+            document.getElementById('avLongeScOD').value = data.acuidadeVisual?.longe?.od?.sc ?? "20/40";
+            document.getElementById('avLongePhOD').value = data.acuidadeVisual?.longe?.od?.ph ?? "20/20";
+            document.getElementById('avLongeCcOD').value = data.acuidadeVisual?.longe?.od?.cc ?? "20/20";
+            document.getElementById('avLongeScOE').value = data.acuidadeVisual?.longe?.oe?.sc ?? "20/50";
+            document.getElementById('avLongePhOE').value = data.acuidadeVisual?.longe?.oe?.ph ?? "20/20";
+            document.getElementById('avLongeCcOE').value = data.acuidadeVisual?.longe?.oe?.cc ?? "20/20";
+            document.getElementById('avLongeScAO').value = data.acuidadeVisual?.longe?.ao?.sc ?? "20/30";
+            document.getElementById('avLongePhAO').value = data.acuidadeVisual?.longe?.ao?.ph ?? "20/20";
+            document.getElementById('avLongeCcAO').value = data.acuidadeVisual?.longe?.ao?.cc ?? "20/20";
+
+            // Acuidade Visual - Perto
+            document.getElementById('avPertoScOD').value = data.acuidadeVisual?.perto?.od?.sc ?? "J2";
+            document.getElementById('avPertoCcOD').value = data.acuidadeVisual?.perto?.od?.cc ?? "J1";
+            document.getElementById('avPertoScOE').value = data.acuidadeVisual?.perto?.oe?.sc ?? "J3";
+            document.getElementById('avPertoCcOE').value = data.acuidadeVisual?.perto?.oe?.cc ?? "J1";
+            document.getElementById('avPertoScAO').value = data.acuidadeVisual?.perto?.ao?.sc ?? "J2";
+            document.getElementById('avPertoCcAO').value = data.acuidadeVisual?.perto?.ao?.cc ?? "J1";
+
+            // Retinoscopia Estática OD
+            const esfOD = data.rxOD?.esf ?? 0;
+            document.getElementById('rxEsfOD').value = esfOD > 0 ? ('+' + esfOD.toFixed(2)) : esfOD.toFixed(2);
+            document.getElementById('rxCilOD').value = (data.rxOD?.cil ?? 0).toFixed(2);
+            document.getElementById('rxEixoOD').value = data.rxOD?.eixo ?? 0;
+
+            // Retinoscopia Estática OE
+            const esfOE = data.rxOE?.esf ?? 0;
+            document.getElementById('rxEsfOE').value = esfOE > 0 ? ('+' + esfOE.toFixed(2)) : esfOE.toFixed(2);
+            document.getElementById('rxCilOE').value = (data.rxOE?.cil ?? 0).toFixed(2);
+            document.getElementById('rxEixoOE').value = data.rxOE?.eixo ?? 0;
+
+            // Retinoscopia Dinâmica OD
+            const dinEsfOD = data.rxDinamica?.od?.esf ?? (esfOD + 0.75);
+            document.getElementById('rxDinEsfOD').value = dinEsfOD > 0 ? ('+' + dinEsfOD.toFixed(2)) : dinEsfOD.toFixed(2);
+            document.getElementById('rxDinCilOD').value = (data.rxDinamica?.od?.cil ?? (data.rxOD?.cil ?? 0)).toFixed(2);
+            document.getElementById('rxDinEixoOD').value = data.rxDinamica?.od?.eixo ?? (data.rxOD?.eixo ?? 0);
+
+            // Retinoscopia Dinâmica OE
+            const dinEsfOE = data.rxDinamica?.oe?.esf ?? (esfOE + 0.75);
+            document.getElementById('rxDinEsfOE').value = dinEsfOE > 0 ? ('+' + dinEsfOE.toFixed(2)) : dinEsfOE.toFixed(2);
+            document.getElementById('rxDinCilOE').value = (data.rxDinamica?.oe?.cil ?? (data.rxOE?.cil ?? 0)).toFixed(2);
+            document.getElementById('rxDinEixoOE').value = data.rxDinamica?.oe?.eixo ?? (data.rxOE?.eixo ?? 0);
+
+            // Motilidade Ocular (MEO)
+            document.getElementById('meoHirschberg').value = data.motilidadeOcular?.hirschberg ?? "Centrado (Ortoforia)";
+            document.getElementById('meoOlhoDesvio').value = data.motilidadeOcular?.olhoDesvio ?? "OE (Olho Esquerdo)";
+            let gHirsch = data.motilidadeOcular?.hirschbergGraus || "0°";
+            if (gHirsch.includes('7')) gHirsch = "7°";
+            else if (gHirsch.includes('15')) gHirsch = "15°";
+            else if (gHirsch.includes('30')) gHirsch = "30°";
+            else if (gHirsch.includes('45')) gHirsch = "45°";
+            else gHirsch = "0°";
+            document.getElementById('meoHirschbergGraus').value = gHirsch;
+            document.getElementById('meoKappaOD').value = data.motilidadeOcular?.kappaOD ?? "+5° (Fisiológico Nasal)";
+            document.getElementById('meoKappaOE').value = data.motilidadeOcular?.kappaOE ?? "+5° (Fisiológico Nasal)";
+
+            // Ducções Monoculares SPEC (OD e OE)
+            definirSPEC('od', data.motilidadeOcular?.duccoesOD ?? "SPEC");
+            definirSPEC('oe', data.motilidadeOcular?.duccoesOE ?? "SPEC");
+
+            // Versões Binoculares em Duplo H
+            const vH = data.motilidadeOcular?.versoesH;
+            setHVal('h_od_sup_esq', vH?.od?.supEsq ?? "0");
+            setHVal('h_od_sup_dir', vH?.od?.supDir ?? "0");
+            setHVal('h_od_lat_esq', vH?.od?.latEsq ?? "0");
+            setHVal('h_od_lat_dir', vH?.od?.latDir ?? "0");
+            setHVal('h_od_inf_esq', vH?.od?.infEsq ?? "0");
+            setHVal('h_od_inf_dir', vH?.od?.infDir ?? "0");
+
+            setHVal('h_oe_sup_esq', vH?.oe?.supEsq ?? "0");
+            setHVal('h_oe_sup_dir', vH?.oe?.supDir ?? "0");
+            setHVal('h_oe_lat_esq', vH?.oe?.latEsq ?? "0");
+            setHVal('h_oe_lat_dir', vH?.oe?.latDir ?? "0");
+            setHVal('h_oe_inf_esq', vH?.oe?.infEsq ?? "0");
+            setHVal('h_oe_inf_dir', vH?.oe?.infDir ?? "0");
+
+            const elVersoesObs = document.getElementById('meoVersoesObs');
+            if (elVersoesObs) {
+                elVersoesObs.value = data.motilidadeOcular?.versoesObs ?? (data.motilidadeOcular?.versoes && !data.motilidadeOcular?.versoes.includes('Sem hipo') ? data.motilidadeOcular.versoes : "");
+            }
+
+            // Alterações Motoras (Paresia / Paralisia)
+            if (document.getElementById('meoEstadoMotor')) {
+                document.getElementById('meoEstadoMotor').value = data.motilidadeOcular?.estadoMotor ?? 'normal';
+                document.getElementById('meoOlhoMotor').value = data.motilidadeOcular?.olhoMotor ?? 'nenhum';
+                document.getElementById('meoMusculoMotor').value = data.motilidadeOcular?.musculoMotor ?? 'RL';
+                document.getElementById('meoGrauMotor').value = data.motilidadeOcular?.grauMotor ?? '-2';
+                atualizarAnotacaoClinicaMotora(false);
+            }
+
+            document.getElementById('estadoAccOD').value = (data.amplitude?.estadoAccOD ?? 5).toFixed(2);
+            document.getElementById('estadoAccOE').value = (data.amplitude?.estadoAccOE ?? 5).toFixed(2);
+            document.getElementById('recobroOD').value = (data.amplitude?.recobroOD ?? 0.5).toFixed(2);
+            document.getElementById('recobroOE').value = (data.amplitude?.recobroOE ?? 0.5).toFixed(2);
+        }
+
+        function extrairFormulario() {
+            return {
+                idade: parseInt(document.getElementById('idade').value) || 40,
+                ceratometria: {
+                    od: {
+                        horizontal: parseFloat(document.getElementById('ceraHorizOD').value) || 44.00,
+                        vertical: parseFloat(document.getElementById('ceraVertOD').value) || 44.00,
+                        eixo: parseInt(document.getElementById('ceraEixoOD').value) || 180
+                    },
+                    oe: {
+                        horizontal: parseFloat(document.getElementById('ceraHorizOE').value) || 44.00,
+                        vertical: parseFloat(document.getElementById('ceraVertOE').value) || 44.00,
+                        eixo: parseInt(document.getElementById('ceraEixoOE').value) || 180
+                    }
+                },
+                acuidadeVisual: {
+                    longe: {
+                        od: {
+                            sc: document.getElementById('avLongeScOD').value.trim() || "20/40",
+                            ph: document.getElementById('avLongePhOD').value.trim() || "20/20",
+                            cc: document.getElementById('avLongeCcOD').value.trim() || "20/20"
+                        },
+                        oe: {
+                            sc: document.getElementById('avLongeScOE').value.trim() || "20/50",
+                            ph: document.getElementById('avLongePhOE').value.trim() || "20/20",
+                            cc: document.getElementById('avLongeCcOE').value.trim() || "20/20"
+                        },
+                        ao: {
+                            sc: document.getElementById('avLongeScAO').value.trim() || "20/30",
+                            ph: document.getElementById('avLongePhAO').value.trim() || "20/20",
+                            cc: document.getElementById('avLongeCcAO').value.trim() || "20/20"
+                        }
+                    },
+                    perto: {
+                        od: {
+                            sc: document.getElementById('avPertoScOD').value.trim() || "J2",
+                            cc: document.getElementById('avPertoCcOD').value.trim() || "J1"
+                        },
+                        oe: {
+                            sc: document.getElementById('avPertoScOE').value.trim() || "J3",
+                            cc: document.getElementById('avPertoCcOE').value.trim() || "J1"
+                        },
+                        ao: {
+                            sc: document.getElementById('avPertoScAO').value.trim() || "J2",
+                            cc: document.getElementById('avPertoCcAO').value.trim() || "J1"
+                        }
+                    }
+                },
+                rxOD: {
+                    esf: parseFloat(document.getElementById('rxEsfOD').value.toString().replace('+', '')) || 0,
+                    cil: -Math.abs(parseFloat(document.getElementById('rxCilOD').value) || 0),
+                    eixo: parseInt(document.getElementById('rxEixoOD').value) || 0
+                },
+                rxOE: {
+                    esf: parseFloat(document.getElementById('rxEsfOE').value.toString().replace('+', '')) || 0,
+                    cil: -Math.abs(parseFloat(document.getElementById('rxCilOE').value) || 0),
+                    eixo: parseInt(document.getElementById('rxEixoOE').value) || 0
+                },
+                rxDinamica: {
+                    od: {
+                        esf: parseFloat(document.getElementById('rxDinEsfOD').value.toString().replace('+', '')) || 0,
+                        cil: -Math.abs(parseFloat(document.getElementById('rxDinCilOD').value) || 0),
+                        eixo: parseInt(document.getElementById('rxDinEixoOD').value) || 0
+                    },
+                    oe: {
+                        esf: parseFloat(document.getElementById('rxDinEsfOE').value.toString().replace('+', '')) || 0,
+                        cil: -Math.abs(parseFloat(document.getElementById('rxDinCilOE').value) || 0),
+                        eixo: parseInt(document.getElementById('rxDinEixoOE').value) || 0
+                    }
+                },
+                amplitude: {
+                    estadoAccOD: parseFloat(document.getElementById('estadoAccOD').value) || 5,
+                    estadoAccOE: parseFloat(document.getElementById('estadoAccOE').value) || 5,
+                    recobroOD: parseFloat(document.getElementById('recobroOD').value) || 0.5,
+                    recobroOE: parseFloat(document.getElementById('recobroOE').value) || 0.5
+                },
+                motilidadeOcular: {
+                    hirschberg: document.getElementById('meoHirschberg').value,
+                    olhoDesvio: document.getElementById('meoOlhoDesvio').value,
+                    hirschbergGraus: document.getElementById('meoHirschbergGraus').value,
+                    kappaOD: document.getElementById('meoKappaOD').value,
+                    kappaOE: document.getElementById('meoKappaOE').value,
+                    duccoesOD: obterSPEC('od'),
+                    duccoesOE: obterSPEC('oe'),
+                    duccoes: `OD: ${obterSPEC('od')} | OE: ${obterSPEC('oe')}`,
+                    versoesH: {
+                        od: {
+                            supEsq: document.getElementById('h_od_sup_esq').value.trim() || "0",
+                            supDir: document.getElementById('h_od_sup_dir').value.trim() || "0",
+                            latEsq: document.getElementById('h_od_lat_esq').value.trim() || "0",
+                            latDir: document.getElementById('h_od_lat_dir').value.trim() || "0",
+                            infEsq: document.getElementById('h_od_inf_esq').value.trim() || "0",
+                            infDir: document.getElementById('h_od_inf_dir').value.trim() || "0"
+                        },
+                        oe: {
+                            supEsq: document.getElementById('h_oe_sup_esq').value.trim() || "0",
+                            supDir: document.getElementById('h_oe_sup_dir').value.trim() || "0",
+                            latEsq: document.getElementById('h_oe_lat_esq').value.trim() || "0",
+                            latDir: document.getElementById('h_oe_lat_dir').value.trim() || "0",
+                            infEsq: document.getElementById('h_oe_inf_esq').value.trim() || "0",
+                            infDir: document.getElementById('h_oe_inf_dir').value.trim() || "0"
+                        }
+                    },
+                    versoesObs: document.getElementById('meoVersoesObs')?.value?.trim() || "",
+                    versoes: document.getElementById('meoVersoesObs')?.value?.trim() || "Normais e Simétricas (Sem hipo/hiperfunções)",
+                    estadoMotor: document.getElementById('meoEstadoMotor')?.value || 'normal',
+                    olhoMotor: document.getElementById('meoOlhoMotor')?.value || 'nenhum',
+                    musculoMotor: document.getElementById('meoMusculoMotor')?.value || 'RL',
+                    grauMotor: document.getElementById('meoGrauMotor')?.value || '-2',
+                    anotacaoMotora: document.getElementById('txt-registro-oficial')?.textContent || 'Movimentação Ocular Normal'
+                }
+            };
+        }
+
+        // =========================================================================
+        // ⚡ ALTERAÇÕES MOTORAS: PARESIA, PARALISIA E MÚSCULOS EXTRAOCULARES
+        // =========================================================================
+        function atualizarAnotacaoClinicaMotora(aplicarAutomacao = true) {
+            const estado = document.getElementById('meoEstadoMotor')?.value || 'normal';
+            const olho = document.getElementById('meoOlhoMotor')?.value || 'nenhum';
+            const musculo = document.getElementById('meoMusculoMotor')?.value || 'RL';
+            const grau = document.getElementById('meoGrauMotor')?.value || '-2';
+
+            const badge = document.getElementById('badge-anotacao-motora');
+            const txtRegistro = document.getElementById('txt-registro-oficial');
+
+            const nomesMusculos = {
+                'RL': 'Reto Lateral',
+                'RM': 'Reto Medial',
+                'RS': 'Reto Superior',
+                'RI': 'Reto Inferior',
+                'OS': 'Oblíquo Superior',
+                'OI': 'Oblíquo Inferior'
+            };
+
+            const nomeM = nomesMusculos[musculo] || musculo;
+
+            if (estado === 'normal' || olho === 'nenhum') {
+                if (badge) {
+                    badge.textContent = 'Movimentação Ocular Normal';
+                    badge.style.background = 'rgba(16, 185, 129, 0.2)';
+                    badge.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+                    badge.style.color = '#34D399';
+                }
+                if (txtRegistro) {
+                    txtRegistro.textContent = 'Normalidade de Versões e Ducções';
+                    txtRegistro.style.color = '#34D399';
+                }
+                if (aplicarAutomacao && estado === 'normal') {
+                    definirSPEC('od', 'SPEC');
+                    definirSPEC('oe', 'SPEC');
+                }
+                return;
+            }
+
+            const olhoNome = olho.toUpperCase();
+            const tipoDesc = estado === 'paralisia' ? 'Paralisia' : 'Paresia';
+            const textoAnotacao = `${tipoDesc} do ${nomeM} do ${olhoNome}`;
+
+            if (badge) {
+                badge.textContent = textoAnotacao;
+                if (estado === 'paralisia') {
+                    badge.style.background = 'rgba(239, 68, 68, 0.25)';
+                    badge.style.borderColor = '#EF4444';
+                    badge.style.color = '#F87171';
+                } else {
+                    badge.style.background = 'rgba(245, 158, 11, 0.25)';
+                    badge.style.borderColor = '#F59E0B';
+                    badge.style.color = '#FBBF24';
+                }
+            }
+
+            if (txtRegistro) {
+                txtRegistro.textContent = `${textoAnotacao} (${grau})`;
+                txtRegistro.style.color = estado === 'paralisia' ? '#F87171' : '#FBBF24';
+            }
+
+            if (aplicarAutomacao) {
+                // Ajuste automático clínico do SPEC
+                if (estado === 'paralisia') {
+                    definirSPEC(olho, 'S'); // Paralisia: sem amplitude, não supera linha média (corta P, E, C)
+                } else {
+                    definirSPEC(olho, 'SP'); // Paresia: ultrapassa linha média mas limitada (corta E, C)
+                }
+
+                // Ajuste automático das caixinhas do Duplo H (Hipofunção + Hiperfunção yugo pela Lei de Hering)
+                aplicarHipoHiperDuploH(olho, musculo, grau);
+            }
+        }
+
+        function aplicarHipoHiperDuploH(olho, musculo, grau) {
+            // Mapeamento dos inputs por olho e músculo
+            const mapaOD = {
+                'RS': 'h_od_sup_esq',
+                'OI': 'h_od_sup_dir',
+                'RL': 'h_od_lat_esq',
+                'RM': 'h_od_lat_dir',
+                'RI': 'h_od_inf_esq',
+                'OS': 'h_od_inf_dir'
+            };
+            const mapaOE = {
+                'OI': 'h_oe_sup_esq',
+                'RS': 'h_oe_sup_dir',
+                'RM': 'h_oe_lat_esq',
+                'RL': 'h_oe_lat_dir',
+                'OS': 'h_oe_inf_esq',
+                'RI': 'h_oe_inf_dir'
+            };
+
+            // Músculos Yugo (Lei de Hering)
+            const yugoParaOD = {
+                'RL': { olhoY: 'oe', muscY: 'RM' },
+                'RM': { olhoY: 'oe', muscY: 'RL' },
+                'RS': { olhoY: 'oe', muscY: 'OI' },
+                'RI': { olhoY: 'oe', muscY: 'OS' },
+                'OS': { olhoY: 'oe', muscY: 'RI' },
+                'OI': { olhoY: 'oe', muscY: 'RS' }
+            };
+            const yugoParaOE = {
+                'RL': { olhoY: 'od', muscY: 'RM' },
+                'RM': { olhoY: 'od', muscY: 'RL' },
+                'RS': { olhoY: 'od', muscY: 'OI' },
+                'RI': { olhoY: 'od', muscY: 'OS' },
+                'OS': { olhoY: 'od', muscY: 'RI' },
+                'OI': { olhoY: 'od', muscY: 'RS' }
+            };
+
+            const inputAfetado = (olho === 'od') ? mapaOD[musculo] : mapaOE[musculo];
+            const yugoInfo = (olho === 'od') ? yugoParaOD[musculo] : yugoParaOE[musculo];
+
+            if (inputAfetado) {
+                setHVal(inputAfetado, grau);
+            }
+
+            if (yugoInfo) {
+                const inputYugo = (yugoInfo.olhoY === 'od') ? mapaOD[yugoInfo.muscY] : mapaOE[yugoInfo.muscY];
+                if (inputYugo) {
+                    const grauHiper = '+' + Math.abs(parseInt(grau, 10));
+                    setHVal(inputYugo, grauHiper);
+                }
+            }
+        }
+
+        // =========================================================================
+        // 🎯 FUNÇÕES AUXILIARES DE MEO (DUCÇÕES SPEC & VERSÕES EM DUPLO H)
+        // =========================================================================
+        function toggleSPEC(olho, letra) {
+            const el = document.querySelector(`.spec-letra[data-olho="${olho}"][data-letra="${letra}"], .spec-btn[data-olho="${olho}"][data-letra="${letra}"]`);
+            if (!el) return;
+            el.classList.toggle('cortada');
+            el.classList.toggle('cortado');
+            atualizarSPECLabel(olho);
+        }
+
+        function obterSPEC(olho) {
+            const letras = ['S', 'P', 'E', 'C'];
+            let res = '';
+            letras.forEach(l => {
+                const el = document.querySelector(`.spec-letra[data-olho="${olho}"][data-letra="${l}"], .spec-btn[data-olho="${olho}"][data-letra="${l}"]`);
+                if (el && !el.classList.contains('cortada') && !el.classList.contains('cortado')) {
+                    res += l;
+                }
+            });
+            return res || "Nenhum";
+        }
+
+        function definirSPEC(olho, valor) {
+            const letras = ['S', 'P', 'E', 'C'];
+            letras.forEach(l => {
+                const el = document.querySelector(`.spec-letra[data-olho="${olho}"][data-letra="${l}"], .spec-btn[data-olho="${olho}"][data-letra="${l}"]`);
+                if (!el) return;
+                // Se valor contiver a letra, está ativa (não cortada); caso contrário, cortada
+                const ativa = valor ? valor.includes(l) : true;
+                el.classList.toggle('cortada', !ativa);
+                el.classList.toggle('cortado', !ativa);
+            });
+            atualizarSPECLabel(olho);
+        }
+
+        function atualizarSPECLabel(olho) {
+            const txtEl = document.getElementById(`spec-result-${olho}`);
+            if (!txtEl) return;
+            const s = obterSPEC(olho);
+            txtEl.textContent = s;
+            txtEl.style.color = s === 'SPEC' ? '#38BDF8' : (s === 'Nenhum' ? '#F87171' : '#FBBF24');
+        }
+
+        function setHVal(id, val) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.value = (val !== undefined && val !== null && val !== '') ? val : "0";
+            colorirHInput(el);
+        }
+
+        function colorirHInput(el) {
+            if (!el) return;
+            const v = el.value.trim();
+            el.classList.remove('hiper', 'hipo');
+            if (v.startsWith('+') || (parseFloat(v) > 0)) {
+                el.classList.add('hiper');
+            } else if (v.startsWith('-') || (parseFloat(v) < 0)) {
+                el.classList.add('hipo');
+            }
+        }
+
+        function salvarNoLocalStorage(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+
+        function salvarFicha(e) {
+            if (e) e.preventDefault();
+            const data = extrairFormulario();
+            salvarNoLocalStorage(data);
+            calcularValoresDinamicos();
+            showToast("Dados salvos com sucesso na Ficha Clínica!");
+        }
+
+        function gerarNovoPacienteAleatorio() {
+            const data = gerarDadosPadrao();
+            salvarNoLocalStorage(data);
+            preencherFormulario(data);
+            calcularValoresDinamicos();
+            showToast("Novo paciente sorteado com sucesso!");
+        }
+
+        function calcularValoresDinamicos() {
+            const idade = parseInt(document.getElementById('idade').value) || 40;
+            const estadoOD = parseFloat(document.getElementById('estadoAccOD').value) || 5;
+            const estadoOE = parseFloat(document.getElementById('estadoAccOE').value) || 5;
+            const aaEsperado = 15 - (idade / 4);
+            document.getElementById('val-aaEsperado').textContent = `${aaEsperado.toFixed(2)} D`;
+            const diffOD = estadoOD - aaEsperado;
+            let dxOD = 'Normal';
+            if (diffOD > 0.25) dxOD = 'Excesso de Acomodação'; else if (diffOD < -0.25) dxOD = 'Insuficiência de Acomodação';
+            document.getElementById('val-dxOD').textContent = dxOD;
+            const diffOE = estadoOE - aaEsperado;
+            let dxOE = 'Normal';
+            if (diffOE > 0.25) dxOE = 'Excesso de Acomodação'; else if (diffOE < -0.25) dxOE = 'Insuficiência de Acomodação';
+            document.getElementById('val-dxOE').textContent = dxOE;
+            const cHorizOD = parseFloat(document.getElementById('ceraHorizOD').value) || 44.00;
+            const cVertOD = parseFloat(document.getElementById('ceraVertOD').value) || 44.00;
+            const astigOD = Math.abs(cVertOD - cHorizOD);
+            document.getElementById('val-astigOD').textContent = `${astigOD.toFixed(2)} D (${cVertOD >= cHorizOD ? 'Com a Regra' : 'Contra a Regra'})`;
+            const cHorizOE = parseFloat(document.getElementById('ceraHorizOE').value) || 44.00;
+            const cVertOE = parseFloat(document.getElementById('ceraVertOE').value) || 44.00;
+            const astigOE = Math.abs(cVertOE - cHorizOE);
+            document.getElementById('val-astigOE').textContent = `${astigOE.toFixed(2)} D (${cVertOE >= cHorizOE ? 'Com a Regra' : 'Contra a Regra'})`;
+        }
+
+        function formatarDioptria(input) {
+            let texto = input.value.toString().replace('+', '').trim();
+            let val = parseFloat(texto);
+            if (isNaN(val)) val = 0;
+            val = Math.round(val * 4) / 4;
+
+            // Cilindros sempre negativos (se digitar positivo, converte para negativo)
+            if (input.id === 'rxCilOD' || input.id === 'rxCilOE' || input.id === 'rxDinCilOD' || input.id === 'rxDinCilOE') {
+                if (val > 0) val = -val;
+                input.value = val.toFixed(2);
+            } else if (input.id === 'rxEsfOD' || input.id === 'rxEsfOE' || input.id === 'rxDinEsfOD' || input.id === 'rxDinEsfOE') {
+                // Esféricos positivos ganham o símbolo '+'
+                if (val > 0) {
+                    input.value = '+' + val.toFixed(2);
+                } else {
+                    input.value = val.toFixed(2);
+                }
+            } else {
+                input.value = val.toFixed(2);
+            }
+
+            calcularValoresDinamicos();
+        }
+
+        function formatarEixo(input) {
+            let val = parseInt(input.value);
+            if (isNaN(val)) val = 0;
+            val = Math.max(0, Math.min(180, Math.round(val)));
+            input.value = val;
+        }
+
+        function formatarIdade(input) {
+            let val = parseInt(input.value);
+            if (isNaN(val) || val < 5) val = 5;
+            if (val > 100) val = 100;
+            input.value = val;
+            calcularValoresDinamicos();
+        }
+
+        const camposDioptricos = [
+            'ceraHorizOD', 'ceraVertOD', 'ceraHorizOE', 'ceraVertOE',
+            'rxEsfOD', 'rxCilOD', 'rxEsfOE', 'rxCilOE',
+            'rxDinEsfOD', 'rxDinCilOD', 'rxDinEsfOE', 'rxDinCilOE',
+            'estadoAccOD', 'estadoAccOE', 'recobroOD', 'recobroOE'
+        ];
+
+        camposDioptricos.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('blur', () => formatarDioptria(el));
+                el.addEventListener('change', () => formatarDioptria(el));
+                el.addEventListener('input', calcularValoresDinamicos);
+            }
+        });
+
+        ['ceraEixoOD', 'ceraEixoOE', 'rxEixoOD', 'rxEixoOE', 'rxDinEixoOD', 'rxDinEixoOE'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('blur', () => formatarEixo(el));
+                el.addEventListener('change', () => formatarEixo(el));
+            }
+        });
+
+        const elIdade = document.getElementById('idade');
+        if (elIdade) {
+            elIdade.addEventListener('blur', () => formatarIdade(elIdade));
+            elIdade.addEventListener('input', calcularValoresDinamicos);
+        }
+
+        // Sincronização amigável de Hirschberg na Motilidade Ocular
+        const elHirsch = document.getElementById('meoHirschberg');
+        const elHirschGraus = document.getElementById('meoHirschbergGraus');
+        if (elHirsch && elHirschGraus) {
+            elHirsch.addEventListener('change', () => {
+                if (elHirsch.value.includes('Centrado') || elHirsch.value.includes('Ortoforia')) {
+                    elHirschGraus.value = "0°";
+                } else if (elHirschGraus.value === '0°') {
+                    elHirschGraus.value = "15°";
+                }
+            });
+
+            elHirschGraus.addEventListener('change', () => {
+                if (elHirschGraus.value === '0°') {
+                    elHirsch.value = "Centrado (Ortoforia)";
+                } else if (elHirsch.value.includes('Centrado') || elHirsch.value.includes('Ortoforia')) {
+                    elHirsch.value = "Desvio Temporal (Endotropia)";
+                }
+            });
+        }
+
+        let toastTimeout = null;
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = msg;
+            toast.classList.add('show');
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 5000);
+        }
+
+        document.addEventListener('DOMContentLoaded', carregarDados);
+    </script>
+    <script src="fichaclinica.js"></script>
+</body>
+
+</html>

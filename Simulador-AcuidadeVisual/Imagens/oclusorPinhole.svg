@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 420" width="140" height="420">
+  <defs>
+    <!-- Máscara de perfuração: Branco = opaco, Preto = 100% vazado/transparente -->
+    <mask id="pinholeMask">
+      <rect x="0" y="0" width="140" height="420" fill="#FFFFFF" />
+
+      <!-- Furo Central Nítido (Transparente) -->
+      <circle cx="70" cy="70" r="5" fill="#000000" />
+
+      <!-- Círculo interno de furos (Transparente) -->
+      <circle cx="85" cy="70" r="4" fill="#000000" />
+      <circle cx="77.5" cy="83" r="4" fill="#000000" />
+      <circle cx="62.5" cy="83" r="4" fill="#000000" />
+      <circle cx="55" cy="70" r="4" fill="#000000" />
+      <circle cx="62.5" cy="57" r="4" fill="#000000" />
+      <circle cx="77.5" cy="57" r="4" fill="#000000" />
+
+      <!-- Círculo externo de furos (Transparente) -->
+      <circle cx="100" cy="70" r="3.5" fill="#000000" />
+      <circle cx="96" cy="85" r="3.5" fill="#000000" />
+      <circle cx="85" cy="96" r="3.5" fill="#000000" />
+      <circle cx="70" cy="100" r="3.5" fill="#000000" />
+      <circle cx="55" cy="96" r="3.5" fill="#000000" />
+      <circle cx="44" cy="85" r="3.5" fill="#000000" />
+      <circle cx="40" cy="70" r="3.5" fill="#000000" />
+      <circle cx="44" cy="55" r="3.5" fill="#000000" />
+      <circle cx="55" cy="44" r="3.5" fill="#000000" />
+      <circle cx="70" cy="40" r="3.5" fill="#000000" />
+      <circle cx="85" cy="44" r="3.5" fill="#000000" />
+      <circle cx="96" cy="55" r="3.5" fill="#000000" />
+    </mask>
+  </defs>
+
+  <!-- Cabo Minimalista Neutro -->
+  <rect x="63" y="110" width="14" height="280" rx="7" fill="#1E293B" stroke="#334155" stroke-width="2" />
+  
+  <!-- Concha Circular Minimalista com Máscara Pinhole -->
+  <g mask="url(#pinholeMask)">
+    <circle cx="70" cy="70" r="60" fill="#1E293B" stroke="#475569" stroke-width="3" />
+    <circle cx="70" cy="70" r="54" fill="#0F172A" />
+  </g>
+</svg>

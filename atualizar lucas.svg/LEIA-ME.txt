@@ -1,0 +1,19 @@
+=========================================================================
+  ATUALIZADOR UNIVERSAL DO PACIENTE LUCAS (lucas.svg) - PROF. LUCAS
+=========================================================================
+
+COMO USAR:
+1. Sempre que você fizer alterações no "lucas.svg" no CorelDRAW, Illustrator,
+   Inkscape ou Figma, salve ou cole o novo arquivo "lucas.svg" AQUI nesta pasta.
+
+2. Dê dois cliques no arquivo:
+   👉 atualizar.bat
+
+O QUE O SCRIPT FAZ AUTOMATICAMENTE:
+- Detecta e converte automaticamente a codificação de UTF-16 para UTF-8 padrão web.
+- Localiza todos os simuladores do projeto (MEO, Acuidade Visual, Amplitude,
+  Flexibilidade, Retinoscopia, Subjetivo, etc.).
+- Substitui o "lucas.svg" em todas as pastas de simuladores simultaneamente.
+- Atualiza a constante interna LUCAS_SVG_RAW no meo.js para que o simulador de MEO
+  funcione sem restrições de CORS.
+- Exibe o relatório de todas as pastas atualizadas com sucesso!

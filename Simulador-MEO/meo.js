@@ -1,0 +1,1458 @@
+// =========================================================================
+// 🎯 SIMULADOR DE MOTILIDADE OCULAR EXTRÍNSECA (MEO) - PROF. LUCAS
+// Lanterna Clínica, Eye-Tracking Suave, Teste de Hirschberg e 9 Posições
+// =========================================================================
+
+// Configurações e Calibração dos Instrumentos e Hitboxes (Calibrado pelo SVG das Pupilhas: OD #36, OE #63)
+const CALIBRACAO_OCLUSOR = {
+    mostrarHitboxDebug: false,
+    larguraAtivo: 175,
+    offsetX: 0,
+    offsetY: 175,
+    offsetConchaX: 0,
+    offsetConchaY: -175,
+    hitboxPupilaY: 0.547286,   // Y exato: 16254.4 / 29700 (54.73%)
+    hitboxPupilaOD_X: 0.320385, // X exato OD: 6728.1 / 21000 (32.04%)
+    hitboxPupilaOE_X: 0.673030, // X exato OE: 14133.6 / 21000 (67.30%)
+    raioOclusaoOlho: 90
+};
+
+// 📐 LIMITES MÁXIMOS FISIOLÓGICOS DO MOVIMENTO OCULAR (EXCURSÃO MÁXIMA)
+const LIMITES_EXCURSAO_OCULAR = {
+    centro: { x: 0, y: 0 },
+    // Observador / Paciente:
+    // Translação X negativa (-35): olhos movem p/ direita do paciente (Dextroversão)
+    // Translação X positiva (+35): olhos movem p/ esquerda do paciente (Levoversão)
+    // Translação Y negativa (-25): olhos movem p/ cima (Supraversão)
+    // Translação Y positiva (+25): olhos movem p/ baixo (Infraversão)
+    dextroX: -35,      // Dextroversão (direita do paciente = esquerda da tela)
+    levoX: 35,        // Levoversão (esquerda do paciente = direita da tela)
+    supraY: -25,      // Supraversão
+    infraY: 25,       // Infraversão
+    escalaSVG: 32     // Fator de conversão para unidades do viewBox do SVG
+};
+
+// 🎯 MAPEAMENTO ANATÔMICO DEFINITIVO DAS ESTRUTURAS DO LUCAS (MEO)
+const MAPEAMENTO_PADRAO_LUCAS = {
+    "iris-od": [
+        { index: 34, className: "fil10", pathD_start: "M5789.57 15269.41c388.13,-425.32 10" },
+        { index: 35, className: "fil11", pathD_start: "M5555 16440c75.4,-10.58 153.14,-11." }
+    ],
+    "pupila-od": [
+        { index: 36, className: "fil1", pathD_start: "M5770.46 16480.26c-152.99,-806.55 8" }
+    ],
+    "olho-od": [
+        { index: 34, className: "fil10", pathD_start: "M5789.57 15269.41c388.13,-425.32 10" },
+        { index: 35, className: "fil11", pathD_start: "M5555 16440c75.4,-10.58 153.14,-11." },
+        { index: 36, className: "fil1", pathD_start: "M5770.46 16480.26c-152.99,-806.55 8" }
+    ],
+    "iris-oe": [
+        { index: 39, className: "fil10", pathD_start: "M13259.63 15268.22c388.13,-425.32 1" },
+        { index: 40, className: "fil11", pathD_start: "M15095.52 16486.14c53.94,-25.12 107" }
+    ],
+    "pupila-oe": [
+        { index: 63, className: "fil1", pathD_start: "M15091.27 16481.76c152.99,-806.55 -" }
+    ],
+    "esclera-od": [
+        { index: 18, className: "fil9", pathD_start: "M4584.68 16351.19" }
+    ],
+    "esclera-oe": [
+        { index: 30, className: "fil9", pathD_start: "M16350.14 16236.09" }
+    ],
+    "olho-oe": [
+        { index: 39, className: "fil10", pathD_start: "M13259.63 15268.22c388.13,-425.32 1" },
+        { index: 40, className: "fil11", pathD_start: "M15095.52 16486.14c53.94,-25.12 107" },
+        { index: 63, className: "fil1", pathD_start: "M15091.27 16481.76c152.99,-806.55 -" }
+    ]
+};
+
+// Estruturas ativas mapeadas
+const mapeamentoEstruturas = JSON.parse(JSON.stringify(MAPEAMENTO_PADRAO_LUCAS));
+
+// =========================================================================
+// 🎯 CALIBRAÇÃO CLÍNICA DE HIRSCHBERG & REFLEXOS CORNEANOS
+// (Altere os números aqui no código ou use o botão '⚙️ Calibrar Hirschberg' no simulador)
+// =========================================================================
+const CALIBRACAO_HIRSCHBERG_DEFAULT = {
+    odX: 32.04,
+    odY: 54.73,
+    oeX: 67.30,
+    oeY: 54.73,
+    desvio7: 350,
+    desvio15: 800,
+    desvio30: 1050,
+    desvio45: 1300
+};
+
+let calibracaoHirschberg = carregarCalibracaoHirschberg();
+
+function carregarCalibracaoHirschberg() {
+    try {
+        const salvo = localStorage.getItem('calibracaoHirschberg');
+        if (salvo) {
+            return Object.assign({}, CALIBRACAO_HIRSCHBERG_DEFAULT, JSON.parse(salvo));
+        }
+    } catch (e) {
+        console.warn("Erro ao carregar calibracaoHirschberg:", e);
+    }
+    return Object.assign({}, CALIBRACAO_HIRSCHBERG_DEFAULT);
+}
+
+// Parâmetros Clínicos Padrão do Paciente (Sincronizados com a Ficha Clínica)
+let dadosClinicosMEO = {
+    hirschberg: "Centrado (Ortoforia)",
+    olhoDesvio: "OE (Olho Esquerdo)",
+    hirschbergGraus: "0°",
+    kappaOD: "+5° (Fisiológico Nasal)",
+    kappaOE: "+5° (Fisiológico Nasal)",
+    duccoes: "SPEC (Suaves, Precisos, Extensos e Constantes)",
+    versoes: "Normais e Simétricas (Sem hipo/hiperfunções)",
+    estadoMotor: "normal", // 'normal', 'paresia', 'paralisia'
+    olhoMotor: "nenhum",   // 'nenhum', 'od', 'oe'
+    musculoMotor: "RL",    // 'RL', 'RM', 'RS', 'RI', 'OS', 'OI'
+    grauMotor: "-2",
+    anotacaoMotora: "Movimentação Ocular Normal"
+};
+
+// Estado Global do Teste
+let estadoTeste = {
+    olhoAberto: 'ao',         // 'ao', 'od', 'oe'
+    oclusorTipo: null,
+    isComCorrecao: false,
+    posicaoOlharX: 0,        // Entre -35 e +35
+    posicaoOlharY: 0,        // Entre -25 e +25
+    animacaoFrame: null
+};
+
+// Referências de Ferramentas
+let oclusorAtivo = null;
+let isOclusorTravado = false;
+
+let lanternaAtiva = false;
+let isLanternaTravada = false;
+
+let falaTimeout = null;
+let toastTimeout = null;
+let cardInstrucoesTimeout = null;
+
+function exibirCardInstrucoes() {
+    const cardInst = document.getElementById('card-instrucoes-oclusor');
+    if (!cardInst) return;
+    cardInst.classList.add('visivel');
+    if (cardInstrucoesTimeout) clearTimeout(cardInstrucoesTimeout);
+    cardInstrucoesTimeout = setTimeout(() => {
+        cardInst.classList.remove('visivel');
+    }, 5000);
+}
+
+function ocultarCardInstrucoes() {
+    const cardInst = document.getElementById('card-instrucoes-oclusor');
+    if (!cardInst) return;
+    if (cardInstrucoesTimeout) clearTimeout(cardInstrucoesTimeout);
+    cardInst.classList.remove('visivel');
+}
+
+// SVG com esclera nasal, carúnculas lacrimais e alinhamento anatômico ortofórico
+const LUCAS_SVG_RAW = "﻿<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\r\n<!-- Creator: CorelDRAW 2020 (64 Bit) -->\r\n<svg xmlns=\"http://www.w3.org/2000/svg\" xml:space=\"preserve\" width=\"210mm\" height=\"297mm\" version=\"1.1\" style=\"shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd\"\r\nviewBox=\"0 0 21000 29700\"\r\n xmlns:xlink=\"http://www.w3.org/1999/xlink\"\r\n xmlns:xodm=\"http://www.corel.com/coreldraw/odm/2003\">\r\n <defs>\r\n  <style type=\"text/css\">\r\n   <![CDATA[\r\n    .str0 {stroke:black;stroke-width:20;stroke-miterlimit:22.9256}\r\n    .fil1 {fill:#282828}\r\n    .fil10 {fill:#403231}\r\n    .fil5 {fill:#5F3F3A}\r\n    .fil4 {fill:#724C45}\r\n    .fil3 {fill:#84594F}\r\n    .fil6 {fill:#AA7A6B}\r\n    .fil11 {fill:#BF373A}\r\n    .fil14 {fill:#CEB8BC}\r\n    .fil2 {fill:#D4B29F}\r\n    .fil7 {fill:#DF9984}\r\n    .fil15 {fill:#EF494C}\r\n    .fil12 {fill:#F8AC9E}\r\n    .fil8 {fill:#FDD8BB}\r\n    .fil13 {fill:#FEFEFE}\r\n    .fil9 {fill:#FFFFFE}\r\n    .fil0 {fill:white}\r\n   ]]>\r\n  </style>\r\n </defs>\r\n <g id=\"Camada_x0020_1\">\r\n  <metadata id=\"CorelCorpID_0Corel-Layer\"/>\r\n  <polygon class=\"fil0 str0\" points=\"2656.83,28489.7 4987.66,28894.87 5298.55,28924.58 6185.93,28996.42 14814.08,29022.59 15605.35,28928.83 15866.59,28912.72 15964.23,28867.83 16311.79,28850.74 16550.64,28783.32 18083.65,28518.65 18277.25,28485.72 17467.04,26096.28 16096.5,24895.08 14514.29,24223.03 13805.21,23566.87 12461.12,23672.7 7561.04,23487.49 6396.86,24207.16 4047.36,25413.66 2957.27,27159.91 \"/>\r\n  <path class=\"fil1\" d=\"M11183.99 853.17c174.02,-214.28 518.5,-214.64 691.62,1.16 320.99,385.88 376.09,915.24 393.29,1398.49 1003.21,116.85 2097.07,442.96 3053.39,-37.54 302.31,-126.69 503.21,-582.17 883.12,-410.89 495.43,304.94 503.66,986.75 429.73,1500.89 673.26,229.49 1348.87,644.29 2087.38,472.66 306.87,-87.17 506.3,214.23 479.7,488.69 260.72,-290.47 743.21,-175.92 808.91,220.12 279.82,1317.92 12.93,2718.36 -555.25,3926.4 591.25,126.67 1077.86,616.95 1208.96,1205.72 188.41,777.7 -53.65,1589.69 -443.4,2265.6 -524.68,791.71 -662.68,1751.99 -996.88,2626.89 561.72,152.83 818.6,770.25 822.13,1306.53 15.58,1015.4 -329.65,2022.86 -884.3,2865.86 -288.2,440.17 -773.34,772.9 -1315.65,752.47 -78.61,852.41 -425.03,1714.08 -1145.17,2220.38 -1032.44,770.11 -2251.83,1265.83 -3503.4,1546.54 596.26,79.06 1280.38,250.73 1562.7,844.47 787.46,387.55 1670.28,657.24 2336.49,1259.66 840.8,823.01 1200.57,2008.01 1372.96,3142.59 -128.59,24.99 -257.63,47.76 -386.67,68.78 -280.7,-1076.97 -597.72,-2278.13 -1518.17,-2992.69 -654.3,-455.89 -1413.97,-720.58 -2164.24,-970.86 -8.67,16.45 -25.42,49.67 -33.65,66.43 -593.15,945 -1715.99,1370.76 -2700.37,1791.09 -225.88,73.92 -455.01,146.52 -691.93,175.03 317.01,-145.35 646.66,-261.89 962.49,-410.48 753.8,-354.49 1505.24,-771.28 2086.49,-1378.4 134.18,-165.78 380.06,-441.49 129.04,-615.5 -452.36,-360.37 -1132.53,-513.65 -1678.36,-293.49 88.34,150.93 340.96,219.27 395.63,431.2 101.28,-156.38 195.17,-318.33 312.75,-462.94 -55.84,850.34 -761.58,1546.68 -1459.38,1967 -1561.52,909.28 -3775.59,-199.87 -4022.94,-1969.36 144.18,154.01 225.89,352.28 351.4,520.41 17.21,-239.27 275.27,-324.5 378.44,-486.02 -530.84,-238.38 -1202.19,-53.94 -1661.17,267.48 -285.4,215.01 -22.63,532.46 162.25,710.74 762.33,713.08 1719.81,1195.57 2691.42,1556.82 130.95,43.35 260.71,92.29 382.25,158.28 -399.88,-59.82 -786.56,-189.59 -1164.27,-329.94 -838.87,-385.94 -1776.83,-781.13 -2293.27,-1587.69 -21.9,-39.54 -43.06,-78.92 -64.23,-118.01 -846.38,317.74 -1759.68,589.93 -2418.43,1243.64 -679.47,759.67 -948.45,1776.09 -1217.43,2734.32 -127.47,-24.99 -255.31,-46.59 -381.98,-73.48 183.37,-1154.88 546.57,-2366.47 1413.32,-3198.45 654.45,-585.67 1516.97,-841.68 2278.11,-1238.2 261.6,-601.98 959.4,-716.61 1534.48,-809.2 -1462.46,-337.88 -2973.97,-908.26 -4002.22,-2047.1 -403.46,-481.33 -541.47,-1116.22 -623.17,-1723.05 -614.2,59.09 -1130.65,-384.61 -1423.11,-884.3 -503.17,-840.95 -828.43,-1820.33 -792.07,-2807.8 15.23,-508.66 267.03,-1079.92 796.01,-1226.15 -456.25,-1296.41 -984.05,-2572.81 -1331.22,-3904.03 -263.52,-964.54 346.36,-2133.51 1393.37,-2239.89 -134.89,-1317.13 298.68,-2657.33 1090,-3707.86 1116.19,-1524.74 2891.16,-2505.66 4744.71,-2790.24 286.88,-68.84 561.71,153.64 556.27,447.6 1062.72,-390.95 2299.74,-574.29 3083.52,-1470.38z\"/>\r\n  <path class=\"fil2\" d=\"M8367.95 2845.09c1104.46,-367.49 2331.63,-602.05 3182.72,-1459.82 -381.96,771.74 -1290.52,1066.92 -2047.84,1344.53 -1739.64,544.97 -3521.77,1089.18 -5026.91,2152.6 1035.73,-1079.07 2498.19,-1593.97 3892.03,-2037.31z\"/>\r\n  <path class=\"fil3\" d=\"M11550.68 1385.27c336.71,831.15 60.25,1939.55 -819.06,2298.06 -718.52,268.97 -1498.47,62.96 -2239.78,34.41 631.08,127.04 1271.42,293.6 1919.98,237.7 627.56,-50.06 1147.08,-536.01 1359.45,-1110.73 137.56,8.21 275.12,18.4 412.83,29.7 -12.2,68.42 -24.25,136.84 -35.57,205.26 1278.48,179.85 2906.72,595.83 3887.72,-516.83 130.51,424.96 41.45,935.17 -299.52,1239.73 -595.06,550.48 -1462.17,572.39 -2223.02,491.44 213.11,83.64 440.31,114.17 663.12,160.67 711.18,224.02 1605.61,302.22 2182.75,-260.38 299.08,87.19 1248.63,294.43 705.29,663.48 -1927.89,1598.24 -4177.82,2993.58 -6712.42,3293.46 -1237.02,164.17 -2487.28,137.22 -3729.44,195.48 -614.17,-117.68 -1129.88,-609.5 -1307.71,-1208.47 34.83,551.24 447.66,978.17 903.55,1239.73 -528.2,116.87 -1018.48,343.67 -1519.32,533.65 -919.51,-27.36 -1832.82,-940.22 -1426.62,-1897.32 -592.28,891.79 292.83,1858.21 1187.35,1995.86 -596.6,390.15 -1369.12,200.17 -1893.41,-222.48 -1.17,30.92 -3.51,93.08 -4.69,123.94 -337.02,-1465.7 209.56,-3017.42 1170.55,-4134.79 922.65,-1120.89 2310.22,-1674.1 3657.03,-2097.1 -195.91,335.44 -594.63,446.47 -920.31,612.63 -983.35,458.19 -2019.33,1067.31 -2490.42,2091.64 168.49,-163.83 294.39,-374.93 496.91,-501.61 1505.14,-1063.43 3287.26,-1607.63 5026.91,-2152.6 757.33,-277.61 1665.87,-572.78 2047.85,-1344.53z\"/>\r\n  <path class=\"fil2\" d=\"M2260.35 7690.25c174.75,-2725.33 2657.34,-4788.46 5237.7,-5198.16 -34.09,62.89 -52.46,139.58 -108.31,187.65 -1346.8,422.99 -2734.38,976.21 -3657.03,2097.1 -960.98,1117.36 -1507.57,2669.1 -1170.55,4134.79 1.94,52.36 3.93,104.8 7.82,157.57 -265.45,-406.6 -346.78,-901.17 -309.63,-1378.95z\"/>\r\n  <path class=\"fil2\" d=\"M12184.1 2874.4c1273.32,134.52 2780.03,534.46 3858.77,-391.31 -1.62,19.89 -5.15,59.81 -6.62,79.75 -981,1112.65 -2609.25,696.69 -3887.72,516.83 11.32,-68.42 23.37,-136.83 35.57,-205.27z\"/>\r\n  <path class=\"fil4\" d=\"M14176.84 4454.66c716.61,48.88 1444.97,-176.3 1969.2,-675.55 837.13,264.67 1643.97,737.34 2551.49,664.65 -96.99,493.78 -712.05,349.87 -1066.98,281.88 230.75,134.88 489.85,204.83 732.64,313.14 -1432.05,1897.73 -3495.62,3470.97 -5896.03,3821.26 -1714.8,175.51 -3418.16,-365.56 -5118.13,-371.03 -247.05,28.14 -502.33,-38.68 -726.02,-142.29 1242.17,-58.26 2492.42,-31.31 3729.44,-195.48 2534.6,-299.89 4784.51,-1695.22 6712.42,-3293.46 543.34,-369.05 -406.21,-576.29 -705.29,-663.48 -577.13,562.59 -1471.58,484.41 -2182.74,260.36z\"/>\r\n  <path class=\"fil5\" d=\"M18377.3 5019.23c389.45,90.72 799.93,14.48 1123.56,-221.66 52.47,439.44 95.38,899.2 10.58,1334.34 -282.61,1098.19 -755.71,2135.81 -1286.26,3134.32 -211.03,441.39 -726.75,667.39 -925.45,1102.57 -61.28,45.26 -121.54,92.29 -181.65,138.29 -154.45,-325.23 -509.1,-455.04 -780.84,-659.49 179.89,-87.98 356.54,-184.53 510.27,-313.94 -281.14,103.59 -559.06,229.91 -859.76,265.49 -1816.07,224.38 -3694.6,88.72 -5431.17,-507.86 -1019.36,-448.47 -2126.9,-615.01 -3207.55,-802.28 1699.97,5.46 3403.32,546.54 5118.13,371.03 2400.41,-350.3 4463.97,-1923.53 5896.03,-3821.26l14.11 -19.55z\"/>\r\n  <path class=\"fil6\" d=\"M13433.61 4940.23c288.95,-151.25 368.3,251 145.35,379.29 -812.42,694.71 -1962.6,782.31 -2987.25,795.21 994.23,-267.84 1947.02,-668.14 2841.9,-1174.5z\"/>\r\n  <path class=\"fil2\" d=\"M18225.19 9266.23c530.55,-998.51 1003.63,-2036.12 1286.25,-3134.32 -102.43,1136.15 -536.73,2267.57 -1286.25,3134.32z\"/>\r\n  <path class=\"fil5\" d=\"M4460.26 9010.17c-894.51,-137.66 -1779.63,-1104.07 -1187.35,-1995.86 -406.2,957.1 507.11,1869.97 1426.62,1897.32 500.84,-189.99 991.12,-416.77 1519.32,-533.65 1262.74,429.26 2703.46,312.77 3828.64,1142.01 -1630.75,-295.22 -3308.67,-115.73 -4919.87,213.45 -875.32,272.1 -2133.04,336.63 -2557.64,-664.24 -3.89,-52.78 -5.88,-105.19 -7.82,-157.57 1.18,-30.87 3.51,-93.01 4.69,-123.94 524.29,422.64 1296.81,612.64 1893.41,222.48z\"/>\r\n  <path class=\"fil2\" d=\"M1178.94 9260.76c295.59,-281.87 734.25,-299.47 1116.61,-247.47 28.89,61.35 58.23,123.14 87.16,184.91 -423.41,-75.07 -943.76,-8.59 -1192.05,385.92 -290.47,487.09 -121.18,1072.43 28.56,1575.94 305.76,1112.68 767.83,2181.88 1029.78,3304.71 -445.27,-1167.66 -894.13,-2335.46 -1286.65,-3522.07 -182.57,-547.31 -231.44,-1246.79 216.59,-1681.94z\"/>\r\n  <path class=\"fil2\" d=\"M18667.42 9069.98c795.23,-345.21 1636.17,429.27 1502.87,1254.61 -7.49,-807.36 -766.73,-1260.48 -1502.87,-1254.61z\"/>\r\n  <path class=\"fil4\" d=\"M17299.74 10368.79c525.54,-346.07 1041.99,-752.26 1367.66,-1298.8 736.17,-5.88 1495.4,447.25 1502.89,1254.6 24.11,316.23 -79.36,625.17 -172.83,923.51 -60.69,-560.39 -306.87,-1163.2 -836.69,-1428.26 41.9,80.93 95.83,158.33 120.08,247.48 271.59,1171.66 -103.62,2327.71 -350.81,3461.12 -429.28,1428.66 -975.43,2828.97 -1289.35,4293.5 66.88,-1669.27 139.91,-3340.27 154.91,-5012.02 59.81,-814.8 -139.62,-1671.75 -677.52,-2302.83 60.12,-46.01 120.37,-93.03 181.66,-138.3z\"/>\r\n  <path class=\"fil3\" d=\"M1190.67 9584.11c248.28,-394.51 768.63,-460.96 1192.04,-385.91 369.08,695.13 1207.28,994.19 1959.5,890.62 -262.33,127.86 -557.12,81.32 -837.05,109.08 131.38,51.61 266.64,91.09 404.25,122.37 -921.1,893.73 -830,2244.07 -797.96,3414.22 -174.37,533.78 -311.22,1082.26 -551.24,1591.65 -102.06,-287.33 -246.29,-562.59 -311.21,-861.37 -261.94,-1122.84 -724.03,-2192.02 -1029.78,-3304.71 -149.74,-503.52 -319.03,-1088.85 -28.55,-1575.95z\"/>\r\n  <path class=\"fil7\" d=\"M9903.18 9247.45c1944.23,764.36 4097.29,1020.86 6163.2,704.94 398.74,105.91 743.21,396.42 978.5,731.06 -2138.95,262.77 -4235.58,-412.07 -6300.32,-871.82 20.43,-5.07 60.99,-14.85 81.71,-19.96 -313.47,-170.82 -637.99,-326.82 -923.09,-544.22z\"/>\r\n  <path class=\"fil7\" d=\"M4986.1 9941.39c1748.75,-347.51 3578.49,-601.62 5342.83,-225.56 -1253.76,-173.95 -2512.69,-0.37 -3747.66,222.07 -962.92,215.01 -1956,396.46 -2834.1,867.98 262.34,-442.53 718.58,-800.33 1238.93,-864.49z\"/>\r\n  <path class=\"fil8\" d=\"M6581.28 9937.9c1234.96,-222.46 2493.87,-396.02 3747.65,-222.07 141.55,15.29 278.36,58.64 415.63,95.8 2064.74,459.74 4161.37,1134.6 6300.32,871.82l14.86 -3.1c401.95,512.48 592.71,1169.73 580.51,1817.12 -22.63,1656.15 -93.03,3311.17 -181.65,4964.84 -59.52,852.26 -85.24,1714.37 -301.87,2545.61l-13.66 6.91c-374.62,155.34 -561.13,542.31 -854.33,799.65 -1141.48,1076.97 -2651.87,1642.36 -4142.12,2043.58 23.08,1.91 69.52,5.43 92.59,6.9 -1169.7,250.29 -2398.21,253.82 -3568.36,1.18 23.96,-3.09 71.28,-9.4 95.09,-12.05 -1444.54,-396.08 -2916.27,-921.48 -4044.49,-1943.93 -336.25,-280.27 -555.17,-697.07 -955.52,-895.62l-13.29 -7.06c-438.27,-2198.33 -330.75,-4460 -471.91,-6688.62 -39.48,-850.21 -84.02,-1801.81 466.44,-2512.98 878.1,-471.53 1871.17,-652.97 2834.11,-867.98zm-2815.35 10076.63c400.36,198.56 619.27,615.36 955.52,895.63 1128.22,1022.44 2599.95,1547.85 4044.49,1943.93 -23.81,2.64 -71.13,8.97 -95.09,12.05 -1452.33,-261.9 -2921.12,-730.28 -4103.45,-1642.79 -394.09,-297.18 -697.1,-722.79 -801.47,-1208.82zm12522.82 799.95c293.19,-257.34 479.69,-644.3 854.31,-799.64 -157.24,828.15 -906.35,1321.52 -1587.39,1707.45 -1029.36,565.24 -2160.41,947.21 -3316.46,1142.67 -23.07,-1.47 -69.52,-4.99 -92.59,-6.9 1490.26,-401.22 3000.63,-966.61 4142.13,-2043.58z\"/>\r\n  <path class=\"fil9\" d=\"M4585.3 16491.23c-1.62,816.03 894.13,1468.62 1778.27,1448.84 195.64,-4.37 397.25,4.39 583.18,-13.45 502.45,-48.21 895.82,-123.08 1271.74,-447.61 375.91,-324.54 488.42,-821.05 448.81,-1284.51 -39.6,-463.46 -300.95,-736.48 -624.24,-949.68 -323.29,-213.19 -170.32,-139.73 -457.05,-214.23 -875.27,-227.42 -1488.98,-100.77 -2728.97,788.77 -80.92,58.05 -271.51,537.89 -271.74,671.87z\"/>\r\n  <path class=\"fil2\" d=\"M18930.04 13528.43c247.2,-1133.41 622.4,-2289.44 350.81,-3461.11 662.68,1107.15 22.92,2373.12 -350.81,3461.11z\"/>\r\n  <path class=\"fil1\" d=\"M4524.4 14227.56c146.61,-1362.1 1701.8,-2198.77 2964.98,-1873.98 408.14,138 341.7,771.43 10.14,962.64 -965.57,251.02 -2250.65,-70.84 -2928.99,851.53 -11.34,14.84 -34.79,44.97 -46.13,59.81z\"/>\r\n  <path class=\"fil1\" d=\"M13412.17 12346.23c1212.62,-291.59 2659.2,442.97 2931.69,1710.12 2.07,35.85 6.32,107.87 8.67,143.88 -672.08,-919.57 -1928.65,-669.44 -2904.07,-855.5 -391.82,-153.29 -477.35,-859.32 -36.29,-998.5z\"/>\r\n  <path class=\"fil4\" d=\"M4843.44 13632.05c488.32,-885.92 1568.97,-1342.54 2549.09,-1141.2 338.91,96.99 231.32,715.44 -124.78,704.12 -815.96,80.52 -1673.21,54.82 -2424.31,437.08z\"/>\r\n  <path class=\"fil4\" d=\"M13518.86 12492.45c980.42,-200.15 2086.93,268.24 2540.47,1181.05 -733.06,-456.63 -1625.6,-372.86 -2445.53,-485.58 -349.49,-2.37 -461.33,-631.67 -94.94,-695.47z\"/>\r\n  <path class=\"fil7\" d=\"M4570.53 14167.74c678.34,-922.37 1963.42,-600.5 2928.99,-851.52 -127.41,327.14 -516,346.7 -815.81,345.96 -716.31,9.85 -1524.79,59.08 -2067.07,589.93 -11.32,-21.03 -34.4,-63.35 -46.11,-84.37z\"/>\r\n  <path class=\"fil7\" d=\"M13448.46 13344.73c975.43,186.05 2231.99,-64.07 2904.07,855.5 -2.35,-36.01 -6.62,-108.02 -8.67,-143.88 25.13,84.79 17.19,173.12 -2.36,258.37 -548.91,-578.62 -1402.65,-649.75 -2154.09,-650.92 -263.51,-12.51 -644.31,-12.94 -738.95,-319.07z\"/>\r\n  <path class=\"fil5\" d=\"M2560.21 15326.14c240.03,-509.4 376.87,-1057.87 551.24,-1591.65 100.11,1337.11 104,2685.97 169.28,4025.72 -250.18,-806.56 -452.73,-1634.12 -720.52,-2434.07z\"/>\r\n  <path class=\"fil1\" d=\"M5381.73 14756.05c776.42,-598.89 2007.57,-479.99 2650.4,262.34 -173.71,-74.96 -340.96,-164.6 -517.62,-232.65 -1019.21,-505.42 -2245.36,66.14 -2679.71,1074.04 -96.17,170.03 -178.64,348.31 -238.08,534.81 -27.38,77.01 -61.77,151.38 -97.75,225.16 -25,-715 313.95,-1430.43 882.76,-1863.7z\"/>\r\n  <path class=\"fil1\" d=\"M12847.47 14896.62c519.97,-630.21 1462.16,-831.54 2215.51,-545.69 835.82,307.6 1384.44,1207.63 1344.17,2085.76 -25.42,-49.68 -50.85,-98.47 -71.57,-149.76 -63.35,-197.83 -140.07,-391.66 -242.06,-572.73 -447.21,-1008.35 -1685.42,-1588.13 -2711.69,-1074.33 -184.44,71.86 -353.75,176.36 -534.36,256.75z\"/>\r\n  <path class=\"fil7\" d=\"M4834.8 15859.78c434.35,-1007.9 1660.49,-1579.46 2679.71,-1074.04 12.5,118.16 -48.4,127.32 -127.33,192.72 -1123.22,-224.16 -1802.65,318.26 -2552.38,881.32z\"/>\r\n  <path class=\"fil9\" d=\"M16350.14 16236.09c-0.08,49.98 -0.71,96.29 -0.62,140.04 1.63,816.04 -890.1,1468.62 -1770.25,1448.84 -194.76,-4.37 -395.46,4.39 -580.55,-13.45 -500.19,-48.21 -891.78,-123.08 -1266,-447.61 -374.22,-324.54 -486.22,-821.05 -446.8,-1284.51 39.43,-463.46 402.79,-797.34 621.43,-949.68 218.64,-152.34 169.99,-137.47 454.99,-214.23 323.96,-87.26 1320.56,19.31 1495.06,62.93 174.91,43.73 248.59,58.98 412.57,148.45 375.36,204.79 281.02,134.39 578.75,381.9 73.26,60.91 163.88,128.62 230.29,195.49 71.8,72.31 271.25,455.72 271.13,531.83z\"/>\r\n  <path class=\"fil7\" d=\"M13381.84 14639.86c1026.27,-513.8 2264.46,66 2711.68,1074.34 -636.76,-529.8 -956.65,-877.96 -2604.19,-818.26 -82.15,-69.24 -98.53,-152.9 -107.49,-256.08z\"/>\r\n  <path class=\"fil8\" d=\"M1381.49 15975.14c-37.52,-385.06 132.52,-967.62 609.5,-936.32 447.62,68.34 450.75,608.59 596.6,941.32 -18.41,8.67 -54.75,26.61 -73.12,35.28 -12.14,54.37 -24.63,108.61 -36.77,163.72 -198.56,-240.44 -492.21,-585.96 -839.37,-437.08 451.16,153.71 748.31,560.24 944.56,974.69 -459.76,385.48 -182.57,1441.89 499.24,1114.3 58.65,350.21 167.72,689.28 230.68,1038.32 -382.38,84.07 -805.79,-35.12 -1036.42,-364.33 -544.22,-725.29 -843.32,-1627.95 -894.9,-2529.9z\"/>\r\n  <path class=\"fil8\" d=\"M18252.22 16188.24c204.44,-396.07 137.12,-1174.85 746.74,-1154.12 529.39,111.4 552.75,784.95 498.37,1217.33 -101.99,784.79 -376.09,1558.44 -838.16,2203.92 -231.03,333.46 -662.67,499.24 -1055.95,385.93 70.4,-327.3 164.16,-648.27 230.59,-975.86 705.01,248.96 952.49,-755.71 494.25,-1154.13 167.26,-412.11 494.1,-809.35 929.27,-953.23 -351.1,-186.8 -685.01,227.21 -884,482.93 -40.56,-18.08 -80.84,-35.56 -121.11,-52.77z\"/>\r\n  <path class=\"fil10\" d=\"M5789.57 15269.41c388.13,-425.32 1057.56,-562.59 1551.37,-237.64 1041.86,652.82 873.72,2648.64 -445.75,2828.52 -1336.66,137.26 -1974.75,-1694.38 -1105.62,-2590.88z\"/>\r\n  <path class=\"fil11\" d=\"M5555 16440c75.4,-10.58 153.14,-11.31 215.45,40.27 35.86,393.28 268.96,796.71 661.5,920.75 600.07,230.59 1215.86,-308.92 1236.59,-911.05 37.18,-28.51 74.65,-56.58 112.13,-84.35 252.94,700.88 -528.2,1508.61 -1249.07,1319.76 -586.84,-110.97 -990.71,-704.12 -976.6,-1285.38z\"/>\r\n  <path class=\"fil1\" d=\"M5908.74 16462.17c-130.71,-689.1 707.69,-1370.92 1317.32,-876.57 236.57,227.43 314.08,394.71 319.07,705.57 -4.02,59.38 -7.41,119.54 -14.69,179.3 -17.7,514.44 -543.84,975.4 -1056.53,778.39 -335.38,-105.99 -534.54,-450.66 -565.17,-786.69z\"/>\r\n  <path class=\"fil7\" d=\"M2514.48 16015.41c18.36,-8.66 54.69,-26.59 73.11,-35.27 183.75,563.76 332.32,1138.56 461.31,1717.17 -457.8,278.35 -753.35,-461.77 -462.12,-776.14 236.96,-227.51 9.79,-516.44 -109.08,-742.03 12.14,-55.12 24.63,-109.34 36.78,-163.73z\"/>\r\n  <path class=\"fil7\" d=\"M18252.22 16188.24c40.28,17.2 80.54,34.7 121.11,52.77 -102,208.69 -302.61,466.77 -62.17,659.59 324.21,292.02 25.42,1071.53 -420.18,808.46 69.22,-503.96 217.36,-1023.18 361.24,-1520.82z\"/>\r\n  <g id=\"_1635811835776\">\r\n   <path class=\"fil10\" d=\"M13259.63 15268.22c388.13,-425.32 1057.56,-562.59 1551.37,-237.64 1041.86,652.82 873.72,2648.64 -445.75,2828.52 -1336.66,137.26 -1974.75,-1694.38 -1105.62,-2590.88z\"/>\r\n   <path class=\"fil11\" d=\"M15095.52 16486.14c53.94,-25.12 107.87,-50.1 162.69,-75.09 146.98,769.37 -658.71,1513.03 -1413.68,1319.03 -533.78,-156.67 -862.84,-724.84 -867.25,-1262.3 60.27,6.61 155.36,16.64 215.91,23.69 57.47,418.71 282.31,837.1 715.42,940.42 589.93,162.23 1145.46,-376.09 1186.91,-945.75z\"/>\r\n  </g>\r\n  <path class=\"fil12\" d=\"M5368.06 18460.5c469.27,-62.6 990.7,-31 1380.16,266.61 183.28,133.29 176.66,425.32 4.71,565.67 -576.7,523.94 -1595.18,532.17 -2143.31,-32.04 -280.69,-477.79 381.98,-756.44 758.44,-800.24z\"/>\r\n  <path class=\"fil12\" d=\"M14868.46 18458.89c523.79,-61.73 1507.43,-27.33 1505.97,679.87 -462.2,755.7 -1735.1,693.98 -2301.95,83.33 -265.87,-484.84 420.18,-738.95 795.98,-763.2z\"/>\r\n  <path class=\"fil1\" d=\"M10145.24 18795.15c180.17,-17.2 361.96,-10.58 541.12,15.58 -150.2,165.04 -401.96,161.52 -541.12,-15.58z\"/>\r\n  <path class=\"fil1\" d=\"M8368.25 19955.16c1305.06,482.05 2929.93,695.45 4092.29,-254.25 -213.82,816.4 -1058.01,1347.25 -1881.76,1293.02 415.19,-140.07 1118.12,-200.61 1199.54,-709.71 -869.16,326.85 -1826.21,281.59 -2716.39,68.93 -19.25,102.44 -38.36,204.87 -48.5,308.78 -5.14,42.33 -10.14,84.8 -15.28,127.86 -326.85,-146.24 -671.35,-440.61 -629.9,-834.63z\"/>\r\n  <path class=\"fil13\" d=\"M9061.94 20353.15c890.18,212.66 1847.22,257.93 2716.38,-68.93 -81.42,509.09 -784.36,569.65 -1199.54,709.71 -527.02,78.48 -1072.72,-16.02 -1563.88,-214.28 -0.29,-29.4 -1.03,-88.33 -1.47,-117.72 10.15,-103.91 29.25,-206.34 48.51,-308.78z\"/>\r\n  <path class=\"fil8\" d=\"M8637.35 23039.42c26.59,3.82 79.65,11.31 106.25,14.84 6.62,273.94 -141.53,667.38 157.25,833.45 632.11,421.5 1281.56,818.02 1937.91,1200.72 -761.13,59.38 -1534.48,-48.94 -2253.01,-305.84 10.88,-581.25 44.83,-1161.92 51.6,-1743.17z\"/>\r\n  <path class=\"fil7\" d=\"M8743.6 23054.25c1144.44,225.16 2321.93,193.12 3468.57,7.36 1.18,566.99 -19.55,1145.17 79.36,1704.23 -456.92,197.52 -959.4,284.23 -1452.77,322.59 -656.34,-382.7 -1305.8,-779.22 -1937.91,-1200.72 -298.78,-166.08 -150.64,-559.5 -157.25,-833.46z\"/>\r\n  <path class=\"fil13\" d=\"M12212.18 23061.6c13.67,-11.32 41.58,-33.5 55.25,-44.96 21.76,597.12 50.41,1196.46 38.65,1793.44l-14.54 -44.25c-98.9,-559.05 -78.19,-1137.22 -79.36,-1704.23z\"/>\r\n  <path class=\"fil11\" d=\"M8391.76 24709.11c-279.96,-119.64 -215.45,-496.45 32.48,-613 3.09,204.87 -7.05,409.74 -32.48,613z\"/>\r\n  <path class=\"fil11\" d=\"M12481.56 24103.16c223.69,129.77 269.39,467.65 24.69,601.69 -22.62,-199.73 -28.22,-401.08 -24.69,-601.69z\"/>\r\n  <path class=\"fil14\" d=\"M11861.96 26151c816.26,-471.03 1380.01,-1232.61 2072.81,-1849.58 14.12,168.13 37.92,336.26 89.5,497.34 -581.25,607.11 -1332.69,1023.92 -2086.49,1378.4 -18.8,-6.18 -57.02,-19.54 -75.82,-26.16z\"/>\r\n  <path class=\"fil14\" d=\"M6960.45 24386.67c759.68,830.79 1728.04,1445.71 2662.9,2038.43 -971.59,-361.25 -1929.1,-843.74 -2691.42,-1556.82 28.08,-159.17 35.13,-320.54 28.52,-481.61z\"/>\r\n  <path class=\"fil14\" d=\"M11667.22 26412.6c984.39,-420.32 2107.21,-846.08 2700.37,-1791.08 211.2,240.14 539.96,336.7 731.9,597.12 -1150.3,356.1 -2193.34,1169.72 -3432.27,1193.96z\"/>\r\n  <path class=\"fil14\" d=\"M6548.06 24665.75c516.44,806.56 1454.38,1201.75 2293.27,1587.69 -1156.78,-166.08 -2161.15,-927.65 -3347.76,-982.03 327.3,-243.97 733.07,-355.08 1054.49,-605.66z\"/>\r\n  <path class=\"fil15\" d=\"M8308.88 24839.03c1367.97,546.42 2959.9,562.59 4317,-25.87 -444.87,586.4 -1087.7,1067.71 -1838.71,1139.73 -955.86,150.05 -1953.92,-304.22 -2478.29,-1113.86z\"/>\r\n  <path class=\"fil1\" d=\"M15983.06 26894.95c12.5,-117.29 35.11,-233.38 66.86,-346.69 15.59,135.64 21.9,272.91 20.28,409.74 11.04,583.31 -92.59,1159.57 -161.07,1736.56 196.36,-300.99 371.82,-615.35 548.92,-927.66 64.97,-110.66 142.26,-213.09 226.77,-309.36 -226.04,476.32 -472.21,944.7 -720.58,1410.3 -72.6,71.13 -193.85,40.56 -286.88,57.02 -18.07,0.88 -53.94,2.79 -72.01,3.97 156.37,-671.64 297.9,-1348.42 377.71,-2033.88z\"/>\r\n  <path class=\"fil1\" d=\"M4865.32 27391.55c-17.99,-265.42 -44.57,-532.46 -14.1,-797.88 123.17,576.55 199.04,1163.1 338.57,1736.56 39.97,197.38 75.1,395.64 108.75,594.34 -103.6,-12.2 -207.25,-22.05 -310.88,-29.69 -258.42,-483.67 -493.38,-979.54 -755.33,-1461.15 119.65,116.98 217.39,254.55 300.28,400.05 151.31,269.39 304.56,537.89 478.92,793.62 -42.6,-412.83 -119.22,-821.84 -146.21,-1235.85z\"/>\r\n  <path class=\"fil14\" d=\"M14814.09 29022.59c512.9,-710.29 807.72,-1536.39 1125.16,-2342.95 16.03,70.7 35.57,142.27 43.8,215.31 -79.8,685.45 -221.33,1362.24 -377.7,2033.88 18.08,-1.18 53.93,-3.09 72.01,-3.97 -285.11,53.64 -574.79,73.19 -863.27,97.73z\"/>\r\n  <path class=\"fil14\" d=\"M16070.21 26958c1.17,317.45 217.8,562.15 387.84,808.9 -177.09,312.31 -352.58,626.67 -548.92,927.66 68.49,-576.99 172.09,-1153.25 161.08,-1736.56z\"/>\r\n  <path class=\"fil14\" d=\"M16684.82 27457.54c24.7,-69.96 81.27,-120.37 132.12,-171.22 22.64,508.66 -156.81,1005.26 -266.3,1497.01 -179.43,89.21 -390.93,76.28 -586.4,84.51 248.37,-465.6 494.54,-933.98 720.58,-1410.3z\"/>\r\n  <path class=\"fil14\" d=\"M4865.32 27391.55c27,414.01 103.6,823.02 146.21,1235.85 -174.36,-255.73 -327.62,-524.23 -478.92,-793.62 126.69,-134.19 285.4,-254.26 332.71,-442.23z\"/>\r\n  <path class=\"fil14\" d=\"M5189.79 28330.23c283.5,290.41 634.9,489.11 996.14,666.2 -296.73,-11.75 -593.89,-28.51 -887.39,-71.86 -33.65,-198.71 -68.78,-396.96 -108.75,-594.34z\"/>\r\n  <path class=\"fil1\" d=\"M14952.99 16463.67c130.71,-689.1 -707.69,-1370.92 -1317.32,-876.57 -236.57,227.43 -314.08,394.71 -319.07,705.57 4.02,59.38 7.41,119.54 14.69,179.3 17.7,514.44 543.84,975.4 1056.53,778.39 335.38,-105.99 534.54,-450.66 565.17,-786.69z\"/>\r\n </g>\r\n</svg>\r\n";
+
+// =========================================================================
+// INICIALIZAÇÃO
+// =========================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    carregarDadosClinicosFicha();
+    inicializarPacienteSVG();
+    configurarEventosOclusor();
+    configurarEventosLanterna();
+    configurarEventosGlobais();
+    sincronizarPainelMotor();
+    centralizarOlhar(false);
+    atualizarPainelDiagnostico();
+    mostrarFala("Olá! Estou pronto para o teste de motilidade ocular. Pegue a lanterna ou o oclusor para começar!", 4500);
+});
+
+// Sincronização em Tempo Real: se a Ficha Clínica for salva em outra aba, atualiza na hora
+window.addEventListener('storage', (e) => {
+    if (e.key === 'pacienteData') {
+        carregarDadosClinicosFicha();
+        sincronizarPainelMotor();
+        atualizarReflexosHirschberg(estadoTeste.posicaoOlharX, estadoTeste.posicaoOlharY);
+        atualizarPainelDiagnostico();
+        showToast("🔄 Parâmetros atualizados da Ficha Clínica!");
+    }
+});
+
+// Lê os parâmetros definidos na Ficha Clínica do Paciente
+function carregarDadosClinicosFicha() {
+    const raw = localStorage.getItem('pacienteData');
+    if (raw) {
+        try {
+            const data = JSON.parse(raw);
+            if (data && data.motilidadeOcular) {
+                dadosClinicosMEO = Object.assign(dadosClinicosMEO, data.motilidadeOcular);
+                console.log("📋 Dados de MEO carregados da Ficha Clínica:", dadosClinicosMEO);
+                sincronizarPainelMotor();
+            }
+        } catch (e) {
+            console.error("Erro ao ler pacienteData na MEO:", e);
+        }
+    }
+}
+
+// Injeta o SVG inline no paciente principal para controle dinâmico dos olhos
+function inicializarPacienteSVG() {
+    const holder = document.getElementById('patient-svg-holder') || document.getElementById('patient-svg-wrapper');
+    if (!holder) return;
+
+    // Tenta carregar o arquivo SVG mais recente do disco se disponível (caso tenha sido editado no CorelDRAW)
+    fetch('Imagens/lucas.svg')
+        .then(res => {
+            if (!res.ok) throw new Error('Não foi possível ler arquivo lucas.svg');
+            return res.text();
+        })
+        .then(svgText => {
+            if (svgText && svgText.includes('<svg')) {
+                montarSVGNoHolder(holder, svgText);
+            } else {
+                montarSVGNoHolder(holder, LUCAS_SVG_RAW);
+            }
+        })
+        .catch(() => {
+            // Fallback imediato e offline para a constante embutida
+            montarSVGNoHolder(holder, LUCAS_SVG_RAW);
+        });
+}
+
+function montarSVGNoHolder(holder, svgString) {
+    holder.innerHTML = svgString;
+    const svg = holder.querySelector('svg');
+    if (svg) {
+        svg.id = 'patient-svg';
+        svg.classList.add('patient-img');
+        indexarElementosSVG(svg, 'patient');
+        aplicarMascaraRecorteEsclera(svg);
+        ajustarProfundidadeCamadasSVG(svg);
+        setPosicaoOlhar(estadoTeste.posicaoOlharX, estadoTeste.posicaoOlharY);
+    }
+}
+
+// Numera e identifica todos os elementos internos do SVG com detecção anatômica inteligente
+function indexarElementosSVG(svgElement, prefixo = 'patient') {
+    const paths = svgElement.querySelectorAll('path, polygon');
+    paths.forEach((el, idx) => {
+        el.setAttribute('data-svg-index', idx);
+        
+        const cls = el.getAttribute('class') || '';
+        const d = el.getAttribute('d') || '';
+        const m = d.match(/M([0-9.]+)/);
+        const x = m ? parseFloat(m[1]) : 0;
+        const lado = x < 10500 ? 'od' : 'oe';
+
+        // Mapeamento prioritário por índice anatômico garantido:
+        if (idx === 18) {
+            el.setAttribute('id', 'olho-esclera-od');
+        } else if (idx === 30) {
+            el.setAttribute('id', 'olho-esclera-oe');
+        } else if (idx === 34) {
+            el.setAttribute('id', 'olho-iris-marrom-od');
+        } else if (idx === 35) {
+            el.setAttribute('id', 'olho-iris-vermelha-od');
+        } else if (idx === 36) {
+            el.setAttribute('id', 'olho-pupila-od');
+        } else if (idx === 39) {
+            el.setAttribute('id', 'olho-iris-marrom-oe');
+        } else if (idx === 40) {
+            el.setAttribute('id', 'olho-iris-vermelha-oe');
+        } else if (idx === 63) {
+            el.setAttribute('id', 'olho-pupila-oe');
+        } else if (cls === 'fil9') {
+            el.setAttribute('id', `olho-esclera-${lado}`);
+        } else if (cls === 'fil10') {
+            el.setAttribute('id', `olho-iris-marrom-${lado}`);
+        } else if (cls === 'fil11' && d.length > 200) {
+            el.setAttribute('id', `olho-iris-vermelha-${lado}`);
+        } else if (cls === 'fil1' && (d.startsWith('M5770') || d.startsWith('M5908') || d.startsWith('M15091') || d.startsWith('M14952') || d.includes('16462') || d.includes('16463'))) {
+            el.setAttribute('id', `olho-pupila-${lado}`);
+        } else if (cls === 'fil1' && (d.startsWith('M5381') || d.startsWith('M12848'))) {
+            el.setAttribute('id', `palpebra-superior-cilios-${lado}`);
+        } else if (cls === 'fil7' && (d.startsWith('M4834') || d.startsWith('M13383'))) {
+            el.setAttribute('id', `palpebra-superior-dobra-${lado}`);
+        } else if (cls === 'fil12' && (d.startsWith('M5368') || d.startsWith('M14868'))) {
+            el.setAttribute('id', `bochecha-blush-${lado}`);
+        } else {
+            el.setAttribute('id', prefixo + '-svg-part-' + idx);
+        }
+    });
+}
+
+// 👁️ Reordena a profundidade das camadas (Z-Index SVG):
+// Pálpebras superiores, dobras e bochechas vão para a frente dos olhos!
+function ajustarProfundidadeCamadasSVG(svg) {
+    if (!svg) return;
+    const camada = svg.querySelector('#Camada_x0020_1') || svg;
+    if (!camada) return;
+
+    // Elementos anatômicos que cobrem e escondem os olhos na supraversão/infraversão
+    const idsParaFrente = [
+        'palpebra-superior-cilios-od',
+        'palpebra-superior-cilios-oe',
+        'palpebra-superior-dobra-od',
+        'palpebra-superior-dobra-oe',
+        'bochecha-blush-od',
+        'bochecha-blush-oe'
+    ];
+
+    idsParaFrente.forEach(id => {
+        const el = svg.querySelector('#' + id);
+        if (el) {
+            camada.appendChild(el);
+        }
+    });
+}
+
+// ✂️ Aplica Máscara de Recorte Estática (clipPath) baseada na esclera para que íris e pupila se ocultem nas bordas
+function aplicarMascaraRecorteEsclera(svg) {
+    if (!svg) return;
+
+    const elEscleraOD = svg.querySelector('#olho-esclera-od') || svg.querySelector('[data-svg-index="18"]');
+    const elEscleraOE = svg.querySelector('#olho-esclera-oe') || svg.querySelector('[data-svg-index="30"]');
+    if (!elEscleraOD || !elEscleraOE) return;
+
+    let defs = svg.querySelector('defs');
+    if (!defs) {
+        defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        svg.insertBefore(defs, svg.firstChild);
+    }
+
+    // 1. ClipPath para o Olho Direito (Esclera OD)
+    const clipIdOD = 'clip-esclera-od';
+    let clipOD = svg.querySelector('#' + clipIdOD);
+    if (!clipOD) {
+        clipOD = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
+        clipOD.setAttribute('id', clipIdOD);
+        clipOD.setAttribute('clipPathUnits', 'userSpaceOnUse');
+        const pathOD = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        pathOD.setAttribute('d', elEscleraOD.getAttribute('d'));
+        clipOD.appendChild(pathOD);
+        defs.appendChild(clipOD);
+    }
+
+    // 2. ClipPath para o Olho Esquerdo (Esclera OE)
+    const clipIdOE = 'clip-esclera-oe';
+    let clipOE = svg.querySelector('#' + clipIdOE);
+    if (!clipOE) {
+        clipOE = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
+        clipOE.setAttribute('id', clipIdOE);
+        clipOE.setAttribute('clipPathUnits', 'userSpaceOnUse');
+        const pathOE = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        pathOE.setAttribute('d', elEscleraOE.getAttribute('d'));
+        clipOE.appendChild(pathOE);
+        defs.appendChild(clipOE);
+    }
+
+    // 3. Cria grupo recortado estático para OD (se não existir) e move íris/pupila para dentro dele
+    let gRecorteOD = svg.querySelector('#grupo-recortado-od');
+    if (!gRecorteOD) {
+        gRecorteOD = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        gRecorteOD.setAttribute('id', 'grupo-recortado-od');
+        gRecorteOD.setAttribute('clip-path', `url(#${clipIdOD})`);
+        elEscleraOD.parentNode.insertBefore(gRecorteOD, elEscleraOD.nextSibling);
+
+        const elIrisExtOD = svg.querySelector('#olho-iris-marrom-od') || svg.querySelector('[data-svg-index="34"]');
+        const elIrisIntOD = svg.querySelector('#olho-iris-vermelha-od') || svg.querySelector('[data-svg-index="35"]');
+        const elPupilaOD = svg.querySelector('#olho-pupila-od') || svg.querySelector('[data-svg-index="36"]');
+        if (elIrisExtOD) gRecorteOD.appendChild(elIrisExtOD);
+        if (elIrisIntOD) gRecorteOD.appendChild(elIrisIntOD);
+        if (elPupilaOD) gRecorteOD.appendChild(elPupilaOD);
+    }
+
+    // 4. Cria grupo recortado estático para OE (se não existir) e move íris/pupila para dentro dele
+    let gRecorteOE = svg.querySelector('#grupo-recortado-oe');
+    if (!gRecorteOE) {
+        gRecorteOE = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        gRecorteOE.setAttribute('id', 'grupo-recortado-oe');
+        gRecorteOE.setAttribute('clip-path', `url(#${clipIdOE})`);
+        elEscleraOE.parentNode.insertBefore(gRecorteOE, elEscleraOE.nextSibling);
+
+        const elIrisExtOE = svg.querySelector('#olho-iris-marrom-oe') || svg.querySelector('[data-svg-index="39"]');
+        const elIrisIntOE = svg.querySelector('#olho-iris-vermelha-oe') || svg.querySelector('[data-svg-index="40"]');
+        const elPupilaOE = svg.querySelector('#olho-pupila-oe') || svg.querySelector('[data-svg-index="63"]');
+        if (elIrisExtOE) gRecorteOE.appendChild(elIrisExtOE);
+        if (elIrisIntOE) gRecorteOE.appendChild(elIrisIntOE);
+        if (elPupilaOE) gRecorteOE.appendChild(elPupilaOE);
+    }
+}
+
+// =========================================================================
+// 🔦 CONTROLE DA LANTERNA CLÍNICA DE FIXAÇÃO & EYE-TRACKING
+// =========================================================================
+function configurarEventosLanterna() {
+    const btnLanterna = document.getElementById('btn-lanterna-clinica');
+    if (!btnLanterna) return;
+
+    btnLanterna.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (lanternaAtiva) {
+            alternarTravaLanterna();
+        } else {
+            pegarLanterna(e.clientX, e.clientY);
+        }
+    });
+}
+
+function pegarLanterna(mouseX, mouseY) {
+    // Se o oclusor estiver na mão e não travado, guarda-o para pegar a lanterna
+    if (oclusorAtivo && !isOclusorTravado) {
+        guardarOclusor();
+    }
+
+    lanternaAtiva = true;
+    isLanternaTravada = false;
+
+    const btnLanterna = document.getElementById('btn-lanterna-clinica');
+    const fachoLuz = document.getElementById('facho-luz-lanterna');
+    const reflexoOD = document.getElementById('hirschberg-od');
+    const reflexoOE = document.getElementById('hirschberg-oe');
+
+    if (btnLanterna) {
+        btnLanterna.classList.add('ativo');
+        btnLanterna.classList.remove('travado');
+    }
+
+    if (fachoLuz) fachoLuz.classList.add('visivel');
+    if (reflexoOD) reflexoOD.classList.add('visivel');
+    if (reflexoOE) reflexoOE.classList.add('visivel');
+
+    const posX = mouseX || window.innerWidth / 2;
+    const posY = mouseY || window.innerHeight / 2;
+    atualizarPosicaoLanterna(posX, posY);
+
+    exibirCardInstrucoes();
+
+    showToast("🔦 Lanterna clínica empunhada! O paciente acompanhará o foco de luz.");
+    mostrarFala("Estou acompanhando a luz da sua lanterna...", 2500);
+    atualizarPainelDiagnostico();
+}
+
+function guardarLanterna() {
+    if (!lanternaAtiva) return;
+
+    lanternaAtiva = false;
+    isLanternaTravada = false;
+
+    const btnLanterna = document.getElementById('btn-lanterna-clinica');
+    const fachoLuz = document.getElementById('facho-luz-lanterna');
+    const reflexoOD = document.getElementById('hirschberg-od');
+    const reflexoOE = document.getElementById('hirschberg-oe');
+
+    if (btnLanterna) {
+        btnLanterna.classList.remove('ativo', 'travado');
+        btnLanterna.style.left = '';
+        btnLanterna.style.top = '';
+        btnLanterna.style.transform = '';
+    }
+
+    if (fachoLuz) fachoLuz.classList.remove('visivel');
+    if (reflexoOD) reflexoOD.classList.remove('visivel');
+    if (reflexoOE) reflexoOE.classList.remove('visivel');
+
+    if (!oclusorAtivo) {
+        ocultarCardInstrucoes();
+    }
+
+    showToast("Lanterna guardada na bancada.");
+    atualizarPainelDiagnostico();
+}
+
+function alternarTravaLanterna() {
+    if (!lanternaAtiva) return;
+    isLanternaTravada = !isLanternaTravada;
+
+    const btnLanterna = document.getElementById('btn-lanterna-clinica');
+    if (btnLanterna) {
+        btnLanterna.classList.toggle('travado', isLanternaTravada);
+    }
+
+    if (isLanternaTravada) {
+        showToast("📌 Lanterna fixada nesta posição! Clique nela para movimentar.");
+    } else {
+        showToast("🔓 Lanterna livre para guiar o olhar.");
+    }
+}
+
+function atualizarPosicaoLanterna(x, y) {
+    const btnLanterna = document.getElementById('btn-lanterna-clinica');
+    const fachoLuz = document.getElementById('facho-luz-lanterna');
+
+    if (btnLanterna && !isLanternaTravada) {
+        btnLanterna.style.left = x + 'px';
+        btnLanterna.style.top = y + 'px';
+    }
+
+    if (fachoLuz) {
+        fachoLuz.style.left = x + 'px';
+        fachoLuz.style.top = y + 'px';
+    }
+
+    // Calcula o desvio dos olhos do paciente para fixar a lanterna
+    calcularEyeTrackingLanterna(x, y);
+}
+
+// =========================================================================
+// 👁️ EYE-TRACKING FISIOLÓGICO: PACIENTE ACOMPANHA A LUZ / MOUSE
+// =========================================================================
+function calcularEyeTrackingLanterna(cursorX, cursorY) {
+    const patientContainer = document.getElementById('patient-container');
+    if (!patientContainer) return;
+
+    const rect = patientContainer.getBoundingClientRect();
+    const centroOlhosX = rect.left + rect.width * 0.5;
+    const centroOlhosY = rect.top + rect.height * CALIBRACAO_OCLUSOR.hitboxPupilaY;
+
+    // Distância relativa do cursor em relação aos olhos
+    const deltaX = cursorX - centroOlhosX;
+    const deltaY = cursorY - centroOlhosY;
+
+    // Converte a distância em pixels para as unidades de desvio (-35 a +35 / -25 a +25)
+    // Se o cursor estiver à esquerda dos olhos do paciente (cursorX < centro):
+    // Na nossa tela, a esquerda é a DIREITA DO PACIENTE (Dextroversão -> deltaX < 0)
+    const sensibilidadeHorizontal = 0.085;
+    const sensibilidadeVertical = 0.085;
+
+    let targetDesvioX = deltaX * sensibilidadeHorizontal;
+    let targetDesvioY = deltaY * sensibilidadeVertical;
+
+    // Aplica os limites anatômicos da motilidade ocular
+    targetDesvioX = Math.max(LIMITES_EXCURSAO_OCULAR.dextroX, Math.min(LIMITES_EXCURSAO_OCULAR.levoX, targetDesvioX));
+    targetDesvioY = Math.max(LIMITES_EXCURSAO_OCULAR.supraY, Math.min(LIMITES_EXCURSAO_OCULAR.infraY, targetDesvioY));
+
+    // Suaviza a movimentação
+    setPosicaoOlhar(targetDesvioX, targetDesvioY);
+}
+
+// =========================================================================
+// 🚀 CONTROLE E TRANSIÇÃO DOS OLHOS NO SVG & REFLEXOS DE HIRSCHBERG
+// =========================================================================
+function calcularDesvioEstrabicoOlhos() {
+    const res = {
+        od: { x: 0, y: 0 },
+        oe: { x: 0, y: 0 }
+    };
+
+    const temDesvio = !dadosClinicosMEO.hirschberg.includes('Ortoforia') && !dadosClinicosMEO.hirschberg.includes('Centrado');
+    if (!temDesvio) return res;
+
+    // 🩺 Regra Clínica Anatômica: Quando o olho estiver com oclusor, ele se alinha!
+    // Sob oclusão monocular (ducção/cover), o olho sob o oclusor se alinha (res.od = 0 ou res.oe = 0)
+    // e o olho desocluído fixa o centro do alvo visual (res = 0). O desvio manifesto desaparece na fixação monocular.
+    if (estadoTeste.olhoAberto === 'oe' || estadoTeste.olhoAberto === 'od') {
+        res.od.x = 0;
+        res.od.y = 0;
+        res.oe.x = 0;
+        res.oe.y = 0;
+        return res;
+    }
+
+    let graus = 15;
+    if (dadosClinicosMEO.hirschbergGraus) {
+        const m = dadosClinicosMEO.hirschbergGraus.match(/(\d+)/);
+        if (m) graus = parseInt(m[1], 10);
+    }
+    if (graus === 0) graus = 15;
+
+    // Calibração de Hirschberg (lida do objeto de calibração):
+    let magnitudeSVG = calibracaoHirschberg.desvio15;
+    if (graus <= 7) magnitudeSVG = calibracaoHirschberg.desvio7;
+    else if (graus <= 15) magnitudeSVG = calibracaoHirschberg.desvio15;
+    else if (graus <= 30) magnitudeSVG = calibracaoHirschberg.desvio30;
+    else magnitudeSVG = calibracaoHirschberg.desvio45;
+
+    const olhoConfig = dadosClinicosMEO.olhoDesvio || 'OE';
+    const isDesvioOD = olhoConfig.includes('OD') || olhoConfig.includes('AO');
+    const isDesvioOE = olhoConfig.includes('OE') || olhoConfig.includes('AO');
+
+    // Desvio Físico do Olho Estrábico:
+    // Endotropia: olho vira para NASAL (em direção ao nariz).
+    // No OD (olho à esquerda da tela): nasal é para a direita (+X).
+    // No OE (olho à direita da tela): nasal é para a esquerda (-X).
+    // Exotropia: olho vira para TEMPORAL (em direção à orelha).
+    // No OD: temporal é para a esquerda (-X).
+    // No OE: temporal é para a direita (+X).
+    // Hipertropia: olho vira para CIMA (-Y).
+    // Hipotropia: olho vira para BAIXO (+Y).
+    if (dadosClinicosMEO.hirschberg.includes('Endotropia')) {
+        if (isDesvioOD) res.od.x = +magnitudeSVG;
+        if (isDesvioOE) res.oe.x = -magnitudeSVG;
+    } else if (dadosClinicosMEO.hirschberg.includes('Exotropia')) {
+        if (isDesvioOD) res.od.x = -magnitudeSVG;
+        if (isDesvioOE) res.oe.x = +magnitudeSVG;
+    } else if (dadosClinicosMEO.hirschberg.includes('Hipertropia')) {
+        if (isDesvioOD) res.od.y = -magnitudeSVG * 0.85;
+        if (isDesvioOE) res.oe.y = -magnitudeSVG * 0.85;
+    } else if (dadosClinicosMEO.hirschberg.includes('Hipotropia')) {
+        if (isDesvioOD) res.od.y = +magnitudeSVG * 0.85;
+        if (isDesvioOE) res.oe.y = +magnitudeSVG * 0.85;
+    }
+
+    return res;
+}
+
+// =========================================================================
+// ⚡ ALTERAÇÕES MOTORAS: PARESIA, PARALISIA E LEI DE HERING
+// =========================================================================
+function aplicarRestricaoMotora(x, y, xOD, yOD, xOE, yOE) {
+    const estado = dadosClinicosMEO.estadoMotor;
+    const olho = dadosClinicosMEO.olhoMotor;
+    const musc = dadosClinicosMEO.musculoMotor;
+
+    if (!estado || estado === 'normal' || !olho || olho === 'nenhum') {
+        return {
+            od: { x: xOD, y: yOD },
+            oe: { x: xOE, y: yOE }
+        };
+    }
+
+    let novoOD_x = xOD;
+    let novoOD_y = yOD;
+    let novoOE_x = xOE;
+    let novoOE_y = yOE;
+
+    // Fator de limitação motora:
+    // Paralisia: NÃO SUPERAR A LINHA MÉDIA -> trava em 0 (fator = 0)
+    // Paresia: ULTRAPASSA A LINHA MÉDIA, mas limitada -> fator = 0.45 (~45% da amplitude)
+    const isParalisia = (estado === 'paralisia');
+    const fatorParesia = 0.45;
+    const hiperfuncaoYugo = 1.15; // Lei de Hering: inervação aumentada ao músculo yugo contralateral
+
+    if (olho === 'od') {
+        // Acometimento no Olho Direito (OD)
+        if (musc === 'RL') {
+            // Reto Lateral OD atua em Dextroversão (x < 0)
+            if (x < 0) {
+                novoOD_x = isParalisia ? Math.max(0, xOD) : (xOD * fatorParesia);
+                novoOE_x = xOE * hiperfuncaoYugo; // Yugo: RM do OE
+            }
+        } else if (musc === 'RM') {
+            // Reto Medial OD atua em Levoversão (x > 0)
+            if (x > 0) {
+                novoOD_x = isParalisia ? Math.min(0, xOD) : (xOD * fatorParesia);
+                novoOE_x = xOE * hiperfuncaoYugo; // Yugo: RL do OE
+            }
+        } else if (musc === 'RS') {
+            // Reto Superior OD atua em Supra-abdução (y < 0 e x <= 5)
+            if (y < 0 && x <= 5) {
+                novoOD_y = isParalisia ? Math.max(0, yOD) : (yOD * fatorParesia);
+                novoOE_y = yOE * hiperfuncaoYugo; // Yugo: OI do OE
+            }
+        } else if (musc === 'RI') {
+            // Reto Inferior OD atua em Infra-abdução (y > 0 e x <= 5)
+            if (y > 0 && x <= 5) {
+                novoOD_y = isParalisia ? Math.min(0, yOD) : (yOD * fatorParesia);
+                novoOE_y = yOE * hiperfuncaoYugo; // Yugo: OS do OE
+            }
+        } else if (musc === 'OS') {
+            // Oblíquo Superior OD atua em Infra-adução (y > 0 e x >= -5)
+            if (y > 0 && x >= -5) {
+                novoOD_y = isParalisia ? Math.min(0, yOD) : (yOD * fatorParesia);
+                novoOE_y = yOE * hiperfuncaoYugo; // Yugo: RI do OE
+            }
+        } else if (musc === 'OI') {
+            // Oblíquo Inferior OD atua em Supra-adução (y < 0 e x >= -5)
+            if (y < 0 && x >= -5) {
+                novoOD_y = isParalisia ? Math.max(0, yOD) : (yOD * fatorParesia);
+                novoOE_y = yOE * hiperfuncaoYugo; // Yugo: RS do OE
+            }
+        }
+    } else if (olho === 'oe') {
+        // Acometimento no Olho Esquerdo (OE)
+        if (musc === 'RL') {
+            // Reto Lateral OE atua em Levoversão (x > 0)
+            if (x > 0) {
+                novoOE_x = isParalisia ? Math.min(0, xOE) : (xOE * fatorParesia);
+                novoOD_x = xOD * hiperfuncaoYugo; // Yugo: RM do OD
+            }
+        } else if (musc === 'RM') {
+            // Reto Medial OE atua em Dextroversão (x < 0)
+            if (x < 0) {
+                novoOE_x = isParalisia ? Math.max(0, xOE) : (xOE * fatorParesia);
+                novoOD_x = xOD * hiperfuncaoYugo; // Yugo: RL do OD
+            }
+        } else if (musc === 'RS') {
+            // Reto Superior OE atua em Supra-abdução (y < 0 e x >= -5)
+            if (y < 0 && x >= -5) {
+                novoOE_y = isParalisia ? Math.max(0, yOE) : (yOE * fatorParesia);
+                novoOD_y = yOD * hiperfuncaoYugo; // Yugo: OI do OD
+            }
+        } else if (musc === 'RI') {
+            // Reto Inferior OE atua em Infra-abdução (y > 0 e x >= -5)
+            if (y > 0 && x >= -5) {
+                novoOE_y = isParalisia ? Math.min(0, yOE) : (yOE * fatorParesia);
+                novoOD_y = yOD * hiperfuncaoYugo; // Yugo: OS do OD
+            }
+        } else if (musc === 'OS') {
+            // Oblíquo Superior OE atua em Infra-adução (y > 0 e x <= 5)
+            if (y > 0 && x <= 5) {
+                novoOE_y = isParalisia ? Math.min(0, yOE) : (yOE * fatorParesia);
+                novoOD_y = yOD * hiperfuncaoYugo; // Yugo: RI do OD
+            }
+        } else if (musc === 'OI') {
+            // Oblíquo Inferior OE atua em Supra-adução (y < 0 e x <= 5)
+            if (y < 0 && x <= 5) {
+                novoOE_y = isParalisia ? Math.max(0, yOE) : (yOE * fatorParesia);
+                novoOD_y = yOD * hiperfuncaoYugo; // Yugo: RS do OD
+            }
+        }
+    }
+
+    return {
+        od: { x: novoOD_x, y: novoOD_y },
+        oe: { x: novoOE_x, y: novoOE_y }
+    };
+}
+
+let ultimaFalaDiplopia = 0;
+let estadoDiplopiaAnterior = false;
+
+function verificarDiplopiaPaciente(xOD, yOD, xOE, yOE) {
+    const estado = dadosClinicosMEO.estadoMotor;
+    if (!estado || estado === 'normal') {
+        estadoDiplopiaAnterior = false;
+        return;
+    }
+
+    // Discrepância angular entre os olhos no SVG
+    const diffX = Math.abs(xOD - xOE);
+    const diffY = Math.abs(yOD - yOE);
+    const discrepancia = Math.sqrt(diffX * diffX + diffY * diffY);
+
+    const agora = performance.now();
+    const temDiplopia = (discrepancia >= 180); // Limiar de quebra de fusão sensorial
+
+    if (temDiplopia) {
+        // Se um olho estiver ocluído (com a mão ou oclusor), a diplopia desaparece!
+        if (oclusorAtivo || estadoTeste.olhoAberto !== 'ao') {
+            if (agora - ultimaFalaDiplopia > 4000) {
+                mostrarFala("Com um olho tampado voltou a ser apenas uma luz!", 3200);
+                ultimaFalaDiplopia = agora;
+            }
+        } else {
+            // Ambos os olhos abertos -> Diplopia manifesta!
+            if (!estadoDiplopiaAnterior || (agora - ultimaFalaDiplopia > 4500)) {
+                mostrarFala("Doutor(a), estou vendo duas luzes separadas (diplopia)!", 3500);
+                ultimaFalaDiplopia = agora;
+            }
+        }
+        estadoDiplopiaAnterior = true;
+    } else {
+        if (estadoDiplopiaAnterior && !oclusorAtivo && estadoTeste.olhoAberto === 'ao') {
+            if (agora - ultimaFalaDiplopia > 3000) {
+                mostrarFala("Aqui a luz voltou a ficar única.", 2500);
+                ultimaFalaDiplopia = agora;
+            }
+        }
+        estadoDiplopiaAnterior = false;
+    }
+}
+
+// Sincronização do Painel de MEO com a Ficha e Estado Global
+function sincronizarPainelMotor() {
+    const selEstado = document.getElementById('painel-estado-motor');
+    const selOlho = document.getElementById('painel-olho-motor');
+    const selMusc = document.getElementById('painel-musculo-motor');
+
+    if (selEstado) selEstado.value = dadosClinicosMEO.estadoMotor || 'normal';
+    if (selOlho) selOlho.value = dadosClinicosMEO.olhoMotor || 'nenhum';
+    if (selMusc) selMusc.value = dadosClinicosMEO.musculoMotor || 'RL';
+
+    atualizarVisualizacaoPainelMotor();
+}
+
+function alterarCondicaoMotoraPainel() {
+    const selEstado = document.getElementById('painel-estado-motor');
+    const selOlho = document.getElementById('painel-olho-motor');
+    const selMusc = document.getElementById('painel-musculo-motor');
+
+    if (selEstado) dadosClinicosMEO.estadoMotor = selEstado.value;
+    if (selOlho) dadosClinicosMEO.olhoMotor = selOlho.value;
+    if (selMusc) dadosClinicosMEO.musculoMotor = selMusc.value;
+
+    atualizarVisualizacaoPainelMotor();
+    salvarDadosPacienteLocalStorage();
+    setPosicaoOlhar(estadoTeste.posicaoOlharX, estadoTeste.posicaoOlharY);
+}
+
+function salvarDadosPacienteLocalStorage() {
+    try {
+        let raw = localStorage.getItem('pacienteData');
+        let data = raw ? JSON.parse(raw) : {};
+        if (!data.motilidadeOcular) data.motilidadeOcular = {};
+        data.motilidadeOcular.estadoMotor = dadosClinicosMEO.estadoMotor;
+        data.motilidadeOcular.olhoMotor = dadosClinicosMEO.olhoMotor;
+        data.motilidadeOcular.musculoMotor = dadosClinicosMEO.musculoMotor;
+        data.motilidadeOcular.grauMotor = dadosClinicosMEO.grauMotor || '-2';
+        data.motilidadeOcular.anotacaoMotora = dadosClinicosMEO.anotacaoMotora;
+        localStorage.setItem('pacienteData', JSON.stringify(data));
+    } catch (e) {
+        console.warn("Erro ao salvar pacienteData em MEO:", e);
+    }
+}
+
+function atualizarVisualizacaoPainelMotor() {
+    const badge = document.getElementById('badge-painel-motor');
+    const desc = document.getElementById('txt-painel-motor-desc');
+    const estado = dadosClinicosMEO.estadoMotor || 'normal';
+    const olho = (dadosClinicosMEO.olhoMotor || 'nenhum').toUpperCase();
+    const musculo = dadosClinicosMEO.musculoMotor || 'RL';
+
+    const nomesM = {
+        'RL': 'Reto Lateral',
+        'RM': 'Reto Medial',
+        'RS': 'Reto Superior',
+        'RI': 'Reto Inferior',
+        'OS': 'Oblíquo Superior',
+        'OI': 'Oblíquo Inferior'
+    };
+    const nomeMusculo = nomesM[musculo] || musculo;
+
+    if (estado === 'normal' || olho === 'NENHUM') {
+        if (badge) {
+            badge.textContent = 'Normal';
+            badge.style.color = '#34D399';
+            badge.style.background = 'rgba(16, 185, 129, 0.15)';
+        }
+        if (desc) {
+            desc.textContent = 'Movimentação ocular suave, precisa, extensa e completa (SPEC) em ambos os olhos.';
+        }
+        dadosClinicosMEO.anotacaoMotora = 'Movimentação Ocular Normal';
+        return;
+    }
+
+    const tipoDesc = estado === 'paralisia' ? 'Paralisia' : 'Paresia';
+    const textoAnotacao = `${tipoDesc} do ${nomeMusculo} do ${olho}`;
+    dadosClinicosMEO.anotacaoMotora = textoAnotacao;
+
+    if (badge) {
+        badge.textContent = tipoDesc;
+        if (estado === 'paralisia') {
+            badge.style.color = '#F87171';
+            badge.style.background = 'rgba(239, 68, 68, 0.2)';
+        } else {
+            badge.style.color = '#FBBF24';
+            badge.style.background = 'rgba(245, 158, 11, 0.2)';
+        }
+    }
+
+    if (desc) {
+        if (estado === 'paralisia') {
+            desc.textContent = `⚠️ Limitação severa: o ${olho} NÃO consegue superar a linha média ao olhar no campo do ${nomeMusculo}. Causa diplopia manifesta.`;
+        } else {
+            desc.textContent = `⚡ Limitação parcial: o ${olho} ultrapassa a linha média, mas não atinge a excursão total do ${nomeMusculo}. Gera diplopia no campo de ação.`;
+        }
+    }
+}
+
+function setPosicaoOlhar(x, y) {
+    estadoTeste.posicaoOlharX = x;
+    estadoTeste.posicaoOlharY = y;
+
+    // Componente conjugada do olhar (eye-tracking / 9 posições diagnósticas)
+    let transX_OD = x * LIMITES_EXCURSAO_OCULAR.escalaSVG;
+    let transY_OD = y * LIMITES_EXCURSAO_OCULAR.escalaSVG;
+    let transX_OE = x * LIMITES_EXCURSAO_OCULAR.escalaSVG;
+    let transY_OE = y * LIMITES_EXCURSAO_OCULAR.escalaSVG;
+
+    // Aplica alterações motoras (Paresia ou Paralisia)
+    const limitesMotores = aplicarRestricaoMotora(x, y, transX_OD, transY_OD, transX_OE, transY_OE);
+    transX_OD = limitesMotores.od.x;
+    transY_OD = limitesMotores.od.y;
+    transX_OE = limitesMotores.oe.x;
+    transY_OE = limitesMotores.oe.y;
+
+    // Desvio estrábico intrínseco (quem se move fisicamente é a íris e pupila do olho com tropia)
+    const strab = calcularDesvioEstrabicoOlhos();
+
+    transX_OD += strab.od.x;
+    transY_OD += strab.od.y;
+    transX_OE += strab.oe.x;
+    transY_OE += strab.oe.y;
+
+    moverEstruturasSVG('patient-svg', transX_OD, transY_OD, transX_OE, transY_OE);
+    atualizarReflexosHirschberg(x, y);
+    atualizarPainelDiagnostico();
+    verificarDiplopiaPaciente(transX_OD, transY_OD, transX_OE, transY_OE);
+}
+
+function moverEstruturasSVG(svgId, transX_OD, transY_OD, transX_OE, transY_OE) {
+    const svg = document.getElementById(svgId);
+    if (!svg) return;
+
+    // Seletores de todas as estruturas móveis do Olho Direito (OD)
+    const alvosOD = [
+        '#olho-iris-marrom-od',
+        '#olho-iris-vermelha-od',
+        '#olho-pupila-od',
+        '[data-svg-index="34"]',
+        '[data-svg-index="35"]',
+        '[data-svg-index="36"]'
+    ];
+
+    // Seletores de todas as estruturas móveis do Olho Esquerdo (OE)
+    const alvosOE = [
+        '#olho-iris-marrom-oe',
+        '#olho-iris-vermelha-oe',
+        '#olho-pupila-oe',
+        '[data-svg-index="39"]',
+        '[data-svg-index="40"]',
+        '[data-svg-index="63"]'
+    ];
+
+    const movidosOD = new Set();
+    alvosOD.forEach(sel => {
+        svg.querySelectorAll(sel).forEach(el => {
+            if (!movidosOD.has(el)) {
+                movidosOD.add(el);
+                if (transX_OD === 0 && transY_OD === 0) {
+                    el.removeAttribute('transform');
+                } else {
+                    el.setAttribute('transform', 'translate(' + transX_OD + ', ' + transY_OD + ')');
+                }
+            }
+        });
+    });
+
+    const movidosOE = new Set();
+    alvosOE.forEach(sel => {
+        svg.querySelectorAll(sel).forEach(el => {
+            if (!movidosOE.has(el)) {
+                movidosOE.add(el);
+                if (transX_OE === 0 && transY_OE === 0) {
+                    el.removeAttribute('transform');
+                } else {
+                    el.setAttribute('transform', 'translate(' + transX_OE + ', ' + transY_OE + ')');
+                }
+            }
+        });
+    });
+}
+
+// =========================================================================
+// 👓 CONTROLE DOS ÓCULOS DE CORREÇÃO (ÂNGULO KAPPA / CC / SC)
+// =========================================================================
+function alternarOculos() {
+    estadoTeste.isComCorrecao = !estadoTeste.isComCorrecao;
+    const glasses = document.getElementById('patient-glasses');
+    const btnOculos = document.getElementById('btn-oculos-clinica');
+    const lblStatus = document.getElementById('lbl-status-oculos');
+
+    if (glasses) glasses.classList.toggle('visivel', estadoTeste.isComCorrecao);
+    if (btnOculos) btnOculos.classList.toggle('com-oculos', estadoTeste.isComCorrecao);
+    if (lblStatus) lblStatus.textContent = estadoTeste.isComCorrecao ? 'Com Óculos' : 'Sem Óculos';
+
+    if (estadoTeste.isComCorrecao) {
+        mostrarFala("Coloquei meus óculos de correção.", 2500);
+        showToast("👓 Óculos posicionados (Com Correção - CC).");
+    } else {
+        mostrarFala("Tirei meus óculos.", 2500);
+        showToast("👓 Óculos removidos (Sem Correção - SC).");
+    }
+}
+
+// =========================================================================
+// 🎯 LOCALIZAÇÃO MATEMÁTICA E ANALÍTICA DO CENTRO EXATO DA PUPILA NO SVG
+// =========================================================================
+function obterCentroExatoPupila(olho) {
+    // Coordenadas centrais analíticas puras das pupilas no SVG (viewBox: 21000 x 29700):
+    // Pupila OD (#36): X centro = 6728.1 (32.0385%), Y centro = 16254.4 (54.7286%)
+    // Pupila OE (#63): X centro = 14133.6 (67.3030%), Y centro = 16255.1 (54.7310%)
+    const baseOD_X = (6728.095 / 21000) * 100;
+    const baseOE_X = (14133.635 / 21000) * 100;
+    const baseY = (16254.4 / 29700) * 100;
+
+    const fatorDeslocamentoX = (LIMITES_EXCURSAO_OCULAR.escalaSVG / 21000) * 100;
+    const fatorDeslocamentoY = (LIMITES_EXCURSAO_OCULAR.escalaSVG / 29700) * 100;
+
+    return {
+        percentX: (olho === 'od' ? baseOD_X : baseOE_X) + (estadoTeste.posicaoOlharX * fatorDeslocamentoX),
+        percentY: baseY + (estadoTeste.posicaoOlharY * fatorDeslocamentoY)
+    };
+}
+
+// Atualiza a posição dos reflexos luminosos de Hirschberg sobre as córneas do paciente
+function atualizarReflexosHirschberg(desvioX, desvioY) {
+    const reflexoOD = document.getElementById('hirschberg-od');
+    const reflexoOE = document.getElementById('hirschberg-oe');
+    const patientContainer = document.getElementById('patient-container');
+
+    if (!patientContainer || (!reflexoOD && !reflexoOE)) return;
+
+    // Se o olho estiver ocluído pelo oclusor opaco, o reflexo desse olho se apaga
+    const isODOcluido = estadoTeste.olhoAberto === 'oe';
+    const isOEOcluido = estadoTeste.olhoAberto === 'od';
+
+    if (reflexoOD) {
+        reflexoOD.style.display = isODOcluido ? 'none' : 'block';
+    }
+    if (reflexoOE) {
+        reflexoOE.style.display = isOEOcluido ? 'none' : 'block';
+    }
+
+    // Ajuste Fisiológico do Ângulo Kappa Nasal (+5° ~ +0.35% nasal)
+    // No observador, nasal do OD é para a direita da tela (+X), nasal do OE é para a esquerda (-X)
+    let kappaShiftOD_X = 0;
+    let kappaShiftOE_X = 0;
+
+    if (dadosClinicosMEO.kappaOD.includes('+5') || dadosClinicosMEO.kappaOD.includes('Fisiológico')) {
+        kappaShiftOD_X = 0.35; // Leve desvio nasal fisiológico
+    } else if (dadosClinicosMEO.kappaOD.includes('+10')) {
+        kappaShiftOD_X = 0.70;
+    } else if (dadosClinicosMEO.kappaOD.includes('-5')) {
+        kappaShiftOD_X = -0.35;
+    }
+
+    if (dadosClinicosMEO.kappaOE.includes('+5') || dadosClinicosMEO.kappaOE.includes('Fisiológico')) {
+        kappaShiftOE_X = -0.35; // Leve desvio nasal fisiológico
+    } else if (dadosClinicosMEO.kappaOE.includes('+10')) {
+        kappaShiftOE_X = -0.70;
+    } else if (dadosClinicosMEO.kappaOE.includes('-5')) {
+        kappaShiftOE_X = 0.35;
+    }
+
+    // Coordenadas ópticas centrais da córnea anterior onde a lanterna incide (parametrizadas pela calibração)
+    const baseOD_X = calibracaoHirschberg.odX;
+    const baseOE_X = calibracaoHirschberg.oeX;
+    const baseY_OD = calibracaoHirschberg.odY;
+    const baseY_OE = calibracaoHirschberg.oeY;
+
+    // Deslocamento óptico sutil quando a lanterna se movimenta pelo examinador
+    const lightShiftX = (desvioX || 0) * 0.04;
+    const lightShiftY = (desvioY || 0) * 0.03;
+
+    // O reflexo da lanterna permanece incidente na córnea.
+    // Como a íris e pupila do olho estrábico se movem, o reflexo aparenta estar deslocado na íris!
+    const posX_OD = baseOD_X + kappaShiftOD_X + lightShiftX;
+    const posX_OE = baseOE_X + kappaShiftOE_X + lightShiftX;
+    const posY_OD = baseY_OD + lightShiftY;
+    const posY_OE = baseY_OE + lightShiftY;
+
+    if (reflexoOD) {
+        reflexoOD.style.left = posX_OD + '%';
+        reflexoOD.style.top = posY_OD + '%';
+    }
+    if (reflexoOE) {
+        reflexoOE.style.left = posX_OE + '%';
+        reflexoOE.style.top = posY_OE + '%';
+    }
+}
+
+// =========================================================================
+// 🎯 9 POSIÇÕES DIAGNÓSTICAS DO OLHAR (COM ANIMAÇÃO SUAVE)
+// =========================================================================
+function guiarOlharPosicao(alvoX, alvoY) {
+    if (estadoTeste.animacaoFrame) {
+        cancelAnimationFrame(estadoTeste.animacaoFrame);
+    }
+
+    const inicioX = estadoTeste.posicaoOlharX;
+    const inicioY = estadoTeste.posicaoOlharY;
+    const duracao = 350; // ms
+    const inicioTempo = performance.now();
+
+    function animar(tempoAtual) {
+        const tempoDecorrido = tempoAtual - inicioTempo;
+        const progresso = Math.min(tempoDecorrido / duracao, 1);
+        const fator = 1 - Math.pow(1 - progresso, 3);
+
+        const xAtual = inicioX + (alvoX - inicioX) * fator;
+        const yAtual = inicioY + (alvoY - inicioY) * fator;
+
+        setPosicaoOlhar(xAtual, yAtual);
+
+        if (progresso < 1) {
+            estadoTeste.animacaoFrame = requestAnimationFrame(animar);
+        } else {
+            setPosicaoOlhar(alvoX, alvoY);
+            estadoTeste.animacaoFrame = null;
+        }
+    }
+
+    estadoTeste.animacaoFrame = requestAnimationFrame(animar);
+    atualizarBotaoCardealAtivo(alvoX, alvoY);
+}
+
+function centralizarOlhar(animado = true) {
+    if (animado) {
+        guiarOlharPosicao(0, 0);
+        showToast("🎯 Olhar fixado na Posição Primária (PPO).");
+    } else {
+        setPosicaoOlhar(0, 0);
+    }
+    atualizarBotaoCardealAtivo(0, 0);
+}
+
+function atualizarBotaoCardealAtivo(x, y) {
+    const botoes = document.querySelectorAll('.btn-cardeal');
+    botoes.forEach(btn => {
+        const onclickAttr = btn.getAttribute('onclick') || '';
+        const match = onclickAttr.match(/guiarOlharPosicao\(([-\d.]+),\s*([-\d.]+)\)/);
+        if (match) {
+            const bx = parseFloat(match[1]);
+            const by = parseFloat(match[2]);
+            const ativo = Math.hypot(bx - x, by - y) < 8;
+            btn.classList.toggle('ativo', ativo);
+        }
+    });
+}
+
+// =========================================================================
+// 🩺 PAINEL CLÍNICO DE DIAGNÓSTICO & LEI DE HERING / SHERRINGTON
+// =========================================================================
+function atualizarPainelDiagnostico() {
+    const x = estadoTeste.posicaoOlharX;
+    const y = estadoTeste.posicaoOlharY;
+    const modoOlho = estadoTeste.olhoAberto;
+
+    // Elementos da interface
+    const txtPosicao = document.getElementById('txt-posicao-olhar');
+    const txtMusculos = document.getElementById('txt-musculos-ativos');
+    const badgeModo = document.getElementById('badge-modo-exame');
+    const badgeHirschberg = document.getElementById('badge-hirschberg');
+    const txtHirschbergDesc = document.getElementById('txt-hirschberg-desc');
+    const txtKappaDesc = document.getElementById('txt-kappa-desc');
+    const badgeDuccoes = document.getElementById('badge-duccoes');
+    const txtDuccoesDesc = document.getElementById('txt-duccoes-desc');
+    const txtVersoesDesc = document.getElementById('txt-versoes-desc');
+
+    // 1. Identificação do Modo (Versões vs Ducções)
+    if (badgeModo) {
+        if (modoOlho === 'ao') {
+            badgeModo.textContent = 'Versões (AO)';
+            badgeModo.style.borderColor = '#10B981';
+            badgeModo.style.color = '#34D399';
+        } else if (modoOlho === 'od') {
+            badgeModo.textContent = 'Ducção Monoc. (OD)';
+            badgeModo.style.borderColor = '#38BDF8';
+            badgeModo.style.color = '#38BDF8';
+        } else if (modoOlho === 'oe') {
+            badgeModo.textContent = 'Ducção Monoc. (OE)';
+            badgeModo.style.borderColor = '#F59E0B';
+            badgeModo.style.color = '#F59E0B';
+        }
+    }
+
+    // 2. Classificação da Posição Cardeal Atual
+    const limX = 14;
+    const limY = 10;
+
+    let nomePosicao = '🎯 Posição Primária (PPO)';
+    let musculosTexto = 'Retos e oblíquos em tônus fisiológico simétrico.';
+
+    const isDextro = x < -limX;
+    const isLevo = x > limX;
+    const isSupra = y < -limY;
+    const isInfra = y > limY;
+
+    if (!isDextro && !isLevo && !isSupra && !isInfra) {
+        nomePosicao = '🎯 Posição Primária do Olhar (PPO)';
+        musculosTexto = 'Músculos em tônus postural basal equilibrado.';
+    } else if (isDextro && !isSupra && !isInfra) {
+        nomePosicao = '➡ Dextroversão (Olhar à Direita)';
+        musculosTexto = modoOlho === 'ao'
+            ? 'Yoked: Reto Lateral do OD + Reto Medial do OE (Lei de Hering).'
+            : (modoOlho === 'od' ? 'Agonista isolado: Reto Lateral do OD.' : 'Agonista isolado: Reto Medial do OE.');
+    } else if (isLevo && !isSupra && !isInfra) {
+        nomePosicao = '⬅ Levoversão (Olhar à Esquerda)';
+        musculosTexto = modoOlho === 'ao'
+            ? 'Yoked: Reto Medial do OD + Reto Lateral do OE (Lei de Hering).'
+            : (modoOlho === 'od' ? 'Agonista isolado: Reto Medial do OD.' : 'Agonista isolado: Reto Lateral do OE.');
+    } else if (!isDextro && !isLevo && isSupra) {
+        nomePosicao = '⬆ Supraversão (Olhar para Cima)';
+        musculosTexto = 'Agonistas: Retos Superiores (RS AO) auxiliados pelos Oblíquos Inferiores (OI AO).';
+    } else if (!isDextro && !isLevo && isInfra) {
+        nomePosicao = '⬇ Infraversão (Olhar para Baixo)';
+        musculosTexto = 'Agonistas: Retos Inferiores (RI AO) auxiliados pelos Oblíquos Superiores (OS AO).';
+    } else if (isDextro && isSupra) {
+        nomePosicao = '↗ Dextro-Supraversão';
+        musculosTexto = modoOlho === 'ao'
+            ? 'Yoked: Reto Superior do OD + Oblíquo Inferior do OE.'
+            : (modoOlho === 'od' ? 'Agonista: Reto Superior do OD.' : 'Agonista: Oblíquo Inferior do OE.');
+    } else if (isLevo && isSupra) {
+        nomePosicao = '↖ Levo-Supraversão';
+        musculosTexto = modoOlho === 'ao'
+            ? 'Yoked: Oblíquo Inferior do OD + Reto Superior do OE.'
+            : (modoOlho === 'od' ? 'Agonista: Oblíquo Inferior do OD.' : 'Agonista: Reto Superior do OE.');
+    } else if (isDextro && isInfra) {
+        nomePosicao = '↘ Dextro-Infraversão';
+        musculosTexto = modoOlho === 'ao'
+            ? 'Yoked: Reto Inferior do OD + Oblíquo Superior do OE.'
+            : (modoOlho === 'od' ? 'Agonista: Reto Inferior do OD.' : 'Agonista: Oblíquo Superior do OE.');
+    } else if (isLevo && isInfra) {
+        nomePosicao = '↙ Levo-Infraversão';
+        musculosTexto = modoOlho === 'ao'
+            ? 'Yoked: Oblíquo Superior do OD + Reto Inferior do OE.'
+            : (modoOlho === 'od' ? 'Agonista: Oblíquo Superior do OD.' : 'Agonista: Reto Inferior do OE.');
+    }
+
+    if (txtPosicao) txtPosicao.textContent = nomePosicao;
+    if (txtMusculos) txtMusculos.textContent = musculosTexto;
+
+    // 3. Teste de Hirschberg & Ângulo Kappa
+    if (badgeHirschberg && txtHirschbergDesc && txtKappaDesc) {
+        if (!lanternaAtiva) {
+            badgeHirschberg.textContent = 'Lanterna Inativa';
+            badgeHirschberg.style.color = '#94A3B8';
+            txtHirschbergDesc.textContent = 'Empunhe a lanterna clínica para avaliar os reflexos corneanos de Purkinje.';
+            txtKappaDesc.textContent = `Ângulo Kappa: OD ${dadosClinicosMEO.kappaOD} | OE ${dadosClinicosMEO.kappaOE}`;
+        } else {
+            const isOrto = dadosClinicosMEO.hirschberg.includes('Ortoforia') || dadosClinicosMEO.hirschberg.includes('Centrado');
+            const grausTxt = dadosClinicosMEO.hirschbergGraus || (isOrto ? '0°' : '15°');
+            const grauNum = grausTxt.split(' ')[0]; // Ex: '0°', '7°', '15°', '30°', '45°'
+
+            badgeHirschberg.textContent = isOrto ? `Ortoforia (${grauNum})` : `Desvio ${grauNum}`;
+            badgeHirschberg.style.color = isOrto ? '#FACC15' : '#F87171';
+
+            if (modoOlho === 'ao') {
+                const olhoTxt = dadosClinicosMEO.olhoDesvio ? ` em ${dadosClinicosMEO.olhoDesvio}` : '';
+                txtHirschbergDesc.textContent = isOrto
+                    ? `Hirschberg: ${dadosClinicosMEO.hirschberg} (${grausTxt}). Reflexos de Purkinje centrados.`
+                    : `Hirschberg: ${dadosClinicosMEO.hirschberg}${olhoTxt} (${grausTxt}).`;
+            } else if (modoOlho === 'od') {
+                txtHirschbergDesc.textContent = `Reflexo no OD (olho fixador livre). OE ocluído. Hirschberg: ${grauNum}.`;
+            } else {
+                txtHirschbergDesc.textContent = `Reflexo no OE (olho fixador livre). OD ocluído. Hirschberg: ${grauNum}.`;
+            }
+            txtKappaDesc.textContent = `Ângulo Kappa: OD ${dadosClinicosMEO.kappaOD} | OE ${dadosClinicosMEO.kappaOE}`;
+        }
+    }
+
+    // 4. Exibição de Ducções e Versões (SPEC e Simétricas)
+    if (badgeDuccoes && txtDuccoesDesc && txtVersoesDesc) {
+        badgeDuccoes.textContent = dadosClinicosMEO.duccoes.includes('SPEC') ? 'SPEC' : 'Atenção';
+        badgeDuccoes.style.color = dadosClinicosMEO.duccoes.includes('SPEC') ? '#34D399' : '#FBBF24';
+        txtDuccoesDesc.textContent = `Ducções: ${dadosClinicosMEO.duccoes}`;
+        txtVersoesDesc.textContent = `Versões: ${dadosClinicosMEO.versoes}`;
+    }
+}
+
+// =========================================================================
+// 🧰 CONTROLE DO OCLUSOR OPACO (DUCÇÕES & COVER TESTE)
+// =========================================================================
+function configurarEventosOclusor() {
+    const btnOpaco = document.getElementById('btn-oclusor-opaco');
+    if (!btnOpaco) return;
+
+    btnOpaco.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (oclusorAtivo === btnOpaco) {
+            alternarTravaOclusor();
+        } else {
+            pegarOclusor(btnOpaco, 'opaco', e.clientX, e.clientY);
+        }
+    });
+}
+
+function pegarOclusor(elemento, tipo, mouseX, mouseY) {
+    // Se a lanterna estiver na mão e não travada, desativa para pegar o oclusor
+    if (lanternaAtiva && !isLanternaTravada) {
+        guardarLanterna();
+    }
+
+    oclusorAtivo = elemento;
+    isOclusorTravado = false;
+    estadoTeste.oclusorTipo = tipo;
+
+    elemento.classList.add('ativo');
+    elemento.classList.remove('travado');
+
+    const posX = (mouseX || window.innerWidth / 2) + CALIBRACAO_OCLUSOR.offsetX;
+    const posY = (mouseY || window.innerHeight / 2) + CALIBRACAO_OCLUSOR.offsetY;
+
+    elemento.style.left = posX + 'px';
+    elemento.style.top = posY + 'px';
+    elemento.style.transform = 'translate(-50%, -50%)';
+
+    exibirCardInstrucoes();
+
+    showToast("Oclusor Opaco empunhado. Posicione sobre um dos olhos.");
+    atualizarStatusOclusao();
+}
+
+function alternarTravaOclusor() {
+    if (!oclusorAtivo) return;
+    isOclusorTravado = !isOclusorTravado;
+    oclusorAtivo.classList.toggle('travado', isOclusorTravado);
+
+    if (isOclusorTravado) {
+        showToast("📌 Oclusor travado nesta posição!");
+    } else {
+        showToast("🔓 Oclusor destravado. Movimentando...");
+    }
+}
+
+function guardarOclusor() {
+    if (!oclusorAtivo) return;
+
+    oclusorAtivo.classList.remove('ativo', 'travado');
+    oclusorAtivo.style.left = '';
+    oclusorAtivo.style.top = '';
+    oclusorAtivo.style.transform = '';
+
+    oclusorAtivo = null;
+    isOclusorTravado = false;
+    estadoTeste.oclusorTipo = null;
+    estadoTeste.olhoAberto = 'ao';
+
+    if (!lanternaAtiva) {
+        ocultarCardInstrucoes();
+    }
+
+    atualizarStatusOclusao();
+    setPosicaoOlhar(estadoTeste.posicaoOlharX, estadoTeste.posicaoOlharY);
+    atualizarReflexosHirschberg(estadoTeste.posicaoOlharX, estadoTeste.posicaoOlharY);
+    atualizarPainelDiagnostico();
+    showToast("Oclusor guardado na bancada.");
+}
+
+function verificarOclusaoOlhos(conchaX, conchaY) {
+    const patientContainer = document.getElementById('patient-container');
+    if (!patientContainer) return;
+
+    const rect = patientContainer.getBoundingClientRect();
+    const centroOD_X = rect.left + rect.width * CALIBRACAO_OCLUSOR.hitboxPupilaOD_X;
+    const centroOD_Y = rect.top + rect.height * CALIBRACAO_OCLUSOR.hitboxPupilaY;
+
+    const centroOE_X = rect.left + rect.width * CALIBRACAO_OCLUSOR.hitboxPupilaOE_X;
+    const centroOE_Y = rect.top + rect.height * CALIBRACAO_OCLUSOR.hitboxPupilaY;
+
+    const distOD = Math.hypot(conchaX - centroOD_X, conchaY - centroOD_Y);
+    const distOE = Math.hypot(conchaX - centroOE_X, conchaY - centroOE_Y);
+
+    let novoOlhoAberto = 'ao';
+
+    if (distOD <= CALIBRACAO_OCLUSOR.raioOclusaoOlho) {
+        novoOlhoAberto = 'oe'; // OD coberto -> OE aberto
+    } else if (distOE <= CALIBRACAO_OCLUSOR.raioOclusaoOlho) {
+        novoOlhoAberto = 'od'; // OE coberto -> OD aberto
+    } else {
+        novoOlhoAberto = 'ao'; // Ambos abertos
+    }
+
+    if (estadoTeste.olhoAberto !== novoOlhoAberto) {
+        estadoTeste.olhoAberto = novoOlhoAberto;
+        atualizarStatusOclusao();
+        setPosicaoOlhar(estadoTeste.posicaoOlharX, estadoTeste.posicaoOlharY);
+        atualizarReflexosHirschberg(estadoTeste.posicaoOlharX, estadoTeste.posicaoOlharY);
+        atualizarPainelDiagnostico();
+
+        if (novoOlhoAberto === 'oe') {
+            mostrarFala("Olho Direito (OD) ocluído. Avaliando ducções do Olho Esquerdo (OE).", 2500);
+        } else if (novoOlhoAberto === 'od') {
+            mostrarFala("Olho Esquerdo (OE) ocluído. Avaliando ducções do Olho Direito (OD).", 2500);
+        }
+    }
+}
+
+function atualizarStatusOclusao() {
+    const { olhoAberto } = estadoTeste;
+    const contentContainer = document.querySelector('.content-container');
+    if (contentContainer) {
+        const isOcluido = (olhoAberto === 'od' || olhoAberto === 'oe');
+        contentContainer.classList.toggle('ocluido', isOcluido);
+    }
+}
+
+// =========================================================================
+// 🌐 EVENTOS GLOBAIS DE MOUSE & TECLADO
+// =========================================================================
+function configurarEventosGlobais() {
+    window.addEventListener('mousemove', (e) => {
+        // Movimento do Oclusor
+        if (oclusorAtivo && !isOclusorTravado) {
+            const posX = e.clientX + CALIBRACAO_OCLUSOR.offsetX;
+            const posY = e.clientY + CALIBRACAO_OCLUSOR.offsetY;
+
+            oclusorAtivo.style.left = posX + 'px';
+            oclusorAtivo.style.top = posY + 'px';
+
+            const conchaX = posX + (CALIBRACAO_OCLUSOR.offsetConchaX || 0);
+            const conchaY = posY + (CALIBRACAO_OCLUSOR.offsetConchaY !== undefined ? CALIBRACAO_OCLUSOR.offsetConchaY : -175);
+            verificarOclusaoOlhos(conchaX, conchaY);
+        }
+
+        // Movimento da Lanterna e Eye-Tracking
+        if (lanternaAtiva && !isLanternaTravada) {
+            atualizarPosicaoLanterna(e.clientX, e.clientY);
+        }
+    });
+
+    window.addEventListener('click', (e) => {
+        // Ignora cliques nos botões de navegação, ficha ou painel de controle
+        if (e.target.closest('.back-button') ||
+            e.target.closest('.btn-switch-sim') ||
+            e.target.closest('.panel-meo-clinico') ||
+            e.target.closest('#btn-oclusor-opaco') ||
+            e.target.closest('#btn-lanterna-clinica') ||
+            e.target.closest('#btn-oculos-clinica')) {
+            return;
+        }
+
+        // Clique para travar oclusor ou lanterna na tela
+        if (oclusorAtivo && !isOclusorTravado) {
+            alternarTravaOclusor();
+        } else if (lanternaAtiva && !isLanternaTravada) {
+            alternarTravaLanterna();
+        }
+    });
+
+    // Botão Direito do Mouse: guarda a ferramenta em uso
+    window.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        if (oclusorAtivo) {
+            guardarOclusor();
+        } else if (lanternaAtiva) {
+            guardarLanterna();
+        }
+    });
+}
+
+// =========================================================================
+// 💬 FEEDBACK VISUAL & BALÃO DE FALA
+// =========================================================================
+function mostrarFala(texto, duracao = 3500) {
+    const bubble = document.getElementById('speech-bubble');
+    if (!bubble) return;
+
+    bubble.textContent = texto;
+    bubble.classList.add('active');
+
+    if (falaTimeout) clearTimeout(falaTimeout);
+    falaTimeout = setTimeout(() => {
+        bubble.classList.remove('active');
+    }, duracao);
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+
+    toast.textContent = msg;
+    toast.classList.add('show');
+
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+    }, 5000);
+}
+
+// =========================================================================
+// 📊 CONTROLE DE VISIBILIDADE DO PAINEL CLÍNICO DE DIAGNÓSTICO
+// =========================================================================
+function alternarPainelClinico() {
+    const painel = document.querySelector('.panel-meo-clinico');
+    const btn = document.getElementById('btn-toggle-painel');
+    if (!painel) return;
+
+    const estaVisivel = painel.classList.toggle('visivel');
+    if (btn) {
+        btn.classList.toggle('ativo', estaVisivel);
+        btn.innerHTML = estaVisivel ? '✕ Ocultar Painel' : '📊 Painel Clínico';
+    }
+}

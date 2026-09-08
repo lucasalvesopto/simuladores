@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Acuidade Visual - Prof. Lucas</title>
+    <style>
+        :root {
+            --primary: #38BDF8;
+            --primary-glow: rgba(56, 189, 248, 0.35);
+            --bg-dark: #0F172A;
+            --panel-bg: rgba(15, 23, 42, 0.85);
+            --border-panel: rgba(255, 255, 255, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: var(--bg-dark);
+            background-image: url('Imagens/background.png');
+            background-size: cover;
+            background-position: center;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #F8FAFC;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* Botões Superiores */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(30, 41, 59, 0.8);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            z-index: 9999;
+        }
+
+        .back-button:hover {
+            background-color: rgba(16, 185, 129, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .btn-switch-sim {
+            position: absolute;
+            top: 70px;
+            left: 20px;
+            background: rgba(37, 99, 235, 0.8);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 9999;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .btn-switch-sim:hover {
+            background: rgba(29, 78, 216, 0.9);
+            transform: translateY(-2px);
+        }
+
+        /* Container do Título Central Padronizado */
+        .content-container {
+            z-index: 10;
+            margin-bottom: auto;
+            margin-top: 2vh;
+            background: rgba(15, 23, 42, 0.75);
+            padding: 1rem 2.5rem;
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #10B981;
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+            letter-spacing: 1px;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        /* Feedback Visual Verde quando o olho é ocluído com sucesso */
+        .content-container.ocluido {
+            border-color: #10B981 !important;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.5), 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        .content-container.ocluido h1 {
+            color: #10B981 !important;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.8) !important;
+        }
+
+        /* Container do Paciente (Padronizado igual a Retinoscopia e Amplitude) */
+        .patient-container {
+            width: 540px;
+            height: auto;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 5;
+        }
+
+        .patient-img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0px -5px 15px rgba(0, 0, 0, 0.5));
+            pointer-events: none;
+        }
+
+        .patient-glasses {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+            z-index: 2;
+            transition: opacity 0.2s ease;
+        }
+
+        /* Balão de Fala do Paciente */
+        .speech-bubble {
+            position: absolute;
+            top: 5%;
+            left: 55%;
+            transform: translateX(-50%) scale(0.9);
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            backdrop-filter: blur(16px);
+            padding: 14px 22px;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.2);
+            z-index: 40;
+            max-width: 320px;
+            color: #F8FAFC;
+            font-size: 0.95rem;
+            font-weight: 600;
+            line-height: 1.4;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .speech-bubble.active {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 20px;
+            border-width: 10px 10px 0 0;
+            border-style: solid;
+            border-color: rgba(15, 23, 42, 0.92) transparent transparent transparent;
+        }
+
+        /* Hitboxes de Debug Visuais para Calibração */
+        .debug-hitbox {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.85rem;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .debug-hitbox-od {
+            background: rgba(56, 189, 248, 0.45);
+            border: 2px dashed #38BDF8;
+            color: #FFFFFF;
+            text-shadow: 0 0 6px #000000;
+        }
+
+        .debug-hitbox-oe {
+            background: rgba(245, 158, 11, 0.45);
+            border: 2px dashed #F59E0B;
+            color: #FFFFFF;
+            text-shadow: 0 0 6px #000000;
+        }
+
+        .debug-concha-point {
+            position: fixed;
+            width: 14px;
+            height: 14px;
+            background: #EF4444;
+            border: 2px solid #FFFFFF;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 100000;
+            box-shadow: 0 0 10px #EF4444;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Oclusores de Mão na Lateral Esquerda */
+        .oclusor-aparelho-lateral {
+            position: absolute;
+            cursor: pointer;
+            z-index: 999;
+            transition: filter 0.2s ease;
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.6));
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .oclusor-aparelho-lateral img {
+            width: 100px;
+            height: auto;
+            display: block;
+            pointer-events: none;
+        }
+
+        .oclusor-aparelho-lateral:not(.ativo):hover {
+            transform: translateY(-50%) scale(1.06);
+            filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.8));
+        }
+
+        #btn-oclusor-opaco {
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        #btn-oclusor-pinhole {
+            left: 130px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* Oclusor Ativo na Mão do Usuário */
+        .oclusor-aparelho-lateral.ativo {
+            position: fixed !important;
+            cursor: grab;
+            z-index: 99998;
+            filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.85)) !important;
+            transition: none !important;
+            transform: translate(-50%, -50%) !important;
+        }
+
+        .oclusor-aparelho-lateral.ativo.travado {
+            cursor: pointer !important;
+            transform: translate(-50%, -50%) !important;
+        }
+
+        /* Card de Instruções do Oclusor */
+        .card-instrucoes-oclusor {
+            position: absolute;
+            left: 20px;
+            top: calc(50% + 150px);
+            transform: translateY(-50%) scale(0.95);
+            width: 210px;
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: #F8FAFC;
+            font-family: system-ui, -apple-system, sans-serif;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(56, 189, 248, 0.12);
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s ease;
+        }
+
+        .card-instrucoes-oclusor.visivel {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(-50%) scale(1);
+            pointer-events: auto;
+        }
+
+        .card-inst-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            padding-bottom: 5px;
+        }
+
+        .card-inst-icon {
+            font-size: 1.1rem;
+        }
+
+        .card-inst-title {
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: #38BDF8;
+            letter-spacing: 0.5px;
+        }
+
+        .card-inst-lista {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            font-size: 0.76rem;
+        }
+
+        .card-inst-lista li {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            color: #CBD5E1;
+            line-height: 1.2;
+        }
+
+        .inst-key {
+            font-weight: 700;
+            color: #FBBF24;
+            font-size: 0.75rem;
+        }
+
+        /* Coluna Lateral Direita (Controles em Cima + Tabela em Baixo) */
+        .right-column-container {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 50;
+        }
+
+        /* Controles Gerais de Configuração em Cima da Tabela */
+        .panel-top-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .controls-row-dist {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn-toggle-top {
+            flex: 1;
+            background-color: rgba(30, 41, 59, 0.85);
+            color: #FFFFFF;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.82rem;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-toggle-top:hover {
+            background-color: rgba(16, 185, 129, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-toggle-top.active {
+            background-color: rgba(16, 185, 129, 0.9);
+            border-color: #10B981;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+            color: #FFFFFF;
+        }
+
+        /* Toggle Switch de Correção (CC) */
+        .toggle-cc-container {
+            background-color: rgba(30, 41, 59, 0.85);
+            color: #FFFFFF;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.84rem;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            user-select: none;
+            width: 100%;
+        }
+
+        .toggle-cc-container:hover {
+            background-color: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.6);
+        }
+
+        .toggle-cc-container.active {
+            border-color: #10B981;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Switch Toggle */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #475569;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #FFFFFF;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        input:checked + .slider {
+            background-color: #10B981;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(16px);
+        }
+
+        /* Painel Lateral Direito: Tabela de Teste Optométrico (Snellen / Jaeger) */
+        .panel-chart {
+            position: relative;
+            width: 100%;
+            max-height: 70vh;
+            background: #FFFFFF;
+            border-radius: 18px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 255, 255, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            color: #0F172A;
+        }
+
+        .chart-header {
+            background: #F1F5F9;
+            border-bottom: 2px solid #E2E8F0;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chart-header-title {
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: #0F172A;
+        }
+
+        .chart-body {
+            padding: 10px 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-align: center;
+            flex: 1;
+        }
+
+        /* Linhas da Tabela de Snellen */
+        .snellen-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 3px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .snellen-row:hover {
+            background: #F8FAFC;
+            border-color: #38BDF8;
+            transform: scale(1.02);
+        }
+
+        .snellen-row.selected {
+            background: #E0F2FE;
+            border-color: #0284C7;
+        }
+
+        .snellen-letters {
+            font-family: 'Arial', sans-serif;
+            font-weight: 900;
+            letter-spacing: 5px;
+            color: #000000;
+            flex: 1;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .snellen-fraction {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #64748B;
+            width: 50px;
+            text-align: right;
+            font-family: monospace;
+        }
+
+        .row-20-200 .snellen-letters {
+            font-size: 1.75rem;
+        }
+
+        .row-20-100 .snellen-letters {
+            font-size: 1.35rem;
+        }
+
+        .row-20-70 .snellen-letters {
+            font-size: 1.10rem;
+        }
+
+        .row-20-50 .snellen-letters {
+            font-size: 0.90rem;
+        }
+
+        .row-20-40 .snellen-letters {
+            font-size: 0.78rem;
+        }
+
+        .row-20-30 .snellen-letters {
+            font-size: 0.70rem;
+        }
+
+        .row-20-25 .snellen-letters {
+            font-size: 0.62rem;
+        }
+
+        .row-20-20 .snellen-letters {
+            font-size: 0.56rem;
+        }
+
+        .row-20-15 .snellen-letters {
+            font-size: 0.50rem;
+        }
+
+        /* Cartão de Perto (Jaeger em Números - Padrão Amplitude de Acomodação) */
+        .jaeger-container {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .jaeger-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .jaeger-row:hover {
+            background: #F8FAFC;
+            border-color: #38BDF8;
+            transform: scale(1.02);
+        }
+
+        .jaeger-row.selected {
+            background: #E0F2FE;
+            border-color: #0284C7;
+        }
+
+        .jaeger-tag {
+            font-weight: bold;
+            font-size: 0.82rem;
+            color: #475569;
+            min-width: 32px;
+            border-right: 1px solid #CBD5E1;
+            padding-right: 8px;
+            text-align: left;
+        }
+
+        .jaeger-text {
+            font-family: 'Arial', sans-serif;
+            font-weight: 900;
+            color: #000000;
+            flex: 1;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .row-j6 .jaeger-text {
+            font-size: 1.40rem;
+            letter-spacing: 7px;
+        }
+
+        .row-j5 .jaeger-text {
+            font-size: 1.10rem;
+            letter-spacing: 5px;
+        }
+
+        .row-j4 .jaeger-text {
+            font-size: 0.85rem;
+            letter-spacing: 4px;
+        }
+
+        .row-j3 .jaeger-text {
+            font-size: 0.70rem;
+            letter-spacing: 3px;
+        }
+
+        .row-j2 .jaeger-text {
+            font-size: 0.58rem;
+            letter-spacing: 2px;
+        }
+
+        .row-j1 .jaeger-text {
+            font-size: 0.50rem;
+            letter-spacing: 2px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 20px var(--primary-glow);
+            z-index: 9999;
+            transition: transform 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+
+<body oncontextmenu="return false;">
+    <a href="../index.html" class="back-button">⬅ Voltar</a>
+    <a href="../fichaclinica.html" class="btn-switch-sim">📋 Ficha Clínica</a>
+
+    <div class="content-container">
+        <h1>Acuidade Visual</h1>
+    </div>
+
+
+
+    <!-- Card de Instruções dos Oclusores (surge na base ao retirar um oclusor) -->
+    <div id="card-instrucoes-oclusor" class="card-instrucoes-oclusor">
+        <div class="card-inst-header">
+            <span class="card-inst-icon">👁️</span>
+            <span class="card-inst-title">Oclusor</span>
+        </div>
+        <ul class="card-inst-lista">
+            <li><span class="inst-key">🖱️ Mover</span> Segue o cursor do mouse</li>
+            <li><span class="inst-key">📌 Clique na Tela</span> Trava na posição</li>
+            <li><span class="inst-key">🔓 Clique no Oclusor</span> Destrava para mover</li>
+            <li><span class="inst-key">🖱️ Botão Direito</span> Guardar na base</li>
+        </ul>
+    </div>
+
+    <!-- Oclusor Opaco na Lateral Esquerda -->
+    <div id="btn-oclusor-opaco" class="oclusor-aparelho-lateral">
+        <img src="Imagens/oclusor.svg" alt="Oclusor Opaco">
+    </div>
+
+    <!-- Oclusor com Furo Estenopeico (Pinhole) na Lateral Esquerda -->
+    <div id="btn-oclusor-pinhole" class="oclusor-aparelho-lateral">
+        <img src="Imagens/oclusorPinhole.svg" alt="Oclusor Pinhole">
+    </div>
+
+    <!-- Paciente Lucas -->
+    <div id="patient-container" class="patient-container">
+        <img id="patient-img" src="Imagens/lucas.svg" alt="Paciente Lucas" class="patient-img">
+        <img id="patient-glasses" src="Imagens/oculosdoLucas.svg" alt="Óculos do Lucas" class="patient-glasses" style="display: none;">
+
+        <!-- Balão de Fala do Paciente -->
+        <div id="speech-bubble" class="speech-bubble">
+            Olá! Estou pronto para o exame de acuidade visual.
+        </div>
+    </div>
+
+    <!-- Coluna Lateral Direita: Controles em Cima + Tabela em Baixo -->
+    <div class="right-column-container">
+        <!-- Controles em Cima da Tabela -->
+        <div class="panel-top-controls">
+            <div class="controls-row-dist">
+                <button id="btn-dist-longe" class="btn-toggle-top active" onclick="setDistancia('longe')">🔭 Longe (6m)</button>
+                <button id="btn-dist-perto" class="btn-toggle-top" onclick="setDistancia('perto')">📖 Perto (40cm)</button>
+            </div>
+            
+            <!-- Toggle Switch de Correção (CC) -->
+            <div id="toggle-cc-card" class="toggle-cc-container" onclick="toggleCorrecao()">
+                <span class="toggle-cc-label">👓 Correção (CC)</span>
+                <label class="switch" style="pointer-events: none;">
+                    <input type="checkbox" id="toggle-cc-checkbox">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Painel da Tabela Optométrica (Direita) -->
+        <div id="panel-chart" class="panel-chart">
+            <div class="chart-header">
+                <span id="chart-title" class="chart-header-title">Tabela de Snellen (6m)</span>
+                <span style="font-size: 0.75rem; color: #64748B;">Clique na linha</span>
+            </div>
+
+            <div class="chart-body">
+                <!-- Tabela de Longe (Snellen) -->
+                <div id="snellen-container" style="display: flex; flex-direction: column; width: 100%; gap: 6px;">
+                    <div class="snellen-row row-20-200" onclick="testarLinha('20/200', 'E')">
+                        <div class="snellen-letters">E</div>
+                        <div class="snellen-fraction">20/200</div>
+                    </div>
+                    <div class="snellen-row row-20-100" onclick="testarLinha('20/100', 'F P')">
+                        <div class="snellen-letters">F P</div>
+                        <div class="snellen-fraction">20/100</div>
+                    </div>
+                    <div class="snellen-row row-20-70" onclick="testarLinha('20/70', 'T O Z')">
+                        <div class="snellen-letters">T O Z</div>
+                        <div class="snellen-fraction">20/70</div>
+                    </div>
+                    <div class="snellen-row row-20-50" onclick="testarLinha('20/50', 'L P E D')">
+                        <div class="snellen-letters">L P E D</div>
+                        <div class="snellen-fraction">20/50</div>
+                    </div>
+                    <div class="snellen-row row-20-40" onclick="testarLinha('20/40', 'P E C F D')">
+                        <div class="snellen-letters">P E C F D</div>
+                        <div class="snellen-fraction">20/40</div>
+                    </div>
+                    <div class="snellen-row row-20-30" onclick="testarLinha('20/30', 'E D F C Z P')">
+                        <div class="snellen-letters">E D F C Z P</div>
+                        <div class="snellen-fraction">20/30</div>
+                    </div>
+                    <div class="snellen-row row-20-25" onclick="testarLinha('20/25', 'F E L O P Z D')">
+                        <div class="snellen-letters">F E L O P Z D</div>
+                        <div class="snellen-fraction">20/25</div>
+                    </div>
+                    <div class="snellen-row row-20-20" onclick="testarLinha('20/20', 'D E F P O T E C')">
+                        <div class="snellen-letters">D E F P O T E C</div>
+                        <div class="snellen-fraction">20/20</div>
+                    </div>
+                    <div class="snellen-row row-20-15" onclick="testarLinha('20/15', 'L E F O D P C T')">
+                        <div class="snellen-letters">L E F O D P C T</div>
+                        <div class="snellen-fraction">20/15</div>
+                    </div>
+                </div>
+
+                <!-- Tabela de Perto (Cartão em Números - Igual à Amplitude de Acomodação) -->
+                <div id="jaeger-container" class="jaeger-container">
+                    <div class="jaeger-row row-j6" onclick="testarLinha('J6', '2 8 4')">
+                        <span class="jaeger-tag">J6</span>
+                        <div class="jaeger-text">2 8 4</div>
+                    </div>
+                    <div class="jaeger-row row-j5" onclick="testarLinha('J5', '7 3 5 9')">
+                        <span class="jaeger-tag">J5</span>
+                        <div class="jaeger-text">7 3 5 9</div>
+                    </div>
+                    <div class="jaeger-row row-j4" onclick="testarLinha('J4', '4 9 2 5 8')">
+                        <span class="jaeger-tag">J4</span>
+                        <div class="jaeger-text">4 9 2 5 8</div>
+                    </div>
+                    <div class="jaeger-row row-j3" onclick="testarLinha('J3', '8 5 2 9 6 3 7')">
+                        <span class="jaeger-tag">J3</span>
+                        <div class="jaeger-text">8 5 2 9 6 3 7</div>
+                    </div>
+                    <div class="jaeger-row row-j2" onclick="testarLinha('J2', '3 7 9 2 5 8 4 6')">
+                        <span class="jaeger-tag">J2</span>
+                        <div class="jaeger-text">3 7 9 2 5 8 4 6</div>
+                    </div>
+                    <div class="jaeger-row row-j1" onclick="testarLinha('J1', '3 7 9 2 5 8 4 6 1')">
+                        <span class="jaeger-tag">J1</span>
+                        <div class="jaeger-text">3 7 9 2 5 8 4 6 1</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">Mensagem</div>
+
+    <script src="acuidade.js"></script>
+    <script src="../fichaclinica.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW 2020 (64 Bit) -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="210mm" height="297mm" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 21000 29700"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:xodm="http://www.corel.com/coreldraw/odm/2003">
+ <defs>
+  <style type="text/css">
+   <![CDATA[
+    .str0 {stroke:#0F172A;stroke-width:80;stroke-miterlimit:22.9256;stroke-opacity:0.901961}
+    .str1 {stroke:#64748B;stroke-width:50;stroke-miterlimit:22.9256;stroke-opacity:0.901961}
+    .str3 {stroke:#475569;stroke-width:80;stroke-miterlimit:22.9256;stroke-opacity:0.949020}
+    .str2 {stroke:#1E293B;stroke-width:320;stroke-miterlimit:22.9256}
+    .fil3 {fill:none}
+    .fil1 {fill:none}
+    .fil4 {fill:none}
+    .fil2 {fill:black;fill-opacity:0.050980}
+    .fil6 {fill:white;fill-opacity:0.101961}
+    .fil5 {fill:white;fill-opacity:0.250980}
+    .fil0 {fill:#1E293B;fill-opacity:0.901961}
+   ]]>
+  </style>
+ </defs>
+ <g id="Camada_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <path class="fil0 str0" d="M4400 16200l-1800 -600c-200,-100 -300,400 -100,700l1900 700 0 -800z"/>
+  <path class="fil0 str0" d="M16600 16200l1800 -600c200,-100 300,400 100,700l-1900 700 0 -800z"/>
+  <path class="fil0 str0" d="M8900 16400c1066.67,-466.67 2133.33,-466.67 3200,0 -1066.67,466.67 -2133.33,466.67 -3200,0z"/>
+  <path class="fil1 str1" d="M9100 16400c933.33,-333.33 1866.67,-333.33 2800,0"/>
+  <g>
+   <path class="fil2" d="M6000 14100l1400 0c938.74,0 1700.01,761.26 1700.01,1699.99l-0.01 1400.01c0.01,938.72 -761.26,1699.99 -1699.99,1699.99l-1400.01 0.01c-938.72,-0.01 -1699.99,-761.28 -1699.99,-1700.01l-0.01 -1399.99c0.01,-938.74 761.28,-1700 1700.01,-1700z"/>
+   <path id="1" class="fil3 str2" d="M6000 14100l1400 0c938.74,0 1700.01,761.26 1700.01,1699.99l-0.01 1400.01c0.01,938.72 -761.26,1699.99 -1699.99,1699.99l-1400.01 0.01c-938.72,-0.01 -1699.99,-761.28 -1699.99,-1700.01l-0.01 -1399.99c0.01,-938.74 761.28,-1700 1700.01,-1700z"/>
+  </g>
+  <path class="fil4 str3" d="M6000 14300l1400 0c828.3,0 1500.01,671.7 1500.01,1499.99l-0.01 1400.01c0.01,828.28 -671.7,1499.99 -1499.99,1499.99l-1400.01 0.01c-828.28,-0.01 -1499.99,-671.72 -1499.99,-1500.01l-0.01 -1399.99c0.01,-828.3 671.72,-1500 1500.01,-1500z"/>
+  <polygon class="fil5" points="4900,14700 7600,14700 6400,17500 4900,17500 "/>
+  <g>
+   <path class="fil6" d="M13600 14100l1400 0c938.73,0 1700,761.26 1700,1699.99l0 1400.01c0,938.72 -761.27,1699.99 -1700,1699.99l-1400 0.01c-938.73,-0.01 -1700,-761.28 -1700,-1700.01l0 -1399.99c0,-938.74 761.27,-1700 1700,-1700z"/>
+   <path id="1" class="fil3 str2" d="M13600 14100l1400 0c938.73,0 1700,761.26 1700,1699.99l0 1400.01c0,938.72 -761.27,1699.99 -1700,1699.99l-1400 0.01c-938.73,-0.01 -1700,-761.28 -1700,-1700.01l0 -1399.99c0,-938.74 761.27,-1700 1700,-1700z"/>
+  </g>
+  <path class="fil4 str3" d="M13600 14300l1400 0c828.29,0 1500,671.7 1500,1499.99l0 1400.01c0,828.28 -671.71,1499.99 -1500,1499.99l-1400 0.01c-828.29,-0.01 -1500,-671.72 -1500,-1500.01l0 -1399.99c0,-828.3 671.71,-1500 1500,-1500z"/>
+  <polygon class="fil5" points="12500,14700 15200,14700 14000,17500 12500,17500 "/>
+ </g>
+</svg>

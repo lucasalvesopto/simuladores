@@ -184,7 +184,7 @@ body {
 }
 
 .col-ocular { grid-column: 1; display: flex; align-items: flex-start; margin-top: 50px; }
-.col-vert { grid-column: 2; display: flex; justify-content: center; height: 100%; align-items: center; }
+.col-horiz { grid-column: 2; display: flex; justify-content: center; height: 100%; align-items: center; }
 .col-center {
     grid-column: 3; 
     display: flex; 
@@ -193,7 +193,7 @@ body {
     justify-content: space-between;
     height: 100%;
 }
-.col-horiz { grid-column: 4; display: flex; justify-content: center; height: 100%; align-items: center; }
+.col-vert { grid-column: 4; display: flex; justify-content: center; height: 100%; align-items: center; }
 .col-knobs { 
     grid-column: 5; 
     display: flex; 
@@ -379,6 +379,8 @@ body {
     top: 20px;
     right: 20px;
     z-index: 100;
+    display: flex;
+    gap: 10px;
 }
 .teacher-panel button {
     background: var(--accent-orange);
@@ -398,4 +400,136 @@ body {
 }
 .teacher-panel button:active {
     transform: scale(0.95);
+}
+
+.power-off {
+    display: none !important;
+}
+
+/* =========================================
+   TOGGLE SWITCH (LIGAR/DESLIGAR E OLHO OD/OE)
+========================================= */
+.power-switch-container,
+.eye-switch-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--panel-bg);
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--panel-border);
+}
+
+.eye-switch-container {
+    gap: 8px;
+}
+
+.power-label {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: white;
+}
+
+.eye-label {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #64748B;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.eye-label.active {
+    color: #38BDF8;
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+}
+
+.eye-label.active-oe {
+    color: #34D399;
+    text-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ef4444; /* Vermelho (desligado) */
+  transition: .4s;
+}
+
+.eye-slider {
+  background-color: #0284c7; /* Azul (OD selecionado) */
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #10b981; /* Verde (ligado) */
+}
+
+input:checked + .eye-slider {
+  background-color: #10b981; /* Verde (OE selecionado) */
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+.slider.round {
+  border-radius: 24px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/* =========================================
+   BOTÃO DE VOLTAR
+========================================= */
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    background-color: rgba(30, 41, 59, 0.8);
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.back-button:hover {
+    background-color: rgba(79, 70, 229, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }

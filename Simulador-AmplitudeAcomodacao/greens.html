@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador - Amplitude de Acomodação</title>
+    <style>
+        :root {
+            --greens-scale: 1.2;
+            --greens-esq-x: 8.7%;
+            --greens-esq-y: 16%;
+            --greens-dir-x: -41%;
+            --testeira-x: 25%;
+            --testeira-y: -4.5%;
+
+            /* Hitboxes */
+            --hb-ccj-x: 46.5%;
+            --hb-ccj-y: 58.5%;
+            --hb-ccj-w: 6%;
+            --hb-ccj-h: 12%;
+
+            --hb-ccj-retorno-x: 55%;
+            /* Ajuste a posição de onde ele fica quando ativo */
+            --hb-ccj-retorno-y: 47%;
+
+            --hb-risley-x: 49.2%;
+            --hb-risley-y: 41.5%;
+            --hb-risley-w: 7%;
+            --hb-risley-h: 12.5%;
+            --hb-esf-x: 38.7%;
+            --hb-esf-y: 32.6%;
+            --hb-esf-w: 10%;
+            --hb-esf-h: 17.2%;
+            --hb-ace-x: 38.9%;
+            --hb-ace-y: 32.6%;
+            --hb-ace-w: 5.9%;
+            --hb-ace-h: 11.5%;
+            --hb-cil-x: 48.8%;
+            --hb-cil-y: 77.8%;
+            --hb-cil-w: 5.9%;
+            --hb-cil-h: 11.5%;
+
+            --hb-eixo-x: 48.8%;
+            --hb-eixo-y: 77.7%;
+            --hb-eixo-w: 10%;
+            --hb-eixo-h: 17.2%;
+
+            /* Textos dos Visores (Esférico e Cilíndrico) */
+            --visor-esf-x: 37.7%;
+            --visor-esf-y: 57.5%;
+            --visor-esf-font-size: 0.8rem;
+
+            --visor-cil-x: 57.0%;
+            --visor-cil-y: 72.9%;
+            --visor-cil-font-size: 0.8rem;
+
+            --visor-eixo-x: 45%;
+            --visor-eixo-y: 87.5%;
+            --visor-eixo-font-size: 0.8rem;
+
+            /* Posição A (Inativa - repouso) do CCJ */
+            --ccj-inativo-x: 0%;
+            --ccj-inativo-y: 0%;
+            --ccj-inativo-rot: 0deg;
+
+            /* Posição B (Ativa) do CCJ ao ser puxado para a ocular */
+            --ccj-ativo-x: 3%;
+            --ccj-ativo-y: 2.5%;
+            --ccj-ativo-rot: -90deg;
+
+            /* Posição A (Inativa) do Risley */
+            --risley-inativo-x: 0%;
+            --risley-inativo-y: 0%;
+            --risley-inativo-rot: 0deg;
+
+            /* Posição B (Ativa) do Risley */
+            --risley-ativo-x: 6.9%;
+            --risley-ativo-y: 0%;
+            --risley-ativo-rot: 180deg;
+        }
+
+        #greens-container {
+            position: absolute;
+            top: 15%;
+            left: 10%;
+            width: 50%;
+            height: 60%;
+            z-index: 10;
+            transform: scale(var(--greens-scale));
+            transform-origin: center center;
+        }
+
+        #greens-container img {
+            user-select: none;
+            -webkit-user-drag: none;
+            pointer-events: none;
+            /* Faz o clique passar direto para as imagens e atingir só os hitboxes */
+        }
+
+        #greens-esquerdo {
+            position: absolute;
+            top: var(--greens-esq-y);
+            left: var(--greens-esq-x);
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        #greens-direito {
+            position: absolute;
+            top: var(--greens-esq-y);
+            right: var(--greens-dir-x);
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            transform: scaleX(-1);
+            pointer-events: none;
+        }
+
+        #greens-direito .visor-texto {
+            transform: translate(-50%, -50%) scaleX(-1) !important;
+        }
+
+        #greens-testeira {
+            position: absolute;
+            top: var(--testeira-y);
+            left: var(--testeira-x);
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .hitbox {
+            position: absolute;
+            background-color: transparent;
+            /* Invisível mas clicável */
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        /* Z-index maior nos botões internos para eles não serem bloqueados pelos anéis maiores em volta */
+        #hitbox-esf-container {
+            position: absolute;
+            top: var(--hb-esf-y);
+            left: var(--hb-esf-x);
+            width: var(--hb-esf-w);
+            height: var(--hb-esf-h);
+            z-index: 20;
+            display: flex;
+            cursor: pointer;
+            border-radius: 50%;
+            overflow: hidden;
+            transform: translate(-50%, -50%);
+        }
+
+        #hitbox-esf-menos:hover,
+        #hitbox-esf-menos-oe:hover {
+            background-color: rgba(255, 0, 0, 0.4);
+        }
+
+        #hitbox-esf-mais:hover,
+        #hitbox-esf-mais-oe:hover {
+            background-color: rgba(0, 255, 0, 0.4);
+        }
+
+        #hitbox-ace-container {
+            position: absolute;
+            top: var(--hb-ace-y);
+            left: var(--hb-ace-x);
+            width: var(--hb-ace-w);
+            height: var(--hb-ace-h);
+            z-index: 21;
+            display: flex;
+            cursor: pointer;
+            border-radius: 50%;
+            overflow: hidden;
+            transform: translate(-50%, -50%);
+        }
+
+        #hitbox-ace-menos:hover,
+        #hitbox-ace-menos-oe:hover {
+            background-color: rgba(255, 0, 0, 0.4);
+        }
+
+        #hitbox-ace-mais:hover,
+        #hitbox-ace-mais-oe:hover {
+            background-color: rgba(0, 255, 0, 0.4);
+        }
+
+        /* Hitbox Dividido do Eixo (Anel Externo) */
+        #hitbox-eixo-container {
+            position: absolute;
+            top: var(--hb-eixo-y);
+            left: var(--hb-eixo-x);
+            width: var(--hb-eixo-w);
+            height: var(--hb-eixo-h);
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 20;
+            /* Fica ABAIXO do Cilindro */
+            overflow: hidden;
+            display: flex;
+        }
+
+        #hitbox-eixo-menos:hover,
+        #hitbox-eixo-menos-oe:hover {
+            background-color: rgba(255, 0, 0, 0.4);
+        }
+
+        #hitbox-eixo-mais:hover,
+        #hitbox-eixo-mais-oe:hover {
+            background-color: rgba(0, 255, 0, 0.4);
+        }
+
+        /* Hitbox Dividido do Cilindro */
+        #hitbox-cil-container {
+            position: absolute;
+            top: var(--hb-cil-y);
+            left: var(--hb-cil-x);
+            width: var(--hb-cil-w);
+            height: var(--hb-cil-h);
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 21;
+            /* Acima do eixo */
+            overflow: hidden;
+            display: flex;
+            pointer-events: none;
+        }
+
+        .hitbox-half {
+            width: 50%;
+            height: 100%;
+            cursor: pointer;
+            background-color: transparent;
+            transition: background-color 0.2s;
+            pointer-events: auto;
+        }
+
+        #hitbox-cil-menos:hover,
+        #hitbox-cil-menos-oe:hover {
+            background-color: rgba(255, 0, 0, 0.4);
+        }
+
+        #hitbox-cil-mais:hover,
+        #hitbox-cil-mais-oe:hover {
+            background-color: rgba(0, 255, 0, 0.4);
+        }
+
+        /* Faz a imagem física das lentes acessórias girar pelo seu próprio centro */
+        #rot-ace,
+        #rot-ace-oe {
+            transform-origin: var(--hb-ace-x) var(--hb-ace-y);
+            transition: transform 0.2s ease-out;
+        }
+
+        /* Faz a imagem física do eixo girar pelo seu próprio centro */
+        #d-eixo,
+        #d-eixo-oe {
+            transform-origin: var(--hb-eixo-x) var(--hb-eixo-y);
+            transition: transform 0.2s ease-out;
+        }
+
+        /* Faz a imagem física do cilindro girar pelo seu próprio centro */
+        #d-cil,
+        #d-cil-oe {
+            transform-origin: var(--hb-cil-x) var(--hb-cil-y);
+            transition: transform 0.2s ease-out;
+        }
+
+        #hitbox-ccj {
+            top: var(--hb-ccj-y);
+            left: var(--hb-ccj-x);
+            width: var(--hb-ccj-w);
+            height: var(--hb-ccj-h);
+            z-index: 20;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        /* Hitbox único de retorno para qualquer lente que estiver no olho */
+        #hitbox-retorno,
+        #hitbox-retorno-oe {
+            position: absolute;
+            top: var(--hb-ccj-retorno-y);
+            left: var(--hb-ccj-retorno-x);
+            width: var(--hb-ccj-w);
+            height: var(--hb-ccj-h);
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 21;
+            cursor: pointer;
+            display: none;
+            transition: background-color 0.2s;
+            pointer-events: auto;
+        }
+
+        #hitbox-ccj:hover,
+        #hitbox-ccj-oe:hover,
+        #hitbox-retorno:hover,
+        #hitbox-retorno-oe:hover,
+        #hitbox-risley:hover,
+        #hitbox-risley-oe:hover {
+            background-color: rgba(255, 0, 0, 0.4);
+        }
+
+        /* Animação do Cilindro Cruzado de Jackson (CCJ) */
+        #ccj, #ccj-oe {
+            transform: translate(var(--ccj-inativo-x), var(--ccj-inativo-y)) rotate(var(--ccj-inativo-rot));
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        #ccj.ccj-ativo, #ccj-oe.ccj-ativo {
+            transform: translate(var(--ccj-ativo-x), var(--ccj-ativo-y)) rotate(var(--ccj-ativo-rot));
+        }
+
+        #hitbox-risley {
+            top: var(--hb-risley-y);
+            left: var(--hb-risley-x);
+            width: var(--hb-risley-w);
+            height: var(--hb-risley-h);
+            z-index: 20;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        #hitbox-risley:hover {
+            background-color: rgba(255, 0, 0, 0.4);
+        }
+
+        /* Animação do Prisma de Risley (aplicada à mesma imagem do CCJ) */
+        #ccj.risley-ativo, #ccj-oe.risley-ativo {
+            transform: translate(var(--risley-ativo-x), var(--risley-ativo-y)) rotate(var(--risley-ativo-rot));
+        }
+
+        .visor-texto {
+            position: absolute;
+            color: #000;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            transform: translate(-50%, -50%);
+            z-index: 15;
+            /* Fica acima das imagens mas abaixo dos botões */
+            pointer-events: none;
+            /* Para não bloquear cliques nos hitboxes */
+        }
+
+        #visor-esf-texto,
+        #visor-esf-texto-oe {
+            top: var(--visor-esf-y);
+            left: var(--visor-esf-x);
+            font-size: var(--visor-esf-font-size);
+        }
+
+        #visor-cil-texto,
+        #visor-cil-texto-oe {
+            top: var(--visor-cil-y);
+            left: var(--visor-cil-x);
+            font-size: var(--visor-cil-font-size);
+        }
+
+        #visor-eixo-container {
+            position: absolute;
+            top: var(--visor-eixo-y);
+            left: var(--visor-eixo-x);
+            transform: translate(-50%, -50%);
+            width: 32px;
+            height: 18px;
+            background-color: white;
+            border: 1px solid #999;
+            border-radius: 2px;
+            box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.5);
+            z-index: 15;
+            overflow: hidden;
+            /* Esconde o texto quando ele rola pra fora da caixa */
+            pointer-events: none;
+        }
+
+        #visor-eixo-texto,
+        #visor-eixo-texto-oe {
+            top: 50%;
+            left: 50%;
+            font-size: var(--visor-eixo-font-size);
+        }
+
+        #visor-ace-texto,
+        #visor-ace-texto-oe {
+            top: calc(var(--hb-ace-y) - 15%);
+            left: var(--hb-ace-x);
+            font-size: 1.2vw;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            pointer-events: none;
+            opacity: 0;
+            white-space: nowrap;
+            transition: opacity 0.3s;
+            z-index: 30;
+            /* Fica acima de todos os hitboxes */
+        }
+
+        /* Animações de Catraca para os Textos */
+        @keyframes slideUp {
+            0% {
+                transform: translate(-50%, 20%);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translate(-50%, -50%);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideDown {
+            0% {
+                transform: translate(-50%, -120%);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translate(-50%, -50%);
+                opacity: 1;
+            }
+        }
+
+        .anim-up {
+            animation: slideUp 0.15s ease-out forwards;
+        }
+
+        .anim-down {
+            animation: slideDown 0.15s ease-out forwards;
+        }
+
+        /* Animações da Lente Física (greens-lente) */
+        @keyframes lensDropUp {
+            0% {
+                transform: translateY(5%);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes lensDropDown {
+            0% {
+                transform: translateY(-5%);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .anim-lens-up {
+            animation: lensDropUp 0.15s ease-out forwards;
+        }
+
+        .anim-lens-down {
+            animation: lensDropDown 0.15s ease-out forwards;
+        }
+
+        /* Classes para efeito de hover nas formas do Esférico (SVGs) */
+        .hover-positivo {
+            fill: transparent;
+            transition: fill 0.2s;
+        }
+
+        .hover-positivo:hover {
+            fill: rgba(0, 255, 0, 0.5) !important;
+        }
+
+        .hover-negativo {
+            fill: transparent;
+            transition: fill 0.2s;
+        }
+
+        .hover-negativo:hover {
+            fill: rgba(255, 0, 0, 0.5) !important;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f172a;
+            background-image: url('Imagens/background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            overflow: hidden;
+            user-select: none;
+            /* Bloqueia a seleção acidental de texto na tela toda */
+        }
+
+        h1 {
+            color: #10B981;
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+            letter-spacing: 1px;
+        }
+
+        p {
+            color: #94A3B8;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(30, 41, 59, 0.8);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: rgba(16, 185, 129, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .content-container {
+            z-index: 10;
+            margin-bottom: auto;
+            margin-top: 2vh;
+            background: rgba(15, 23, 42, 0.75);
+            padding: 1rem 2.5rem;
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .patient-image {
+            width: 540px;
+            height: auto;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            filter: drop-shadow(0px -5px 15px rgba(0, 0, 0, 0.5));
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* Estilos do Popup do Eixo */
+        .axis-popup {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #0070C0;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.3s;
+        }
+
+        .axis-popup.hidden {
+            display: none;
+            opacity: 0;
+        }
+
+        .axis-label {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .slider-window-vert {
+            background: #0b1f28;
+            /* Fundo escuro igual aos knobs de ceratometria */
+            width: 35px;
+            height: 150px;
+            position: relative;
+            border-radius: 20px;
+            margin: 10px 0 20px 0;
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .slider-thumb {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background: radial-gradient(circle, #FD7C7C, #c93b3b);
+            border-radius: 50%;
+            left: 50%;
+            top: 100%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.8), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            /* Deixa o input range invisível receber o clique */
+            transition: top 0.1s;
+        }
+
+        .hidden-slider-vert {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            /* Truque Mágico: Totalmente transparente */
+            cursor: pointer;
+            z-index: 10;
+            writing-mode: vertical-lr;
+            direction: rtl;
+        }
+
+        .axis-btn-fechar {
+            background: #0070C0;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 5px 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .axis-btn-fechar:hover {
+            background: #005a9c;
+        }
+
+        .near-chart {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ffffff;
+            color: #000000;
+            width: 350px;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            z-index: 20;
+            font-family: 'Times New Roman', Times, serif;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .chart-hidden {
+            transform: translate(120%, -50%) !important;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .chart-header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid #333;
+            padding-bottom: 0.5rem;
+        }
+
+        .chart-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .acuity-label {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #444;
+            min-width: 25px;
+            border-right: 1px solid #ccc;
+            padding-right: 10px;
+        }
+
+        .text-content {
+            letter-spacing: 1px;
+            line-height: 1.4;
+            flex: 1;
+            text-align: center;
+        }
+
+        .controles-gerais {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: 20px;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 1.5rem;
+            z-index: 20;
+        }
+
+        /* Animação de fadiga acomodativa (quando chega perto do limite) */
+        @keyframes struggleBlur {
+
+            /* 1º esforço: Borrão médio (dura 1s: de 0% a 28%) */
+            0% {
+                filter: none;
+                opacity: 1;
+            }
+
+            10% {
+                filter: blur(3px);
+                opacity: 0.6;
+            }
+
+            20% {
+                filter: blur(3px);
+                opacity: 0.6;
+            }
+
+            28% {
+                filter: none;
+                opacity: 1;
+            }
+
+            /* 2º esforço: Piscada rápida (dura 0.5s: de 28% a 43%) */
+            33% {
+                filter: blur(4px);
+                opacity: 0.5;
+            }
+
+            38% {
+                filter: blur(4px);
+                opacity: 0.5;
+            }
+
+            43% {
+                filter: none;
+                opacity: 1;
+            }
+
+            /* 3º esforço: Fadiga arrastada lutando contra o desfoque (dura 2s: de 43% a 100%) */
+            60% {
+                filter: blur(2px);
+                opacity: 0.8;
+            }
+
+            85% {
+                filter: blur(5px);
+                opacity: 0.4;
+            }
+
+            100% {
+                filter: none;
+                opacity: 1;
+            }
+        }
+
+        .struggle-blur {
+            animation: struggleBlur 3.5s ease-in-out;
+        }
+
+        /* ====================================================
+           REAPROVEITANDO SEU MAPEAMENTO ORIGINAL
+           ==================================================== 
+           Usamos as variáveis que você já mapeou no :root para
+           posicionar o texto e rotacioná-lo junto à haste de cada
+           lente, mantendo a responsividade! */
+
+        .lente-negativa-od {
+            --text-x: var(--lente-neg-od-x);
+            --text-y: var(--lente-neg-od-y);
+            --text-rot: var(--lente-neg-od-rot);
+        }
+
+        .lente-negativa-oe {
+            --text-x: var(--lente-neg-oe-x);
+            --text-y: var(--lente-neg-oe-y);
+            --text-rot: var(--lente-neg-oe-rot);
+        }
+
+        .lente-positiva-od {
+            --text-x: var(--lente-pos-od-x);
+            --text-y: var(--lente-pos-od-y);
+            --text-rot: var(--lente-pos-od-rot);
+        }
+
+        .lente-positiva-oe {
+            --text-x: var(--lente-pos-oe-x);
+            --text-y: var(--lente-pos-oe-y);
+            --text-rot: var(--lente-pos-oe-rot);
+        }
+
+        .lente-cil-od {
+            --text-x: var(--lente-cil-od-x);
+            --text-y: var(--lente-cil-od-y);
+            --text-rot: var(--lente-cil-od-rot);
+        }
+
+        .lente-cil-oe {
+            --text-x: var(--lente-cil-oe-x);
+            --text-y: var(--lente-cil-oe-y);
+            --text-rot: var(--lente-cil-oe-rot);
+        }
+
+        .lente-cil-pos-od {
+            --text-x: var(--lente-cil-pos-od-x);
+            --text-y: var(--lente-cil-pos-od-y);
+            --text-rot: var(--lente-cil-pos-od-rot);
+        }
+
+        .lente-cil-pos-oe {
+            --text-x: var(--lente-cil-pos-oe-x);
+            --text-y: var(--lente-cil-pos-oe-y);
+            --text-rot: var(--lente-cil-pos-oe-rot);
+        }
+
+        .lente-group {
+            position: absolute;
+            z-index: 11;
+            /* Fica na FRENTE da armação (z-index: 10) */
+            pointer-events: none;
+            /* Apenas a imagem interna receberá o clique */
+        }
+
+        .lente-group img {
+            width: 100%;
+            display: block;
+            pointer-events: none;
+            /* Agora o "vidro" da lente não recebe clique, permitindo clicar no eixo atrás dele */
+        }
+
+        /* Hitbox circular para o oclusor, evitando cliques no espaço transparente */
+        .lente-group.oclusor-od img,
+        .lente-group.oclusor-oe img {
+            pointer-events: none;
+            /* A imagem inteira ignora cliques */
+        }
+
+        .oclusor-hitbox {
+            position: absolute;
+            width: 5%;
+            height: 4%;
+            border-radius: 50%;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .oclusor-od .oclusor-hitbox {
+            top: 42.7%;
+            left: 28.7%;
+        }
+
+        .oclusor-oe .oclusor-hitbox {
+            top: 42.9%;
+            left: 65.9%;
+        }
+
+        .lente-group .grau-texto {
+            position: absolute;
+            top: var(--text-y);
+            left: var(--text-x);
+            transform: translate(-50%, -50%) rotate(var(--text-rot, 0deg));
+            font-size: var(--tamanho-texto-lente, 0.6rem);
+            font-weight: 900;
+            color: #111;
+            pointer-events: auto;
+            /* O CABINHO é a única parte clicável para remover a lente! */
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* Um círculo invisível maior ao redor do texto para facilitar o clique no celular/mouse */
+        .lente-group .grau-texto::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: transparent;
+            z-index: -1;
+        }
+
+        .drag-oculos.dragging {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            cursor: grabbing;
+            opacity: 0.9;
+        }
+
+        .toggle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .toggle-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #475569;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+        }
+
+        input:checked+.slider {
+            background-color: #10B981;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(22px);
+        }
+
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        /* Notificação (Toast) */
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: rgba(220, 38, 38, 0.95);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            z-index: 10000;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            pointer-events: none;
+        }
+
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Botão para alternar simuladores */
+        .btn-switch-sim {
+            position: absolute;
+            top: 70px;
+            left: 20px;
+            background: rgba(37, 99, 235, 0.8);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 9999;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .btn-switch-sim:hover {
+            background: rgba(29, 78, 216, 0.9);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body oncontextmenu="return false;">
+    <a href="../index.html" class="back-button">⬅ Voltar</a>
+    <a href="index.html" class="btn-switch-sim">Mudar p/ Caixa</a>
+
+    <div class="content-container">
+        <h1>Amplitude de Acomodação</h1>
+    </div>
+
+    <img src="Imagens/lucas.svg" alt="Paciente Lucas" class="patient-image">
+    <div id="greens-container">
+        <img src="Imagens/greens-testeira.svg" id="greens-testeira">
+
+        <div id="greens-esquerdo">
+            <img src="Imagens/greens-lado.svg" id="greens-base"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+            <img src="Imagens/greens-lente.svg" id="greens-lente"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
+            <img src="Imagens/greens-esf.svg" id="d-esf"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 3;">
+            <img src="Imagens/greens-acessorias.svg" id="lente-acessorias"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 4;">
+            <img src="Imagens/greens-rot-acessorias.svg" id="rot-ace"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5;">
+
+            <!-- SVG Dinâmico para as Lentes Acessórias -->
+            <svg id="svg-ace-dinamico" viewBox="0 0 20000 20200"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 6; pointer-events: none; display: none;">
+                <defs>
+                    <mask id="ph-mask">
+                        <rect width="100%" height="100%" fill="white" />
+                        <!-- Círculo transparente no centro do Pinhole -->
+                        <circle cx="12767.735" cy="11921.305" r="150" fill="black" />
+                    </mask>
+                    <pattern id="maddox-vert" width="150" height="150" patternUnits="userSpaceOnUse">
+                        <line x1="0" y1="0" x2="0" y2="150" stroke="darkred" stroke-width="75" />
+                    </pattern>
+                    <pattern id="maddox-horiz" width="150" height="150" patternUnits="userSpaceOnUse">
+                        <line x1="0" y1="0" x2="150" y2="0" stroke="darkred" stroke-width="75" />
+                    </pattern>
+                </defs>
+                <path id="lente-ace-path"
+                    d="M12053.88 11207.45c-394.26,394.25 -394.26,1033.46 0,1427.71 394.25,394.25 1033.46,394.26 1427.71,0 394.26,-394.25 394.25,-1033.46 0,-1427.71 -394.25,-394.26 -1033.46,-394.26 -1427.71,0z" />
+                <!-- Retículo da Mira Centralizadora OD -->
+                <g id="grupo-mira-od" style="display: none;">
+                    <circle cx="12767.735" cy="11921.305" r="700" fill="none" stroke="#222" stroke-width="20" opacity="0.85" />
+                    <circle cx="12767.735" cy="11921.305" r="400" fill="none" stroke="#222" stroke-width="18" opacity="0.85" />
+                    <circle cx="12767.735" cy="11921.305" r="150" fill="none" stroke="#222" stroke-width="18" opacity="0.85" />
+                    <circle cx="12767.735" cy="11921.305" r="30" fill="#222" />
+                    <line x1="12050" y1="11921.305" x2="13485" y2="11921.305" stroke="#222" stroke-width="18" opacity="0.85" />
+                    <line x1="12767.735" y1="11200" x2="12767.735" y2="12640" stroke="#222" stroke-width="18" opacity="0.85" />
+                </g>
+            </svg>
+
+            <img src="Imagens/greens-eixo.svg" id="d-eixo"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5;">
+            <img src="Imagens/greens-cil.svg" id="d-cil"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 6;">
+            <img src="Imagens/greens-ccj.svg" id="ccj"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 7;">
+
+            <!-- Visores Dinâmicos (Textos) -->
+            <div id="visor-esf-texto" class="visor-texto">0.00</div>
+            <div id="visor-cil-texto" class="visor-texto">0.00</div>
+
+            <div id="visor-eixo-container">
+                <div id="visor-eixo-texto" class="visor-texto">0</div>
+            </div>
+
+            <!-- Visor Dinâmico Temporário (Lentes Acessórias) -->
+            <div id="visor-ace-texto" class="visor-texto">Plano (O)</div>
+
+            <!-- Hitboxes em Vetor para formas exatas (greens-esf) -->
+            <svg viewBox="0 0 20000 20200"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; pointer-events: none;">
+                <!-- Forma 1 (+0.25) -->
+                <path id="hitbox-esf-p1" class="hover-positivo" title="Aumentar Esférico (+0.25)"
+                    style="pointer-events: all; cursor: pointer;"
+                    d="M3110.64 11250.39c-0.11,14.05 -0.44,28.04 -0.44,42.11 0,2400.35 1605.97,4432.6 3799.59,5079.8l0 615.69c-2524.68,-663.6 -4392.18,-2965.24 -4392.18,-5695.49 0,-14.07 0.37,-28.06 0.47,-42.11l592.56 0z" />
+                <!-- Forma 2 (-0.25) -->
+                <path id="hitbox-esf-p2" class="hover-negativo" title="Diminuir Esférico (-0.25)"
+                    style="pointer-events: all; cursor: pointer;"
+                    d="M6917.05 6210.14c-2182.52,640.56 -3784.81,2651.92 -3806.34,5033.82l-592.55 -0.47c23.31,-2839.54 2066.31,-5206.13 4760.11,-5730.69 -196.54,175.88 -329.73,421.1 -361.22,697.34z" />
+            </svg>
+
+            <!-- Hitboxes Interativos -->
+            <!-- Esférico Forte (Catraca Externa) -->
+            <div id="hitbox-esf-container" title="Esférico Forte (Anel)">
+                <div class="hitbox-half" id="hitbox-esf-menos" title="Diminuir Esférico Forte (-3.00)"></div>
+                <div class="hitbox-half" id="hitbox-esf-mais" title="Aumentar Esférico Forte (+3.00)"></div>
+            </div>
+
+            <!-- Lentes Acessórias -->
+            <div id="hitbox-ace-container" title="Lentes Acessórias">
+                <div class="hitbox-half" id="hitbox-ace-menos" title="Girar Lentes Acessórias (Esquerda)"></div>
+                <div class="hitbox-half" id="hitbox-ace-mais" title="Girar Lentes Acessórias (Direita)"></div>
+            </div>
+
+            <!-- Eixo dividido em 2 metades (Anel externo, z-index: 20) -->
+            <div id="hitbox-eixo-container" title="Eixo (Anel)">
+                <div class="hitbox-half" id="hitbox-eixo-menos" title="Diminuir Eixo (-5°)"></div>
+                <div class="hitbox-half" id="hitbox-eixo-mais" title="Aumentar Eixo (+5°)"></div>
+            </div>
+
+            <!-- Cilindro dividido em 2 metades (Botão interno, z-index: 21, bloqueia cliques no eixo por baixo) -->
+            <div id="hitbox-cil-container" title="Cilindro">
+                <div class="hitbox-half" id="hitbox-cil-mais" title="Aumentar Cilindro (+0.25)"></div>
+                <div class="hitbox-half" id="hitbox-cil-menos" title="Diminuir Cilindro (-0.25)"></div>
+            </div>
+
+            <div class="hitbox" id="hitbox-ccj" title="Puxar CCJ"></div>
+
+            <!-- Hitbox Único de Retorno -->
+            <div id="hitbox-retorno" title="Retornar Lente"></div>
+
+            <div class="hitbox" id="hitbox-risley" title="Puxar Prisma de Risley"></div>
+        </div>
+
+        <div id="greens-direito">
+            <img src="Imagens/greens-lado.svg" id="greens-base-oe"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+            <img src="Imagens/greens-lente.svg" id="greens-lente-oe"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
+            <img src="Imagens/greens-esf.svg" id="d-esf-oe"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 3;">
+            <img src="Imagens/greens-acessorias.svg" id="lente-acessorias-oe"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 4;">
+            <img src="Imagens/greens-rot-acessorias.svg" id="rot-ace-oe"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5;">
+
+            <!-- SVG Dinâmico para as Lentes Acessórias -->
+            <svg id="svg-ace-dinamico-oe" viewBox="0 0 20000 20200"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 6; pointer-events: none; display: none;">
+                <defs>
+                    <mask id="ph-mask-oe">
+                        <rect width="100%" height="100%" fill="white" />
+                        <circle cx="12767.735" cy="11921.305" r="150" fill="black" />
+                    </mask>
+                    <pattern id="maddox-vert-oe" width="150" height="150" patternUnits="userSpaceOnUse">
+                        <line x1="0" y1="0" x2="0" y2="150" stroke="darkred" stroke-width="75" />
+                    </pattern>
+                    <pattern id="maddox-horiz-oe" width="150" height="150" patternUnits="userSpaceOnUse">
+                        <line x1="0" y1="0" x2="150" y2="0" stroke="darkred" stroke-width="75" />
+                    </pattern>
+                </defs>
+                <path id="lente-ace-path-oe"
+                    d="M12053.88 11207.45c-394.26,394.25 -394.26,1033.46 0,1427.71 394.25,394.25 1033.46,394.26 1427.71,0 394.26,-394.25 394.25,-1033.46 0,-1427.71 -394.25,-394.26 -1033.46,-394.26 -1427.71,0z" />
+                <!-- Retículo da Mira Centralizadora OE -->
+                <g id="grupo-mira-oe" style="display: none;">
+                    <circle cx="12767.735" cy="11921.305" r="700" fill="none" stroke="#222" stroke-width="20" opacity="0.85" />
+                    <circle cx="12767.735" cy="11921.305" r="400" fill="none" stroke="#222" stroke-width="18" opacity="0.85" />
+                    <circle cx="12767.735" cy="11921.305" r="150" fill="none" stroke="#222" stroke-width="18" opacity="0.85" />
+                    <circle cx="12767.735" cy="11921.305" r="30" fill="#222" />
+                    <line x1="12050" y1="11921.305" x2="13485" y2="11921.305" stroke="#222" stroke-width="18" opacity="0.85" />
+                    <line x1="12767.735" y1="11200" x2="12767.735" y2="12640" stroke="#222" stroke-width="18" opacity="0.85" />
+                </g>
+            </svg>
+
+            <img src="Imagens/greens-eixo.svg" id="d-eixo-oe"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5;">
+            <img src="Imagens/greens-cil.svg" id="d-cil-oe"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 6;">
+            <img src="Imagens/greens-ccj.svg" id="ccj-oe"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 7;">
+
+            <!-- Visores Dinâmicos (Textos) -->
+            <div id="visor-esf-texto-oe" class="visor-texto">0.00</div>
+            <div id="visor-cil-texto-oe" class="visor-texto">0.00</div>
+
+            <div id="visor-eixo-container-oe"
+                style="position: absolute; top: var(--visor-eixo-y); left: var(--visor-eixo-x); transform: translate(-50%, -50%); width: 32px; height: 18px; background-color: white; border: 1px solid #999; border-radius: 2px; box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.5); z-index: 15; overflow: hidden; pointer-events: none;">
+                <div id="visor-eixo-texto-oe" class="visor-texto">0</div>
+            </div>
+
+            <!-- Visor Dinâmico Temporário (Lentes Acessórias) -->
+            <div id="visor-ace-texto-oe" class="visor-texto">Plano (O)</div>
+
+            <!-- Hitboxes em Vetor para formas exatas (greens-esf) -->
+            <svg viewBox="0 0 20000 20200"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; pointer-events: none;">
+                <path id="hitbox-esf-p1-oe" class="hover-positivo" title="Aumentar Esférico (+0.25)"
+                    style="pointer-events: all; cursor: pointer;"
+                    d="M3110.64 11250.39c-0.11,14.05 -0.44,28.04 -0.44,42.11 0,2400.35 1605.97,4432.6 3799.59,5079.8l0 615.69c-2524.68,-663.6 -4392.18,-2965.24 -4392.18,-5695.49 0,-14.07 0.37,-28.06 0.47,-42.11l592.56 0z" />
+                <path id="hitbox-esf-p2-oe" class="hover-negativo" title="Diminuir Esférico (-0.25)"
+                    style="pointer-events: all; cursor: pointer;"
+                    d="M6917.05 6210.14c-2182.52,640.56 -3784.81,2651.92 -3806.34,5033.82l-592.55 -0.47c23.31,-2839.54 2066.31,-5206.13 4760.11,-5730.69 -196.54,175.88 -329.73,421.1 -361.22,697.34z" />
+            </svg>
+
+            <!-- Hitboxes Interativos -->
+            <!-- Esférico Forte (Catraca Externa) -->
+            <div id="hitbox-esf-container-oe" title="Esférico Forte (Anel)"
+                style="position: absolute; top: var(--hb-esf-y); left: var(--hb-esf-x); width: var(--hb-esf-w); height: var(--hb-esf-h); z-index: 21; display: flex; cursor: pointer; border-radius: 50%; overflow: hidden; transform: translate(-50%, -50%);">
+                <div class="hitbox-half" id="hitbox-esf-menos-oe" title="Diminuir Esférico Forte (-3.00)"></div>
+                <div class="hitbox-half" id="hitbox-esf-mais-oe" title="Aumentar Esférico Forte (+3.00)"></div>
+            </div>
+
+            <!-- Lentes Acessórias -->
+            <div id="hitbox-ace-container-oe" title="Lentes Acessórias"
+                style="position: absolute; top: var(--hb-ace-y); left: var(--hb-ace-x); width: var(--hb-ace-w); height: var(--hb-ace-h); z-index: 21; display: flex; cursor: pointer; border-radius: 50%; overflow: hidden; transform: translate(-50%, -50%);">
+                <div class="hitbox-half" id="hitbox-ace-mais-oe" title="Girar Lentes Acessórias (Avançar)"></div>
+                <div class="hitbox-half" id="hitbox-ace-menos-oe" title="Girar Lentes Acessórias (Voltar)"></div>
+            </div>
+
+            <!-- Eixo dividido em 2 metades (Anel externo, z-index: 20) -->
+            <div id="hitbox-eixo-container-oe" title="Eixo (Anel)"
+                style="position: absolute; top: var(--hb-eixo-y); left: var(--hb-eixo-x); width: var(--hb-eixo-w); height: var(--hb-eixo-h); z-index: 20; display: flex; cursor: pointer; border-radius: 50%; overflow: hidden; transform: translate(-50%, -50%);">
+                <div class="hitbox-half" id="hitbox-eixo-mais-oe" title="Aumentar Eixo (+5°)"></div>
+                <div class="hitbox-half" id="hitbox-eixo-menos-oe" title="Diminuir Eixo (-5°)"></div>
+            </div>
+
+            <!-- Cilindro dividido em 2 metades (Botão interno, z-index: 21) -->
+            <div id="hitbox-cil-container-oe" title="Cilindro"
+                style="position: absolute; top: var(--hb-cil-y); left: var(--hb-cil-x); width: var(--hb-cil-w); height: var(--hb-cil-h); z-index: 21; display: flex; cursor: pointer; border-radius: 50%; overflow: hidden; transform: translate(-50%, -50%);">
+                <div class="hitbox-half" id="hitbox-cil-menos-oe" title="Diminuir Cilindro (-0.25)"></div>
+                <div class="hitbox-half" id="hitbox-cil-mais-oe" title="Aumentar Cilindro (+0.25)"></div>
+            </div>
+
+            <div class="hitbox" id="hitbox-ccj-oe" title="Puxar CCJ"
+                style="position: absolute; top: var(--hb-ccj-y); left: var(--hb-ccj-x); width: var(--hb-ccj-w); height: var(--hb-ccj-h); z-index: 20; border-radius: 50%; cursor: pointer;">
+            </div>
+
+            <div id="hitbox-retorno-oe" title="Retornar Lente"
+                style="position: absolute; top: var(--hb-ccj-retorno-y); left: var(--hb-ccj-retorno-x); width: var(--hb-ccj-w); height: var(--hb-ccj-h); z-index: 25; border-radius: 50%; cursor: pointer; display: none; pointer-events: auto;">
+            </div>
+
+            <div class="hitbox" id="hitbox-risley-oe" title="Puxar Prisma de Risley"
+                style="position: absolute; top: var(--hb-risley-y); left: var(--hb-risley-x); width: var(--hb-risley-w); height: var(--hb-risley-h); z-index: 21; border-radius: 50%; cursor: pointer;">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="near-chart">
+        <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Cartão de Leitura (33cm)</span>
+            <button id="btn-falar" style="background: none; border: none; cursor: pointer; font-size: 1.2rem;"
+                title="Perguntar ao Paciente">🗣️</button>
+        </div>
+
+        <div class="chart-row" data-j="6">
+            <span class="acuity-label">J6</span>
+            <div class="text-content" style="font-size: 1.6rem; letter-spacing: 8px;">2 8 4</div>
+        </div>
+        <div class="chart-row" data-j="5">
+            <span class="acuity-label">J5</span>
+            <div class="text-content" style="font-size: 1.25rem; letter-spacing: 6px;">7 3 5 9</div>
+        </div>
+        <div class="chart-row" data-j="4">
+            <span class="acuity-label">J4</span>
+            <div class="text-content" style="font-size: 0.95rem; letter-spacing: 5px;">4 9 2 5 8</div>
+        </div>
+        <div class="chart-row" data-j="3">
+            <span class="acuity-label">J3</span>
+            <div class="text-content" style="font-size: 0.75rem; letter-spacing: 4px;">8 5 2 9 6 3 7</div>
+        </div>
+        <div class="chart-row" data-j="2">
+            <span class="acuity-label">J2</span>
+            <div class="text-content" style="font-size: 0.65rem; letter-spacing: 3px;">3 7 9 2 5 8 4 6</div>
+        </div>
+        <div class="chart-row" data-j="1">
+            <span class="acuity-label">J1</span>
+            <div class="text-content" style="font-size: 0.55rem; letter-spacing: 3px;">3 7 9 2 5 8 4 6 1</div>
+        </div>
+    </div>
+
+    <!-- Div para a notificação customizada -->
+    <div id="toast" class="toast-notification"></div>
+
+    <script src="greens.js"></script>
+</body>
+
+</html>

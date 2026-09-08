@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 420" width="140" height="420">
+  <!-- Cabo Minimalista -->
+  <rect x="63" y="110" width="14" height="280" rx="7" fill="#1E293B" stroke="#334155" stroke-width="2" />
+  
+  <!-- Concha Circular Opaca Minimalista -->
+  <circle cx="70" cy="70" r="60" fill="#1E293B" stroke="#475569" stroke-width="3" />
+  <circle cx="70" cy="70" r="54" fill="#0F172A" />
+</svg>

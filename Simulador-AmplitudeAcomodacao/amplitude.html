@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador - Amplitude de Acomodação</title>
+    <style>
+        :root {
+            --altura-oculos: 0px;
+            /* Variável constante para ajustar a altura dos óculos em relação à base da página */
+            --largura-oculos: 540px;
+            /* Variável constante para ajustar a largura dos óculos */
+
+            /* Variáveis da Maleta de Provas (Altere aqui os tamanhos e espaçamentos) */
+            --altura-maleta: auto;
+            /* Pode colocar '85vh' ou '600px' se quiser forçar um tamanho, 'auto' acompanha o conteúdo */
+            --gap-colunas-maleta: 8px;
+            /* Espaço vazio entre as colunas da esquerda, centro e direita */
+            --largura-centro-maleta: 430px;
+            /* Use 'auto' para aproximar as colunas cilíndricas, ou '1fr' para afastar */
+            --gap-cilindricas: 5px;
+            /* Espaço entre as 4 colunas cilíndricas */
+
+            --altura-elementos-maleta: 12px;
+            --largura-lente-maleta: 100px;
+            --altura-placeholder-oculos: 200px;
+            /* Reduzi um pouco para diminuir o espaço abaixo da armação. Altere como quiser! */
+
+            /* Ajuste de Posição dos Textos nas Lentes Negativas */
+            --tamanho-texto-lente: 0.6rem;
+
+            --lente-neg-od-x: 21.8%;
+            --lente-neg-od-y: 63%;
+            --lente-neg-od-rot: 45deg;
+
+            --lente-neg-oe-x: 78.5%;
+            --lente-neg-oe-y: 62.5%;
+            --lente-neg-oe-rot: 315deg;
+
+            /* Ajuste de Posição dos Textos nas Lentes Positivas */
+            --lente-pos-od-x: 21.5%;
+            --lente-pos-od-y: 48%;
+            --lente-pos-od-rot: 135deg;
+
+            --lente-pos-oe-x: 78.2%;
+            --lente-pos-oe-y: 48%;
+            --lente-pos-oe-rot: 225deg;
+
+            /* Ajuste de Posição dos Textos nas Lentes Cilíndricas (Negativas) */
+            --lente-cil-od-x: 32.4%;
+            --lente-cil-od-y: 65.9%;
+            --lente-cil-od-rot: 0deg;
+
+            --lente-cil-oe-x: 68.3%;
+            --lente-cil-oe-y: 65.9%;
+            --lente-cil-oe-rot: 0deg;
+
+            /* Ajuste de Posição dos Textos nas Lentes Cilíndricas Positivas */
+            --lente-cil-pos-od-x: 16.8%;
+            --lente-cil-pos-od-y: 55.2%;
+            --lente-cil-pos-od-rot: 90deg;
+
+            --lente-cil-pos-oe-x: 82.3%;
+            --lente-cil-pos-oe-y: 55.2%;
+            --lente-cil-pos-oe-rot: -90deg;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f172a;
+            background-image: url('Imagens/background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #10B981;
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+            letter-spacing: 1px;
+        }
+
+        p {
+            color: #94A3B8;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(30, 41, 59, 0.8);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: rgba(16, 185, 129, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .content-container {
+            z-index: 10;
+            margin-bottom: auto;
+            margin-top: 2vh;
+            background: rgba(15, 23, 42, 0.75);
+            padding: 1rem 2.5rem;
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .patient-image {
+            width: 540px;
+            height: auto;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            filter: drop-shadow(0px -5px 15px rgba(0, 0, 0, 0.5));
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .oculos-prova {
+            position: absolute;
+            bottom: var(--altura-oculos);
+            left: 50%;
+            transform: translate(-50%, 0);
+            width: var(--largura-oculos);
+            height: auto;
+            z-index: 10;
+            pointer-events: auto;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .oculos-hidden {
+            transform: translate(-50%, -200px) !important;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .lente {
+            width: 540px;
+            height: auto;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 11;
+            pointer-events: none;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .lente-hidden {
+            transform: translate(-50%, -200px) !important;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .grau-texto {
+            position: absolute;
+            color: black;
+            font-size: var(--tamanho-texto-lente);
+            font-weight: bold;
+            z-index: 12;
+            /* Fica acima da lente (z-index: 11) */
+            pointer-events: none;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .grau-od {
+            left: var(--lente-neg-od-x);
+            top: var(--lente-neg-od-y);
+            transform: rotate(var(--lente-neg-od-rot));
+        }
+
+        .grau-oe {
+            left: var(--lente-neg-oe-x);
+            top: var(--lente-neg-oe-y);
+            transform: rotate(var(--lente-neg-oe-rot));
+        }
+
+        .grau-pos-od {
+            left: var(--lente-pos-od-x);
+            top: var(--lente-pos-od-y);
+            transform: rotate(var(--lente-pos-od-rot));
+        }
+
+        .grau-pos-oe {
+            left: var(--lente-pos-oe-x);
+            top: var(--lente-pos-oe-y);
+            transform: rotate(var(--lente-pos-oe-rot));
+        }
+
+        .grau-cil-od {
+            left: var(--lente-cil-od-x);
+            top: var(--lente-cil-od-y);
+            transform: rotate(var(--lente-cil-od-rot));
+        }
+
+        .grau-cil-oe {
+            left: var(--lente-cil-oe-x);
+            top: var(--lente-cil-oe-y);
+            transform: rotate(var(--lente-cil-oe-rot));
+        }
+
+        .grau-cil-pos-od {
+            left: var(--lente-cil-pos-od-x);
+            top: var(--lente-cil-pos-od-y);
+            transform: rotate(var(--lente-cil-pos-od-rot));
+        }
+
+        .grau-cil-pos-oe {
+            left: var(--lente-cil-pos-oe-x);
+            top: var(--lente-cil-pos-oe-y);
+            transform: rotate(var(--lente-cil-pos-oe-rot));
+        }
+
+        /* Estilos do Popup do Eixo */
+        .axis-popup {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #0070C0;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.3s;
+        }
+
+        .axis-popup.hidden {
+            display: none;
+            opacity: 0;
+        }
+
+        .axis-label {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .slider-window-vert {
+            background: #0b1f28;
+            /* Fundo escuro igual aos knobs de ceratometria */
+            width: 35px;
+            height: 150px;
+            position: relative;
+            border-radius: 20px;
+            margin: 10px 0 20px 0;
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .slider-thumb {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background: radial-gradient(circle, #FD7C7C, #c93b3b);
+            border-radius: 50%;
+            left: 50%;
+            top: 100%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.8), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            /* Deixa o input range invisível receber o clique */
+            transition: top 0.1s;
+        }
+
+        .hidden-slider-vert {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            /* Truque Mágico: Totalmente transparente */
+            cursor: pointer;
+            z-index: 10;
+            writing-mode: vertical-lr;
+            direction: rtl;
+        }
+
+        .axis-btn-fechar {
+            background: #0070C0;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 5px 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .axis-btn-fechar:hover {
+            background: #005a9c;
+        }
+
+        .near-chart {
+            position: absolute;
+            left: 5%;
+            top: 55%;
+            transform: translate(0, -50%);
+            background: #ffffff;
+            color: #000000;
+            width: 350px;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            z-index: 20;
+            font-family: 'Times New Roman', Times, serif;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .chart-hidden {
+            transform: translate(-120%, -50%) !important;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .chart-header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid #333;
+            padding-bottom: 0.5rem;
+        }
+
+        .chart-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .acuity-label {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #444;
+            min-width: 25px;
+            border-right: 1px solid #ccc;
+            padding-right: 10px;
+        }
+
+        .text-content {
+            letter-spacing: 1px;
+            line-height: 1.4;
+            flex: 1;
+            text-align: center;
+        }
+
+        .controles-gerais {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            gap: 1.5rem;
+            z-index: 20;
+        }
+
+        .maleta-container {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translate(calc(100% - 50px), -50%);
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            z-index: 30;
+            max-height: 95vh;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .maleta-container:hover {
+            transform: translate(-15px, -50%);
+        }
+
+        .maleta-handle {
+            background: #1e293b;
+            color: #fff;
+            padding: 20px 12px;
+            border-radius: 12px 0 0 12px;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+            border: 2px solid #374151;
+            border-right: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: 2px;
+            height: 250px;
+            transition: background 0.3s;
+            user-select: none;
+        }
+
+        .maleta-container:hover .maleta-handle {
+            background: #334155;
+        }
+
+        .maleta-provas {
+            background: #1e293b;
+            background-image: radial-gradient(circle, #334155 1px, transparent 1px);
+            background-size: 20px 20px;
+            padding: 10px;
+            border-radius: 16px;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8), 0 20px 40px rgba(0, 0, 0, 0.7);
+            border: 4px solid #0f172a;
+            display: grid;
+            grid-template-columns: auto auto var(--largura-centro-maleta) auto auto;
+            gap: var(--gap-colunas-maleta);
+            height: var(--altura-maleta);
+        }
+
+        .maleta-provas::-webkit-scrollbar {
+            display: none;
+        }
+
+        .maleta-provas {
+            scrollbar-width: none;
+            /* Para Firefox */
+        }
+
+        .coluna-esf {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .lente-btn {
+            width: var(--largura-lente-maleta);
+            height: var(--altura-elementos-maleta);
+            border-radius: 11px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+            color: #fff;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
+            transition: all 0.2s ease;
+            user-select: none;
+            border: 1px solid rgba(0, 0, 0, 0.8);
+        }
+
+        .lente-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.8), inset 0 2px 5px rgba(255, 255, 255, 0.3);
+            filter: brightness(1.2);
+            z-index: 2;
+        }
+
+        .lente-btn:active {
+            transform: translateY(0);
+        }
+
+        .lente-btn.red {
+            background: linear-gradient(180deg, #dc2626, #991b1b);
+            border-top: 2px solid #f87171;
+        }
+
+        .lente-btn.green {
+            background: linear-gradient(180deg, #059669, #065f46);
+            border-top: 2px solid #34d399;
+        }
+
+        .lente-btn.black {
+            background: linear-gradient(180deg, #374151, #111827);
+            border-top: 2px solid #6b7280;
+            font-size: 0.75rem;
+        }
+
+        .centro-maleta {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 250px;
+        }
+
+        .cil-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: var(--gap-cilindricas);
+            justify-content: center;
+        }
+
+        .acessorios-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .acessorio-btn {
+            width: 60px;
+            height: 60px;
+            flex-direction: column;
+            border-radius: 8px;
+            /* Quadrado arredondado */
+        }
+
+        .oculos-placeholder {
+            margin-top: auto;
+            background: rgba(156, 163, 175, 0.15);
+            /* Fundo cinza translúcido */
+            border-radius: 12px;
+            padding: 2px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            min-height: var(--altura-placeholder-oculos);
+            height: var(--altura-placeholder-oculos);
+            /* Força a altura exata */
+        }
+
+        .oculos-placeholder img {
+            width: 75%;
+            /* Aumentado em 25% (de 50% para 75%) */
+            height: auto;
+            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.5));
+        }
+
+        .oculos-lente g text {
+            cursor: default;
+        }
+
+        /* Animação de fadiga acomodativa (quando chega perto do limite) */
+        @keyframes struggleBlur {
+
+            /* 1º esforço: Borrão médio (dura 1s: de 0% a 28%) */
+            0% {
+                filter: none;
+                opacity: 1;
+            }
+
+            10% {
+                filter: blur(3px);
+                opacity: 0.6;
+            }
+
+            20% {
+                filter: blur(3px);
+                opacity: 0.6;
+            }
+
+            28% {
+                filter: none;
+                opacity: 1;
+            }
+
+            /* 2º esforço: Piscada rápida (dura 0.5s: de 28% a 43%) */
+            33% {
+                filter: blur(4px);
+                opacity: 0.5;
+            }
+
+            38% {
+                filter: blur(4px);
+                opacity: 0.5;
+            }
+
+            43% {
+                filter: none;
+                opacity: 1;
+            }
+
+            /* 3º esforço: Fadiga arrastada lutando contra o desfoque (dura 2s: de 43% a 100%) */
+            60% {
+                filter: blur(2px);
+                opacity: 0.8;
+            }
+
+            85% {
+                filter: blur(5px);
+                opacity: 0.4;
+            }
+
+            100% {
+                filter: none;
+                opacity: 1;
+            }
+        }
+
+        .struggle-blur {
+            animation: struggleBlur 3.5s ease-in-out;
+        }
+
+        /* ====================================================
+           REAPROVEITANDO SEU MAPEAMENTO ORIGINAL
+           ==================================================== 
+           Usamos as variáveis que você já mapeou no :root para
+           posicionar o texto e rotacioná-lo junto à haste de cada
+           lente, mantendo a responsividade! */
+
+        .lente-negativa-od {
+            --text-x: var(--lente-neg-od-x);
+            --text-y: var(--lente-neg-od-y);
+            --text-rot: var(--lente-neg-od-rot);
+        }
+
+        .lente-negativa-oe {
+            --text-x: var(--lente-neg-oe-x);
+            --text-y: var(--lente-neg-oe-y);
+            --text-rot: var(--lente-neg-oe-rot);
+        }
+
+        .lente-positiva-od {
+            --text-x: var(--lente-pos-od-x);
+            --text-y: var(--lente-pos-od-y);
+            --text-rot: var(--lente-pos-od-rot);
+        }
+
+        .lente-positiva-oe {
+            --text-x: var(--lente-pos-oe-x);
+            --text-y: var(--lente-pos-oe-y);
+            --text-rot: var(--lente-pos-oe-rot);
+        }
+
+        .lente-cil-od {
+            --text-x: var(--lente-cil-od-x);
+            --text-y: var(--lente-cil-od-y);
+            --text-rot: var(--lente-cil-od-rot);
+        }
+
+        .lente-cil-oe {
+            --text-x: var(--lente-cil-oe-x);
+            --text-y: var(--lente-cil-oe-y);
+            --text-rot: var(--lente-cil-oe-rot);
+        }
+
+        .lente-cil-pos-od {
+            --text-x: var(--lente-cil-pos-od-x);
+            --text-y: var(--lente-cil-pos-od-y);
+            --text-rot: var(--lente-cil-pos-od-rot);
+        }
+
+        .lente-cil-pos-oe {
+            --text-x: var(--lente-cil-pos-oe-x);
+            --text-y: var(--lente-cil-pos-oe-y);
+            --text-rot: var(--lente-cil-pos-oe-rot);
+        }
+
+        .lente-group {
+            position: absolute;
+            z-index: 11;
+            /* Fica na FRENTE da armação (z-index: 10) */
+            pointer-events: none;
+            /* Apenas a imagem interna receberá o clique */
+        }
+
+        .lente-group img {
+            width: 100%;
+            display: block;
+            pointer-events: none;
+            /* Agora o "vidro" da lente não recebe clique, permitindo clicar no eixo atrás dele */
+        }
+
+        /* Hitbox circular para o oclusor, evitando cliques no espaço transparente */
+        .lente-group.oclusor-od img,
+        .lente-group.oclusor-oe img {
+            pointer-events: none;
+            /* A imagem inteira ignora cliques */
+        }
+
+        .oclusor-hitbox {
+            position: absolute;
+            width: 5%;
+            height: 4%;
+            border-radius: 50%;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .oclusor-od .oclusor-hitbox {
+            top: 42.7%;
+            left: 28.7%;
+        }
+
+        .oclusor-oe .oclusor-hitbox {
+            top: 42.9%;
+            left: 65.9%;
+        }
+
+        .lente-group .grau-texto {
+            position: absolute;
+            top: var(--text-y);
+            left: var(--text-x);
+            transform: translate(-50%, -50%) rotate(var(--text-rot, 0deg));
+            font-size: var(--tamanho-texto-lente, 0.6rem);
+            font-weight: 900;
+            color: #111;
+            pointer-events: auto;
+            /* O CABINHO é a única parte clicável para remover a lente! */
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* Um círculo invisível maior ao redor do texto para facilitar o clique no celular/mouse */
+        .lente-group .grau-texto::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: transparent;
+            z-index: -1;
+        }
+
+        .drag-oculos.dragging {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            cursor: grabbing;
+            opacity: 0.9;
+        }
+
+        .toggle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .toggle-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #475569;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+        }
+
+        input:checked+.slider {
+            background-color: #10B981;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(22px);
+        }
+
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        /* Notificações Customizadas (Toast) */
+        .toast-notification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background-color: rgba(30, 41, 59, 0.95);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 10000;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            text-align: center;
+        }
+
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Botão para alternar simuladores */
+        .btn-switch-sim {
+            position: absolute;
+            top: 70px;
+            left: 20px;
+            background: rgba(37, 99, 235, 0.8);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 9999;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .btn-switch-sim:hover {
+            background: rgba(29, 78, 216, 0.9);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+    <a href="../index.html" class="back-button">⬅ Voltar</a>
+    <a href="greens.html" class="btn-switch-sim">Mudar p/ Greens</a>
+
+    <div class="content-container">
+        <h1>Amplitude de Acomodação</h1>
+    </div>
+
+    <img src="Imagens/lucas.svg" alt="Paciente Lucas" class="patient-image">
+
+    <!-- Lentes de Prova (OD e OE) - Transformadas em Grupos para que o texto siga perfeitamente a lente -->
+    <div class="lente-group lente lente-negativa-od lente-hidden">
+        <img src="Imagens/lente-negativa-od.svg" alt="Negativa OD">
+        <div class="grau-texto"></div>
+    </div>
+    <div class="lente-group lente lente-negativa-oe lente-hidden">
+        <img src="Imagens/lente-negativa-oe.svg" alt="Negativa OE">
+        <div class="grau-texto"></div>
+    </div>
+
+    <div class="lente-group lente lente-positiva-od lente-hidden">
+        <img src="Imagens/lente-positiva-od.svg" alt="Positiva OD">
+        <div class="grau-texto"></div>
+    </div>
+    <div class="lente-group lente lente-positiva-oe lente-hidden">
+        <img src="Imagens/lente-positiva-oe.svg" alt="Positiva OE">
+        <div class="grau-texto"></div>
+    </div>
+
+    <div class="lente-group lente lente-cil-od lente-hidden">
+        <img src="Imagens/lente-negativa-od-cil.svg" alt="Cil. Negativa OD">
+        <div class="grau-texto"></div>
+    </div>
+    <div class="lente-group lente lente-cil-oe lente-hidden">
+        <img src="Imagens/lente-negativa-oe-cil.svg" alt="Cil. Negativa OE">
+        <div class="grau-texto"></div>
+    </div>
+
+    <div class="lente-group lente lente-cil-pos-od lente-hidden">
+        <img src="Imagens/lente-positiva-od-cil.svg" alt="Cil. Positiva OD">
+        <div class="grau-texto"></div>
+    </div>
+    <div class="lente-group lente lente-cil-pos-oe lente-hidden">
+        <img src="Imagens/lente-positiva-oe-cil.svg" alt="Cil. Positiva OE">
+        <div class="grau-texto"></div>
+    </div>
+
+    <div class="lente-group lente oclusor-od lente-hidden">
+        <img src="Imagens/oculosprova-od.svg" alt="Oclusor OD">
+        <div class="oclusor-hitbox"></div>
+    </div>
+    <div class="lente-group lente oclusor-oe lente-hidden">
+        <img src="Imagens/oculosprova-oe.svg" alt="Oclusor OE">
+        <div class="oclusor-hitbox"></div>
+    </div>
+
+    <svg viewBox="0 0 21000 29700" xmlns="http://www.w3.org/2000/svg" id="oculos-rosto" class="oculos-prova oculos-hidden drag-oculos"
+        style="pointer-events: none;">
+        <g style="pointer-events: visiblePainted; cursor: grab;">
+            <path fill="#CECDCC"
+                d="M19909.44 16502.66l0 263.82c0,168.22 -134.97,303.12 -299.37,303.12l-2769.15 0 0 -870.05 2769.15 -0.01c164.4,0 299.37,134.95 299.37,303.12z" />
+            <path fill="#CECDCC"
+                d="M928.08 16766.48l0 -263.82c0,-168.22 134.97,-303.12 299.37,-303.12l2769.15 0 0 870.05 -2769.15 0.01c-164.4,0 -299.37,-134.95 -299.37,-303.12z" />
+            <path fill="#FD7C7C"
+                d="M18970.69 17069.6l0 -870.06 638.81 0c164.74,0 299.94,134.95 299.94,303.17l0 263.77c0,168.22 -135.2,303.12 -299.94,303.12l-638.81 0z" />
+            <path fill="#FD7C7C"
+                d="M1866.83 16199.54l0 870.06 -638.81 0c-164.74,0 -299.94,-134.95 -299.94,-303.17l0 -263.77c0,-168.22 135.2,-303.12 299.94,-303.12l638.81 0z" />
+            <path fill="black"
+                d="M11895.55 16204.93c0,167.23 -134.17,302.81 -299.82,302.81l-2354.07 0c-165.55,0 -299.72,-135.58 -299.72,-302.74l0.12 367.53c0,-167.18 134.05,-302.82 299.48,-302.82l2354.19 0c165.65,0 299.71,135.64 299.71,302.82l0.11 367.46z" />
+            <path fill="#0070C0"
+                d="M6639.61 18324.33c-1026.43,0 -1861.34,-843.07 -1861.34,-1879.57 0,-1036.45 834.91,-1879.67 1861.34,-1879.67 1026.21,0 1861.01,843.22 1861.01,1879.67 0,1036.45 -834.8,1879.57 -1861.01,1879.57zm0 -4667.17c-1282.3,0 -2359.91,888.56 -2668.66,2087.19l-1209.08 -0.06c-165.44,0 -299.56,135.64 -299.56,302.68l0.06 1175.2c0,167.1 134.06,302.69 299.5,302.69l1267 -0.07c21.87,0 43.16,-2.62 63.54,-7.06 417.05,1005.91 1401.36,1714.66 2547.2,1714.66 1522.03,0 2760.26,-1250.59 2760.26,-2787.63 0.11,-1537.22 -1238.23,-2787.6 -2760.26,-2787.6z" />
+            <path fill="#0070C0"
+                d="M12346.72 16444.76c0,-1036.45 833.54,-1879.67 1858.03,-1879.67 1024.61,0 1858.14,843.22 1858.14,1879.67 0,1036.45 -833.53,1879.57 -1858.14,1879.57 -1024.49,0 -1858.14,-843.07 -1858.03,-1879.57zm-897.64 0c0,1537.04 1235.94,2787.63 2755.67,2787.63 1143.78,0 2126.72,-708.75 2542.97,-1714.66 20.49,4.44 41.44,7.13 63.31,7.13l1264.9 -0.07c165.43,0 299.25,-135.52 299.25,-302.62l0 -1175.2c0,-167.1 -133.82,-302.62 -299.25,-302.62l-1206.86 -0.06c-308.3,-1198.63 -1384.07,-2087.13 -2664.32,-2087.13 -1519.73,0 -2755.79,1250.38 -2755.67,2787.6z" />
+            <path fill="#CECDCC"
+                d="M18031.74 11613.42l0 263.82c0,168.22 -134.97,303.12 -299.37,303.12l-13917.46 0c-164.85,0 -299.37,-134.9 -299.37,-303.07l0 -263.87c0,-168.17 134.52,-303.06 299.37,-303.06l13917.46 -0.06c164.4,0 299.37,134.95 299.37,303.12z" />
+            <path fill="black"
+                d="M10601.92 15590.85c0,202.89 -164.05,367.38 -366.45,367.38l0 0c-202.41,0 -366.23,-164.49 -366.23,-367.38l0 -4908.93c0,-203.06 163.82,-367.6 366.23,-367.6l0 0c202.4,0 366.33,164.54 366.33,367.6l0.12 4908.93z" />
+            <path fill="#FD7C7C"
+                d="M11094.19 11745.38c0,480.44 -384.43,870.01 -858.61,870.01 -474.3,0 -858.61,-389.57 -858.61,-870.01 0.12,-480.65 384.31,-870.11 858.61,-870.11 474.18,0 858.61,389.46 858.61,870.11z" />
+            <path fill="#FD7C7C"
+                d="M4454.28 11310.3l0 870.06 -638.8 0c-165.08,0 -299.94,-134.9 -299.94,-303.07l0 -263.87c0,-168.17 134.74,-303.06 299.94,-303.06l638.8 -0.06z" />
+            <path fill="#FD7C7C"
+                d="M17092.99 12180.36l0 -870.06 638.81 0c164.74,0 299.94,134.95 299.94,303.17l0 263.77c0,168.22 -135.2,303.12 -299.94,303.12l-638.81 0z" />
+        </g>
+    </svg>
+
+    <!-- Popup de Eixo com Slider Customizado -->
+    <div id="axis-popup" class="axis-popup hidden">
+        <div class="axis-label" id="axis-label-texto">Eixo OD: <span id="axis-valor">0</span>°</div>
+
+        <div class="slider-window-vert">
+            <div class="slider-thumb" id="axis-thumb"></div>
+            <input type="range" id="axis-slider" class="hidden-slider-vert" min="0" max="180" step="1" value="0">
+        </div>
+
+        <button id="axis-fechar" class="axis-btn-fechar">OK</button>
+    </div>
+
+    <div class="near-chart">
+        <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Cartão de Leitura (33cm)</span>
+            <button id="btn-falar" style="background: none; border: none; cursor: pointer; font-size: 1.2rem;"
+                title="Perguntar ao Paciente">🗣️</button>
+        </div>
+
+        <div class="chart-row" data-j="6">
+            <span class="acuity-label">J6</span>
+            <div class="text-content" style="font-size: 1.6rem; letter-spacing: 8px;">2 8 4</div>
+        </div>
+        <div class="chart-row" data-j="5">
+            <span class="acuity-label">J5</span>
+            <div class="text-content" style="font-size: 1.25rem; letter-spacing: 6px;">7 3 5 9</div>
+        </div>
+        <div class="chart-row" data-j="4">
+            <span class="acuity-label">J4</span>
+            <div class="text-content" style="font-size: 0.95rem; letter-spacing: 5px;">4 9 2 5 8</div>
+        </div>
+        <div class="chart-row" data-j="3">
+            <span class="acuity-label">J3</span>
+            <div class="text-content" style="font-size: 0.75rem; letter-spacing: 4px;">8 5 2 9 6 3 7</div>
+        </div>
+        <div class="chart-row" data-j="2">
+            <span class="acuity-label">J2</span>
+            <div class="text-content" style="font-size: 0.65rem; letter-spacing: 3px;">3 7 9 2 5 8 4 6</div>
+        </div>
+        <div class="chart-row" data-j="1">
+            <span class="acuity-label">J1</span>
+            <div class="text-content" style="font-size: 0.55rem; letter-spacing: 3px;">3 7 9 2 5 8 4 6 1</div>
+        </div>
+    </div>
+    <!-- Controles Gerais -->
+    <div class="controles-gerais">
+        <div class="toggle-container">
+            <span class="toggle-label">Tabela</span>
+            <label class="switch">
+                <input type="checkbox" id="toggle-chart" checked>
+                <span class="slider round"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="maleta-container">
+        <div class="maleta-handle">🧳 CAIXA DE PROVAS</div>
+        <!-- A Maleta Realista gerada por JS -->
+        <div class="maleta-provas" id="maleta-provas">
+            <!-- Conteúdo será injetado pelo comandos.js -->
+        </div>
+    </div>
+
+    <!-- Div para a notificação customizada -->
+    <div id="toast" class="toast-notification"></div>
+
+    <script src="comandos.js"></script>
+</body>
+
+</html>

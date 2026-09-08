@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simuladores de Optometria - Estudos</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+        :root {
+            --primary: #4F46E5;
+            --primary-light: #818CF8;
+            --secondary: #06B6D4;
+            --bg-dark: #0F172A;
+            --text-light: #F8FAFC;
+            --card-bg: rgba(30, 41, 59, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1E1B4B 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background elements */
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.5;
+            animation: float 10s infinite ease-in-out alternate;
+        }
+
+        .blob-1 {
+            background: var(--primary);
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            top: -100px;
+            left: -100px;
+        }
+
+        .blob-2 {
+            background: var(--secondary);
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            bottom: -50px;
+            right: -50px;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                transform: translate(30px, -50px) scale(1.1);
+            }
+        }
+
+        .container {
+            max-width: 1600px;
+            width: 95%;
+            text-align: center;
+            padding: 3rem 2rem;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        header {
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #818CF8, #22D3EE);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        p.subtitle {
+            font-size: 1.2rem;
+            color: #94A3B8;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .credits {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: #CBD5E1;
+        }
+
+        .credits strong {
+            color: #38BDF8;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem 1rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            group: hover;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(79, 70, 229, 0.4);
+            border-color: rgba(129, 140, 248, 0.5);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .icon-container {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover .icon-container {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .card.cover .icon-container {
+            color: #34D399;
+            box-shadow: 0 0 20px rgba(52, 211, 153, 0.2);
+        }
+
+        .card.retino .icon-container {
+            color: #FBBF24;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
+        }
+
+        .card.subjetivo .icon-container {
+            color: #A78BFA;
+            box-shadow: 0 0 20px rgba(167, 139, 250, 0.2);
+        }
+
+        .card.afinamento .icon-container {
+            color: #F43F5E;
+            box-shadow: 0 0 20px rgba(244, 63, 94, 0.2);
+        }
+
+        .card.optometria2 .icon-container {
+            color: #F97316;
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.2);
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            z-index: 1;
+        }
+
+        .card p {
+            color: #94A3B8;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            z-index: 1;
+        }
+
+        .card .btn-indicator {
+            margin-top: auto; /* Empurra o botão para o final do card */
+            padding: 0.6rem 1rem;
+            width: 100%;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .card.retino .btn-indicator {
+            background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+        }
+
+        .card.subjetivo .btn-indicator {
+            background: linear-gradient(135deg, #8b5cf6, #c084fc);
+        }
+
+        .card.afinamento .btn-indicator {
+            background: linear-gradient(135deg, #f43f5e, #fb7185);
+        }
+
+        .card.optometria2 .btn-indicator {
+            background: linear-gradient(135deg, #f97316, #fdba74);
+        }
+
+        .card.ceratometria .icon-container {
+            color: #EC4899;
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.2);
+        }
+
+        .card.ceratometria .btn-indicator {
+            background: linear-gradient(135deg, #ec4899, #f472b6);
+        }
+
+        .card.ficha .icon-container {
+            color: #38BDF8;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+        }
+
+        .card.ficha .btn-indicator {
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+        }
+
+        .card.acomodacao .icon-container {
+            color: #10B981;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+        }
+
+        .card.acomodacao .btn-indicator {
+            background: linear-gradient(135deg, #10B981, #34D399);
+        }
+
+        .card.flexibilidade .icon-container {
+            color: #34D399;
+            box-shadow: 0 0 20px rgba(52, 211, 153, 0.3);
+        }
+
+        .card.flexibilidade .btn-indicator {
+            background: linear-gradient(135deg, #059669, #10B981);
+        }
+
+        .card:hover .btn-indicator {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* =========================================
+           MODAL DA FICHA CLÍNICA (FASUP)
+        ========================================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 1.5rem;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 24px;
+            max-width: 780px;
+            width: 100%;
+            padding: 2.2rem;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(79, 70, 229, 0.2);
+            position: relative;
+            transform: scale(0.92) translateY(20px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 90vh;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.2rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #CBD5E1;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(244, 63, 94, 0.8);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .modal-header h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #F8FAFC;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.4rem;
+        }
+
+        .modal-header p {
+            color: #94A3B8;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-modal-ficha-principal {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            color: white;
+            text-decoration: none;
+            padding: 1.2rem 1.5rem;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.35);
+            transition: all 0.3s ease;
+            margin-bottom: 1.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-modal-ficha-principal:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(2, 132, 199, 0.5);
+            border-color: white;
+        }
+
+        .modal-section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #CBD5E1;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.5rem;
+        }
+
+        .modal-sim-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .modal-sim-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-sim-card:hover {
+            border-color: rgba(129, 140, 248, 0.4);
+            background: rgba(15, 23, 42, 0.85);
+            transform: translateY(-2px);
+        }
+
+        .modal-sim-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #F8FAFC;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-sim-desc {
+            font-size: 0.8rem;
+            color: #94A3B8;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+
+        .modal-btn-group {
+            display: flex;
+            gap: 6px;
+            margin-top: auto;
+        }
+
+        .btn-modal-action {
+            flex: 1;
+            padding: 8px 10px;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: white;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .btn-modal-action:hover {
+            background: var(--primary);
+            border-color: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        .btn-modal-action.single {
+            background: linear-gradient(135deg, #EC4899, #F472B6);
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+        }
+
+        .btn-modal-action.single:hover {
+            background: linear-gradient(135deg, #db2777, #ec4899);
+        }
+
+        footer {
+            margin-top: 2rem;
+            color: #64748B;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .grid {
+                grid-template-columns: repeat(1, 1fr);
+            }
+
+            .modal-sim-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="container">
+        <header>
+            <h1>Portal de Estudos Clínicos</h1>
+            <p class="subtitle">Bem-vindo à plataforma de simuladores interativos de Optometria. Escolha um dos exames abaixo ou acesse a Ficha Clínica para iniciar seu treinamento prático.</p>
+            <div class="credits">
+                Traduzido e adaptado por <strong>Professor Lucas</strong>
+            </div>
+        </header>
+
+        <div class="grid">
+            <!-- Card Ficha Clínica que abre o Modal -->
+            <a href="javascript:void(0)" onclick="abrirModalFicha()" class="card ficha" id="card-ficha-clinica">
+                <div class="icon-container">
+                    📋
+                </div>
+                <h2>Ficha Clínica do Paciente</h2>
+                <p>Consulte os dados do paciente e acesse os exames: Ceratometria, Retinoscopia e Acomodação.</p>
+                <div class="btn-indicator">Abrir Ficha / Exames ➔</div>
+            </a>
+
+            <!-- Simulador de Cover Test -->
+            <a href="CoverTeste/cover.test.html" class="card cover">
+                <div class="icon-container">
+                    👁️
+                </div>
+                <h2>Cover Test</h2>
+                <p>Pratique a identificação de forias e tropias através dos testes de oclusão alternada e unilateral.</p>
+                <div class="btn-indicator">Iniciar Simulação</div>
+            </a>
+
+            <!-- Simulador de Refrator / Subjetivo -->
+            <a href="subjetivo/subjetivo.html" class="card subjetivo">
+                <div class="icon-container">
+                    👓
+                </div>
+                <h2>Simulador de Refrator</h2>
+                <p>Pratique a refração subjetiva em um foróptero virtual completo, simulando exames visuais.</p>
+                <div class="btn-indicator">Iniciar Simulação</div>
+            </a>
+
+            <!-- Simulador de Ametropias -->
+            <a href="Simulador-Ametropias/ametropias.html" class="card optometria2">
+                <div class="icon-container">
+                    🔬
+                </div>
+                <h2>Simulador de Ametropias</h2>
+                <p>Módulo interativo de práticas optométricas avançadas. Ambiente de aprendizado virtual.</p>
+                <div class="btn-indicator">Iniciar Simulação</div>
+            </a>
+
+            <!-- Exame Subjetivo e Afinamento -->
+            <a href="https://www.virtualrefractor.com/refractor" target="_blank" rel="noopener noreferrer" class="card afinamento">
+                <div class="icon-container">
+                    🎯
+                </div>
+                <h2>Afinamento de Refração</h2>
+                <p>Pratique as técnicas de exame subjetivo e afinamento no Virtual Refractor.</p>
+                <div class="btn-indicator">Iniciar Simulação (Nova Aba)</div>
+            </a>
+        </div>
+
+        <footer>
+            &copy; 2026 Plataforma de Simulação Clínica - Prof. Lucas. Todos os direitos reservados.
+        </footer>
+    </div>
+
+    <!-- =========================================
+         MODAL DA FICHA CLÍNICA (FASUP)
+    ========================================= -->
+    <div class="modal-overlay" id="modal-ficha" onclick="fecharModalFicha(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="fecharModalFicha()" title="Fechar">✕</button>
+            
+            <div class="modal-header">
+                <h2>📋 Ecossistema da Ficha Clínica</h2>
+                <p>Acesse a central de dados do paciente ou vá diretamente para o simulador clínico correspondente da ficha oficial.</p>
+            </div>
+
+            <!-- Botão de Acesso aos Dados do Paciente -->
+            <a href="fichaclinica.html" class="btn-modal-ficha-principal">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.6rem;">👤</span>
+                    <div>
+                        <div>1. Dados Gerais do Paciente</div>
+                        <div style="font-size: 0.8rem; font-weight: normal; opacity: 0.9;">Anamnese, Rx Final e Parâmetros Clínicos</div>
+                    </div>
+                </div>
+                <span>Abrir Ficha ➔</span>
+            </a>
+
+            <div class="modal-section-title">
+                <span>🔬 Exames Clínicos Integrados</span>
+            </div>
+
+            <div class="modal-sim-grid">
+                <!-- 4. Acuidade Visual -->
+                <div class="modal-sim-card">
+                    <div class="modal-sim-title">
+                        <span style="color: #38BDF8;">👁️</span>
+                        <span>4. Acuidade Visual</span>
+                    </div>
+                    <div class="modal-sim-desc">
+                        Medição da acuidade visual monocular e binocular com tabela de Snellen (longe), Jaeger (perto) e Pinhole (PH).
+                    </div>
+                    <div class="modal-btn-group">
+                        <a href="Simulador-AcuidadeVisual/acuidade.html" class="btn-modal-action single" style="border-color: rgba(56, 189, 248, 0.4);">
+                            Abrir Simulador ➔
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 5. Motilidade Ocular -->
+                <div class="modal-sim-card">
+                    <div class="modal-sim-title">
+                        <span style="color: #F59E0B;">🎯</span>
+                        <span>5. Motilidade Ocular</span>
+                    </div>
+                    <div class="modal-sim-desc">
+                        Avaliação da motilidade ocular extrínseca (MEO), teste de Hirschberg, ângulo Kappa, ducções e versões.
+                    </div>
+                    <div class="modal-btn-group">
+                        <a href="Simulador-MEO/MEO.html" class="btn-modal-action single" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);">
+                            Abrir Simulador ➔
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 8. Ceratometria -->
+                <div class="modal-sim-card">
+                    <div class="modal-sim-title">
+                        <span style="color: #EC4899;">📐</span>
+                        <span>8. Ceratometria</span>
+                    </div>
+                    <div class="modal-sim-desc">
+                        Medição dos raios de curvatura corneana (K1 e K2) nos eixos horizontal e vertical.
+                    </div>
+                    <div class="modal-btn-group">
+                        <a href="Simulador-Ceratometria/ceratometria.html" class="btn-modal-action single">
+                            Abrir Ceratômetro ➔
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 10. Retinoscopia -->
+                <div class="modal-sim-card">
+                    <div class="modal-sim-title">
+                        <span style="color: #38BDF8;">🔦</span>
+                        <span>10. Retinoscopia</span>
+                    </div>
+                    <div class="modal-sim-desc">
+                        Neutralização de reflexos retinianos com faixa luminosa e lentes de prova.
+                    </div>
+                    <div class="modal-btn-group">
+                        <a href="Simulador-Retinoscopia/retinoscopia.html" class="btn-modal-action">
+                            🧳 Armação
+                        </a>
+                        <a href="Simulador-Retinoscopia/greens.html" class="btn-modal-action">
+                            🔬 Greens
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 11. Amplitude de Acomodação -->
+                <div class="modal-sim-card">
+                    <div class="modal-sim-title">
+                        <span style="color: #10B981;">📏</span>
+                        <span>11. Amplitude de Acomodação</span>
+                    </div>
+                    <div class="modal-sim-desc">
+                        Avaliação da capacidade acomodativa máxima pelo método de Sheard (lentes negativas).
+                    </div>
+                    <div class="modal-btn-group">
+                        <a href="Simulador-AmplitudeAcomodacao/amplitude.html" class="btn-modal-action">
+                            🧳 Armação
+                        </a>
+                        <a href="Simulador-AmplitudeAcomodacao/greens.html" class="btn-modal-action">
+                            🔬 Greens
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 11. Flexibilidade Acomodativa -->
+                <div class="modal-sim-card">
+                    <div class="modal-sim-title">
+                        <span style="color: #34D399;">🔄</span>
+                        <span>11. Flexibilidade Acomodativa</span>
+                    </div>
+                    <div class="modal-sim-desc">
+                        Teste de acomodação e relaxamento ciliar monocular e binocular com Flipper.
+                    </div>
+                    <div class="modal-btn-group">
+                        <a href="Simulador-FlexibilidadeAcomodativa/flexibilidade.html" class="btn-modal-action">
+                            🧳 Armação
+                        </a>
+                        <a href="Simulador-FlexibilidadeAcomodativa/greens.html" class="btn-modal-action">
+                            🔬 Greens
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function abrirModalFicha() {
+            const modal = document.getElementById('modal-ficha');
+            if (modal) modal.classList.add('active');
+        }
+
+        function fecharModalFicha(e) {
+            const modal = document.getElementById('modal-ficha');
+            if (modal) modal.classList.remove('active');
+        }
+
+        // Fecha modal ao pressionar tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') fecharModalFicha();
+        });
+    </script>
+</body>
+
+</html>

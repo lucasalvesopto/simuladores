@@ -190,11 +190,83 @@ eixoRange.addEventListener('input', atualizarTambores);
 eixoRange.addEventListener('input', atualizarPosicaoGlobal);
 focoRange.addEventListener('input', atualizarFocoMiras);
 
-// Inicializa os valores ao carregar a página
-atualizarFocoOcular();
-atualizarFocoMiras();
-atualizarTambores();
-atualizarPosicaoGlobal();
+// Elementos de Seleção de Olho (OD / OE)
+const btnEyeToggle = document.getElementById('btn-eye-toggle');
+const labelOD = document.getElementById('label-od');
+const labelOE = document.getElementById('label-oe');
+let olhoAtual = 'OD'; // Padrão OD
+
+// ==========================================
+// INTEGRAÇÃO COM A FICHA CLÍNICA (LOCALSTORAGE)
+// ==========================================
+const STORAGE_KEY = 'pacienteData';
+
+function carregarCeratometriaDoLocalStorage() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    let data = null;
+    if (raw) {
+        try {
+            data = JSON.parse(raw);
+        } catch (e) {
+            console.error("Erro ao analisar pacienteData:", e);
+        }
+    }
+
+    if (!data) {
+        data = {
+            ceratometria: {
+                od: { horizontal: 44.00, vertical: 44.00, eixo: 180 },
+                oe: { horizontal: 44.00, vertical: 44.00, eixo: 180 }
+            }
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } else if (!data.ceratometria) {
+        data.ceratometria = {
+            od: { horizontal: 44.00, vertical: 44.00, eixo: 180 },
+            oe: { horizontal: 44.00, vertical: 44.00, eixo: 180 }
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    return data.ceratometria;
+}
+
+function aplicarDadosDoOlho(olho) {
+    olhoAtual = olho;
+    const cera = carregarCeratometriaDoLocalStorage();
+    const dadosOlho = (olho === 'OE' ? cera.oe : cera.od) || { horizontal: 44.00, vertical: 44.00, eixo: 180 };
+
+    valorHorizontal = dadosOlho.horizontal !== undefined ? parseFloat(dadosOlho.horizontal) : 44.00;
+    valorVertical = dadosOlho.vertical !== undefined ? parseFloat(dadosOlho.vertical) : 44.00;
+    eixo = 180; // Fixo em 180 conforme especificado
+
+    // Atualiza indicadores visuais do Toggle
+    if (labelOD && labelOE) {
+        if (olho === 'OD') {
+            labelOD.classList.add('active');
+            labelOD.classList.remove('active-oe');
+            labelOE.classList.remove('active', 'active-oe');
+        } else {
+            labelOE.classList.add('active-oe');
+            labelOD.classList.remove('active', 'active-oe');
+        }
+    }
+
+    console.log(`%c[Ceratômetro] Olho Selecionado: %c${olho}`, "font-weight: bold; color: #ea580c;", "color: #38bdf8; font-weight: bold;");
+    console.log(`%cTambor Horizontal: %c${valorHorizontal.toFixed(2)} D | %cTambor Vertical: %c${valorVertical.toFixed(2)} D | %cEixo: %c${eixo}°`, 
+        "font-weight: bold;", "color: #4ade80;", "font-weight: bold;", "color: #4ade80;", "font-weight: bold;", "color: #4ade80;");
+
+    atualizarTambores();
+}
+
+// Escuta a alternância entre OD e OE
+if (btnEyeToggle) {
+    btnEyeToggle.checked = false; // Começa desmarcado = OD
+    btnEyeToggle.addEventListener('change', (e) => {
+        const novoOlho = e.target.checked ? 'OE' : 'OD';
+        aplicarDadosDoOlho(novoOlho);
+    });
+}
 
 // Continuamos escutando o teclado caso queira mapear teclas futuramente
 document.addEventListener('keydown', function (event) {
@@ -202,9 +274,24 @@ document.addEventListener('keydown', function (event) {
 });
 
 // ==========================================
-// MODO PROFESSOR: GERAR PACIENTE
+// MODO PROFESSOR E LIGAR/DESLIGAR
 // ==========================================
 const btnGerarPaciente = document.getElementById('btn-gerar-paciente');
+const btnPower = document.getElementById('btn-power'); // Agora é um checkbox
+
+// Aparelho começa desligado
+if (btnPower) btnPower.checked = false;
+miresGroup.classList.add('power-off'); 
+
+if (btnPower) {
+    btnPower.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            miresGroup.classList.remove('power-off');
+        } else {
+            miresGroup.classList.add('power-off');
+        }
+    });
+}
 
 function randomRange(min, max, step) {
     const steps = Math.floor((max - min) / step);
@@ -214,10 +301,24 @@ function randomRange(min, max, step) {
 
 if (btnGerarPaciente) {
     btnGerarPaciente.addEventListener('click', () => {
-        // Gerar valores aleatórios dentro de faixas realistas
-        valorHorizontal = randomRange(40, 48, 0.25);
-        valorVertical = randomRange(40, 48, 0.25);
-        // eixo = randomRange(-90, 90, 1); // Solicitado para não mexer no eixo no sorteio
+        // Gerar valores aleatórios dentro de faixas realistas para OD e OE
+        const k1_od = randomRange(41, 46, 0.25);
+        const k2_od = randomRange(41, 46, 0.25);
+        const k1_oe = randomRange(41, 46, 0.25);
+        const k2_oe = randomRange(41, 46, 0.25);
+
+        // Atualiza no localStorage preservando os outros dados do pacienteData
+        const raw = localStorage.getItem(STORAGE_KEY);
+        let data = {};
+        if (raw) {
+            try { data = JSON.parse(raw); } catch (e) {}
+        }
+        data.ceratometria = {
+            od: { horizontal: k1_od, vertical: k2_od, eixo: 180 },
+            oe: { horizontal: k1_oe, vertical: k2_oe, eixo: 180 }
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
         altura = randomRange(3, 7, 0.1);
         lateral = randomRange(-5, 5, 0.1);
         foco = randomRange(3, 7, 0.1);
@@ -227,18 +328,25 @@ if (btnGerarPaciente) {
         console.clear();
         console.log("%c=== GABARITO DO PACIENTE ===", "color: #ea580c; font-size: 16px; font-weight: bold;");
         console.log(`%cOcular (Cruz Preta): %c${grauAvaliador > 0 ? '+' : ''}${grauAvaliador.toFixed(2)} D`, "font-weight: bold;", "color: #4ade80;");
-        console.log(`%cTambor Horizontal: %c${valorHorizontal.toFixed(2)} D`, "font-weight: bold;", "color: #4ade80;");
-        console.log(`%cTambor Vertical: %c${valorVertical.toFixed(2)} D`, "font-weight: bold;", "color: #4ade80;");
-        console.log(`%cEixo: %c${eixo}°`, "font-weight: bold;", "color: #4ade80;");
+        console.log(`%c[OD] Horiz: ${k1_od.toFixed(2)} D | Vert: ${k2_od.toFixed(2)} D | Eixo: 180°`, "color: #38bdf8; font-weight: bold;");
+        console.log(`%c[OE] Horiz: ${k1_oe.toFixed(2)} D | Vert: ${k2_oe.toFixed(2)} D | Eixo: 180°`, "color: #34d399; font-weight: bold;");
         console.log(`%cAltura: %c${altura.toFixed(1)}`, "font-weight: bold;", "color: #4ade80;");
         console.log(`%cLateral: %c${lateral.toFixed(1)}`, "font-weight: bold;", "color: #4ade80;");
         console.log(`%cFoco (Aprox): %c${foco.toFixed(1)}`, "font-weight: bold;", "color: #4ade80;");
         console.log("%c============================", "color: #ea580c; font-weight: bold;");
 
-        // Atualizar a ótica com o novo paciente
+        // Atualizar a ótica com o novo paciente para o olho atualmente selecionado
+        aplicarDadosDoOlho(olhoAtual);
         atualizarFocoOcular();
         atualizarFocoMiras();
-        atualizarTambores();
         atualizarPosicaoGlobal();
     });
 }
+
+// Inicializa com os dados do OD
+aplicarDadosDoOlho('OD');
+atualizarFocoOcular();
+atualizarFocoMiras();
+atualizarTambores();
+atualizarPosicaoGlobal();
+
